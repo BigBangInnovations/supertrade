@@ -1,0 +1,108 @@
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress' : viewLoading$, 'kt-portlet--body-progress-overlay' : loadingAfterSubmit }">
+    <div class="kt-portlet__head kt-portlet__head__custom" *ngIf="role">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title">{{getTitle()}}</h3>
+        </div>
+    </div>
+    <div *ngIf="(sale$ | async)?.id">
+        <!--begin::Form-->
+        <div class="kt-form__section kt-form__section--first">
+            <div class="form-group kt-form__group row">
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <h6 class="kt-portlet__head-title ng-star-inserted"> Invoice id: <strong>{{ (sale$ | async)?.invoice_id }} </strong></h6>
+                </div>
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <h6 class="kt-portlet__head-title ng-star-inserted"> Scheme id: <strong>{{ (sale$ | async)?.scheme_id }} </strong></h6>
+                </div>
+
+                <!-- <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <div class="kt-form__heading">
+                        <h3 class="kt-form__heading-title pointer-cursor">Product detail</h3>
+                    </div>
+                    <div formArrayName="products">
+                        <div *ngFor="let product of saleForm.controls.products.controls; let i=index">
+                            <div [formGroupName]="i">
+                                <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="saleForm.controls.products.controls[i]" [parantGroup]="saleForm" [index]="i"></kt-popup-add-product>
+                            </div>
+                        </div>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="col-lg-12 kt-margin-t-20 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
+                        <h6 class="kt-portlet__head-title ng-star-inserted"> Total product amount: <strong>{{ totalAmount | number:'1.2-2' }}</strong></h6>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="col-lg-12 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
+                        <h6 class="kt-portlet__head-title ng-star-inserted"> Total discount amount: <strong>{{ totalDiscount | number:'1.2-2' }}</strong></h6>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="col-lg-12 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
+                        <h6 class="kt-portlet__head-title ng-star-inserted"> Total gross amount: <strong>{{ totalGrossAmount | number:'1.2-2' }}</strong></h6>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="col-lg-12 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
+                        <h6 class="kt-portlet__head-title ng-star-inserted"> Total tax amount: <strong>{{ totalTaxAmount | number:'1.2-2' }}</strong></h6>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="col-lg-12 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
+                        <h6 class="kt-portlet__head-title ng-star-inserted"> Total net amount: <strong>{{ totalNetAmount | number:'1.2-2' }}</strong></h6>
+                    </div>
+                    <mat-divider></mat-divider>
+                </div> -->
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <div class="kt-form__heading">
+                        <h3 class="kt-form__heading-title">Customer detail</h3>
+                    </div>
+                </div>
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <label>Name: </label>
+                    <label>{{ (sale$ | async)?.name }}</label>
+                </div>
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <label>Mobile no: </label>
+                    <label>{{ (sale$ | async)?.mobile_no }}</label>
+                </div>
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <label>Landline no: </label>
+                    <label>{{ (sale$ | async)?.landline_no }}</label>
+                </div>
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <label>Address Line 1: </label>
+                    <label>{{ (sale$ | async)?.address_line1 }}</label>
+                </div>
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <label>Address Line 2: </label>
+                    <label>{{ (sale$ | async)?.address_line2 }}</label>
+                </div>
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <label>Pincode : </label>
+                    <label>{{ (sale$ | async)?.pincode }}</label>
+                </div>
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <label>City: </label>
+                    <label>{{ (sale$ | async)?.city }}</label>
+                </div>
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <label>State: </label>
+                    <label>{{ (sale$ | async)?.state }}</label>
+                </div>
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <label>Country: </label>
+                    <label>{{ (sale$ | async)?.country }}</label>
+                </div>
+
+                <button type="button" mat-raised-button (click)="close()" matTooltip="Cancel"> Cancel </button>
+            </div>
+            <!--end::Form-->
+        </div>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+<div [formGroup]="productForm" class="kt-margin-t-10">
+    <mat-accordion>
+        <mat-expansion-panel class="kt-bg-light-dark">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <label>{{getControlLabel('productNameCtrl')}}</label>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <mat-list role="list">
+                <mat-list-item role="listitem">
+                    <h3 mat-line>Price: {{ getControlLabel('productPriceCtrl') }} </h3>
+                    <button mat-icon-button (click)="deleteProduct(index)">
+                            <mat-icon class="mat-24 kt-font-danger">delete</mat-icon>
+                          </button>
+                </mat-list-item>
+
+                <mat-list-item role="listitem">
+                    <mat-form-field>
+                        <input matInput formControlName="productQuantityCtrl" placeholder="Quantity" (input)="getProductAmount($event.target.value);">
+                    </mat-form-field>
+                </mat-list-item>
+                <mat-list-item role="listitem"><span>Product Amount: </span>{{ productAmount | number:'1.2-2' }}</mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item role="listitem"><span>Discount @{{getControlLabel('productDiscountCtrl')}}%: </span>{{ productDiscount | number:'1.2-2' }}</mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item role="listitem"><span>Gross Amount: </span>{{ productGrossAmount | number:'1.2-2' }}</mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item role="listitem"><span>CGST @{{getControlLabel('productDiscountCtrl')}}%: </span>{{ productCGST | number:'1.2-2' }}</mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item role="listitem"><span>SGST @{{getControlLabel('productDiscountCtrl')}}%: </span>{{ productSGST | number:'1.2-2' }}</mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item role="listitem"><span>Product Net Amount: </span>{{ productNetAmount | number:'1.2-2' }}</mat-list-item>
+            </mat-list>
+
+        </mat-expansion-panel>
+    </mat-accordion>
+</div>

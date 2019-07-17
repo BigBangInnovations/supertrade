@@ -1,0 +1,111 @@
+<kt-portlet>
+    <kt-portlet-header title="View Sale" [class]="'kt-portlet__head--lg'">
+    </kt-portlet-header>
+
+    <kt-portlet-body>
+        <!--begin::Form-->
+        <form [formGroup]="saleForm" class="kt-form kt-form--group-seperator-dashed">
+            <!-- <div class="row">
+                    <div class="col-lg-2"></div>
+                    <div class="col-lg-8 kt-ribbon--border-dash-hor"> -->
+            <kt-alert *ngIf="hasFormErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+                Oh snap! Change a few things up and try submitting again.
+            </kt-alert>
+            <div class="kt-form__section kt-form__section--first">
+                <div class="form-group kt-form__group row">
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                        <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                            <mat-form-field class="mat-form-field-fluid">
+                                <input matInput placeholder="Scheme name" formControlName="scheme_id" readonly />
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                        <div class="kt-form__heading">
+                            <h3 class="kt-form__heading-title pointer-cursor">Product detail</h3>
+                        </div>
+                        <div formArrayName="products">
+                            <div *ngFor="let product of saleForm.controls.products.controls; let i=index">
+                                <div [formGroupName]="i">
+                                    <!-- <input formControlName="productBarCodeCtrl" placeholder="Item name"> -->
+                                    <!-- index: {{productBarCodeCtrl}} -->
+                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="saleForm.controls.products.controls[i]" [parantGroup]="saleForm" [index]="i"></kt-popup-add-product>
+                                </div>
+                            </div>
+                        </div>
+                        <ng-template #popupProductCalculation></ng-template>
+                    </div>
+
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                        <div class="kt-form__heading">
+                            <h3 class="kt-form__heading-title">Customer detail</h3>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input matInput placeholder="customer name" formControlName="name" readonly />
+                            <mat-error>Customer name is<strong>required</strong> </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input matInput placeholder="mobile number" formControlName="mobile_no" readonly />
+                            <mat-error>Mobile number is <strong>required</strong></mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input matInput placeholder="landline number" formControlName="landline_no" readonly />
+                            <mat-error>Address line 1 is <strong>required</strong></mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="form-group kt-form__group row">
+                    <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input type="text" matInput placeholder="address line 1" readonly formControlName="address_line1" />
+                            <mat-error>Address line 1 is <strong>required</strong></mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input matInput placeholder="address line 2" readonly formControlName="address_line2" />
+                            <mat-error>Address line 2 is <strong>required</strong></mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input matInput placeholder="city" formControlName="city" readonly />
+                            <mat-error>City is <strong>required</strong></mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="form-group kt-form__group row">
+                    <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input matInput placeholder="pincode" readonly formControlName="pincode" />
+                            <mat-error>Pincode is <strong>required</strong></mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input matInput placeholder="state" readonly formControlName="state" />
+                            <mat-error>State is <strong>required</strong></mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+            <button type="button" mat-raised-button (click)="close()" cdkFocusInitial matTooltip="Close">
+                    Close
+                </button>
+            <!-- </div>
+                    <div class="col-lg-2"></div>
+                </div> -->
+        </form>
+        <!--end::Form-->
+    </kt-portlet-body>
+</kt-portlet>

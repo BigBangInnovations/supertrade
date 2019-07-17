@@ -1,0 +1,79 @@
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress' : (viewLoading$) | async, 'kt-portlet--body-progress-overlay' : loadingAfterSubmit }">
+    <div class="kt-portlet__head kt-portlet__head__custom">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title">Add new product</h3>
+        </div>
+    </div>
+    <div class="kt-form">
+        <div class="kt-portlet__body">
+
+            <div class="kt-portlet__body-progress">
+                <mat-spinner [diameter]="20"></mat-spinner>
+            </div>
+
+            <kt-alert *ngIf="hasFormErrors" type="warn" [duration]="30000" [showCloseButton]="true" (close)="onAlertClose($event)">
+                Oh snap! Change a few things up and try submitting again.
+            </kt-alert>
+            <form class="kt-form" [formGroup]="popupProductForm" autocomplete="off">
+                <div class="form-group kt-form__group row d-block">
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <mat-select formControlName="productCategoryCtrl" placeholder="Product category" (selectionChange)="changeCategory($event.value)">
+                                <mat-option *ngFor="let categoryArray of ((categories$ | async) | keyvalue)" [value]="categoryArray.value.ID">
+                                    {{categoryArray.value.Name}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field class="mat-form-field-fluid">
+                            <mat-select formControlName="productSubCategoryCtrl" placeholder="Product sub category" (selectionChange)="changeSubCategory($event.value)">
+                                <mat-option *ngFor="let subCategory of ((subCategoryArray) | keyvalue)" [value]="subCategory.value.ID">
+                                    {{subCategory.value.Name}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field class="mat-form-field-fluid">
+                            <mat-select formControlName="productCtrl" placeholder="Product" (selectionChange)="changeProduct($event.value)">
+                                <mat-option *ngFor="let product of ((productArray) | keyvalue)" [value]="product.value.ID">
+                                    {{product.value.Name}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input matInput placeholder="Quantity" value="" formControlName="productQuantityCtrl">
+                        </mat-form-field>
+                        <!-- Hidden field start -->
+
+                        <input [hidden]="true" value="" formControlName="productNameCtrl">
+                        <input [hidden]="true" value="" formControlName="productPriceCtrl">
+                        <input [hidden]="true" value="" formControlName="productDiscountCtrl">
+                        <input [hidden]="true" value="" formControlName="productLoyaltyPointCtrl">
+                        <input [hidden]="true" value="" formControlName="productBarCodeCtrl">
+                        <input [hidden]="true" value="" formControlName="productTaxSGSTCtrl">
+                        <input [hidden]="true" value="" formControlName="productTaxCGSTCtrl">
+                        <input [hidden]="true" value="" formControlName="productTaxIGSTCtrl">
+
+                        <!-- Hidden field end -->
+
+                    </div>
+                </div>
+            </form>
+            <div class="kt-separator kt-separator--dashed"></div>
+        </div>
+        <div class="kt-portlet__foot kt-portlet__foot--fit kt-portlet__no-border">
+            <div class="kt-form__actions kt-form__actions--solid">
+                <div class="row text-right">
+                    <div class="col-lg-12">
+                        <button type="button" mat-raised-button (click)="close()" cdkFocusInitial matTooltip="Cancel">
+                                    Cancel
+                                </button>&nbsp;
+                        <button type="button" mat-raised-button color="primary" (click)="onSubmit()" [disabled]="((viewLoading$) | async) || (!popupProductForm.valid)" matTooltip="Add product">
+                                    Save
+                                </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

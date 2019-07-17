@@ -1,0 +1,113 @@
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress' : viewLoading$, 'kt-portlet--body-progress-overlay' : loadingAfterSubmit }">
+    <div class="kt-portlet__head kt-portlet__head__custom" *ngIf="role">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title">{{getTitle()}}</h3>
+        </div>
+    </div>
+    <div *ngIf="(sale$ | async)?.id">
+        <!--begin::Form-->
+        <div class="kt-form__section kt-form__section--first">
+            <div class="form-group kt-form__group row">
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <h6 class="kt-portlet__head-title ng-star-inserted"> Scheme name: <strong>{{ salesActiveScheme.scheme_name }}</strong></h6>
+                </div>
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <div class="kt-form__heading">
+                        <h3 class="kt-form__heading-title pointer-cursor">Product detail</h3>
+                    </div>
+                    <div formArrayName="products">
+                        <div *ngFor="let product of saleForm.controls.products.controls; let i=index">
+                            <div [formGroupName]="i">
+                                <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="saleForm.controls.products.controls[i]" [parantGroup]="saleForm" [index]="i"></kt-popup-add-product>
+                            </div>
+                        </div>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="col-lg-12 kt-margin-t-20 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
+                        <h6 class="kt-portlet__head-title ng-star-inserted"> Total product amount: <strong>{{ totalAmount | number:'1.2-2' }}</strong></h6>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="col-lg-12 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
+                        <h6 class="kt-portlet__head-title ng-star-inserted"> Total discount amount: <strong>{{ totalDiscount | number:'1.2-2' }}</strong></h6>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="col-lg-12 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
+                        <h6 class="kt-portlet__head-title ng-star-inserted"> Total gross amount: <strong>{{ totalGrossAmount | number:'1.2-2' }}</strong></h6>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="col-lg-12 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
+                        <h6 class="kt-portlet__head-title ng-star-inserted"> Total tax amount: <strong>{{ totalTaxAmount | number:'1.2-2' }}</strong></h6>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="col-lg-12 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
+                        <h6 class="kt-portlet__head-title ng-star-inserted"> Total net amount: <strong>{{ totalNetAmount | number:'1.2-2' }}</strong></h6>
+                    </div>
+                    <mat-divider></mat-divider>
+                </div>
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <div class="kt-form__heading">
+                        <h3 class="kt-form__heading-title">Customer detail</h3>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <input matInput placeholder="Enter customer name" formControlName="name" />
+                        <mat-error>Customer name is<strong>required</strong> </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <input matInput placeholder="Enter mobile number" formControlName="mobile_no" />
+                        <mat-error>Mobile number is <strong>required</strong></mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <input matInput placeholder="Enter landline number" formControlName="landline_no" />
+                        <mat-error>Address line 1 is <strong>required</strong></mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="form-group kt-form__group row">
+                <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <input type="text" matInput placeholder="Enter address line 1" formControlName="address_line1" />
+                        <mat-error>Address line 1 is <strong>required</strong></mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <input matInput placeholder="Enter address line 2" formControlName="address_line2" />
+                        <mat-error>Address line 2 is <strong>required</strong></mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <input matInput placeholder="Enter city" formControlName="city" />
+                        <mat-error>City is <strong>required</strong></mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="form-group kt-form__group row">
+                <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <input matInput placeholder="Enter pincode" formControlName="pincode" />
+                        <mat-error>Pincode is <strong>required</strong></mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-lg-4 kt-margin-bottom-20-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <input matInput placeholder="Enter state" formControlName="state" />
+                        <mat-error>State is <strong>required</strong></mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+        <!--end::Form-->
+    </div>
+</div>

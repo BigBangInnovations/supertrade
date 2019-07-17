@@ -1,0 +1,51 @@
+<mat-tab-group mat-stretch-tabs>
+    <mat-tab md-stretch-tabs="yes" label="Purchase">
+        <div class="kt-section">
+            <div class="kt-section__content">
+                <span *ngIf="error$ | async as error">{{error}}</span>
+                <!-- <mat-list *ngIf="(purchases$ | async)?.length; else loading"> -->
+                <mat-list *ngIf="!(dashboardPurchaseloading$ | async); else loading">
+                    <mat-card>
+                        <mat-card-header>
+                            <mat-card-subtitle>Purchase futer dhamaka</mat-card-subtitle>
+                            <mat-card-title>AAA</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <p>
+                                <ngb-progressbar value="{{(purchasesPoints$ | async)?.accumulated_points}}" type="warning"></ngb-progressbar>
+                            </p>
+                        </mat-card-content>
+                        <mat-card-actions>
+                            <span class="pull-right">231.00 Points</span>
+                            <span>110000.00 Points</span>
+                        </mat-card-actions>
+                    </mat-card>
+                    <h4 mat-line class="text-center mt-3">Purchase List</h4>
+                    <ng-container *ngIf="(purchases$ | async)?.length; else noPurchase">
+                        <a mat-list-item href="" *ngFor=" let purchase of (purchases$ |async)">
+                            <h4 mat-line class="float-right">{{purchase.date | date: 'dd-MM-yyyy'}}</h4>
+                            <span mat-line>Total Amount: {{totalAmount(purchase.product) | number : '1.2-2'}}</span>
+                            <span mat-line>Total Quantity: {{totalQuantity(purchase.product) | number}}</span>
+                            <span mat-line>Loyalty Point: {{totalLoyaltyPoints(purchase.product) | number}}</span>
+                            <span mat-line>Boost Points: {{totalBoostPoints(purchase.product) | number}}</span>
+                            <mat-divider [inset]="true"></mat-divider>
+                        </a>
+                    </ng-container>
+                    <ng-template #noPurchase>
+                        <mat-card>No purchase added yet!</mat-card>
+                    </ng-template>
+                </mat-list>
+
+                <ng-template #loading>
+                    <div style="margin-left: 50%;">
+                        <mat-spinner color="warn" diameter="30" strokeWidth="2"></mat-spinner>
+                        <div style="position:relative;">
+                            Loading...
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab md-stretch-tabs="yes " label="Sales ">Sales</mat-tab>
+</mat-tab-group>
