@@ -16,7 +16,7 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 // CRUD
 import { InterceptService } from '../../../../core/_base/crud/';
-import { PopupAddPproductModule } from '../../popup-product/popup-add-product/popup-add-product.module'
+import { PopupProductModule } from '../../popup-product/popup-product.module'
 
 
 import { 
@@ -59,7 +59,7 @@ const routes: Routes = [
 
 @NgModule({
 	imports: [
-		PopupAddPproductModule,
+		PopupProductModule,
 		CommonModule,
 		PartialsModule,
 		CoreModule,

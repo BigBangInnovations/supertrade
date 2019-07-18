@@ -8,7 +8,6 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { CoreModule } from '../../../../core/core.module';
 import { PartialsModule } from '../../../partials/partials.module';
 import { AddSalesComponent } from './add-sale.component';
-// import { SaleEffects, SalesService, salesReducer  } from '../../../core/sales'
 // Translate
 import { TranslateModule } from '@ngx-translate/core';
 // NGRX
@@ -16,8 +15,7 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 // CRUD
 import { InterceptService } from '../../../../core/_base/crud/';
-import { PopupAddPproductModule } from '../../popup-product/popup-add-product/popup-add-product.module'
-
+import { PopupProductModule } from '../../popup-product/popup-product.module'
 
 import { 
 	MatIconModule,
@@ -48,7 +46,6 @@ import {
 
  import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { from } from 'rxjs';
-//  import { PopupAddProductComponent } from '../../popup-product/popup-add-product/popup-add-product.component'
 
 const routes: Routes = [
 	{
@@ -59,15 +56,13 @@ const routes: Routes = [
 
 @NgModule({
 	imports: [
-		PopupAddPproductModule,
+		PopupProductModule,
 		CommonModule,
 		PartialsModule,
 		CoreModule,
 		RouterModule.forChild(routes),
 		MatTabsModule,
 		TranslateModule.forChild(),
-		// StoreModule.forFeature('sales', salesReducer),
-		// EffectsModule.forFeature([SaleEffects]),
 		MatIconModule,
 		MatListModule,
 		MatProgressSpinnerModule,
@@ -104,12 +99,9 @@ const routes: Routes = [
 			useClass: InterceptService,
 			multi: true
 		},
-		// SalesService
 	],
 	declarations: [
 		AddSalesComponent,
-		// PopupAddProductComponent
-		// AddSalesComponent,
 		
 	],
 	entryComponents: [
@@ -122,7 +114,6 @@ export class AddSalesModule {
 		return {
 			ngModule: AddSalesModule,
 			providers: [
-				// SalesService
 			]
 		};
 	}

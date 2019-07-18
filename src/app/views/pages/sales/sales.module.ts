@@ -50,32 +50,22 @@ import {
 
 //component
  import { SalesListComponent } from './sales.component';
-//  import { AddSalesComponent } from './add-sale/add-sale.component';
-import { PopupProductComponent } from '../popup-product/popup-product.component';
-// import { PopupAddProductComponent } from '../popup-product/popup-add-product/popup-add-product.component';
 import { ActionNotificationComponent } from '../../partials/content/crud';
 import { ViewSaleComponent } from './view-sale/view-sale.component';
-
-import { PopupAddPproductModule } from '../popup-product/popup-add-product/popup-add-product.module'
+import { PopupProductModule } from '../popup-product/popup-product.module'
 import { from } from 'rxjs';
 
 const routes: Routes = [
 	{
 		path: '',
 		component: SalesListComponent,
-		// children: [
-		// 	{
-		// 		path: 'add-sale',
-		// 		component: AddSalesComponent
-		// 	},
-		// ]
 	},
 	
 ];
 
 @NgModule({
 	imports: [
-		PopupAddPproductModule,
+		PopupProductModule,
 		CommonModule,
 		PartialsModule,
 		CoreModule,
@@ -118,10 +108,7 @@ const routes: Routes = [
 	],
 	exports:[
 		SalesListComponent,
-		PopupProductComponent,
 		ViewSaleComponent,
-		// PopupAddProductComponent,
-		// AddSalesComponent
 	],
 	providers: [
 		InterceptService,
@@ -136,17 +123,12 @@ const routes: Routes = [
 	],
 	entryComponents: [
 		ActionNotificationComponent,
-		PopupProductComponent,
 		ViewSaleComponent,
-		// PopupAddProductComponent,
 
 	],
 	declarations: [
 		SalesListComponent,
-		PopupProductComponent,
 		ViewSaleComponent,
-		// PopupAddProductComponent,
-		// AddSalesComponent
 	]
 })
 

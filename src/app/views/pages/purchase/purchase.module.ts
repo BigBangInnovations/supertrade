@@ -50,32 +50,23 @@ import {
 
 //component
  import { PurchaseListComponent } from './purchase.component';
-//  import { AddPurchaseComponent } from './add-purchase/add-purchase.component';
-import { PopupProductComponent } from '../popup-product/popup-product.component';
-// import { PopupAddProductComponent } from '../popup-product/popup-add-product/popup-add-product.component';
 import { ActionNotificationComponent } from '../../partials/content/crud';
 import { ViewPurchaseComponent } from './view-purchase/view-purchase.component';
 
-import { PopupAddPproductModule } from '../popup-product/popup-add-product/popup-add-product.module'
+import { PopupProductModule } from '../popup-product/popup-product.module'
 import { from } from 'rxjs';
 
 const routes: Routes = [
 	{
 		path: '',
 		component: PurchaseListComponent,
-		// children: [
-		// 	{
-		// 		path: 'add-purchase',
-		// 		component: AddPurchaseComponent
-		// 	},
-		// ]
 	},
 	
 ];
 
 @NgModule({
 	imports: [
-		PopupAddPproductModule,
+		PopupProductModule,
 		CommonModule,
 		PartialsModule,
 		CoreModule,
@@ -118,10 +109,7 @@ const routes: Routes = [
 	],
 	exports:[
 		PurchaseListComponent,
-		PopupProductComponent,
 		ViewPurchaseComponent,
-		// PopupAddProductComponent,
-		// AddPurchaseComponent
 	],
 	providers: [
 		InterceptService,
@@ -129,24 +117,18 @@ const routes: Routes = [
 			provide: HTTP_INTERCEPTORS,
 			useClass: InterceptService,
 			multi: true
-		},
-		
+		},		
 		PurchaseService,
 		ProductService
 	],
 	entryComponents: [
 		ActionNotificationComponent,
-		PopupProductComponent,
 		ViewPurchaseComponent,
-		// PopupAddProductComponent,
 
 	],
 	declarations: [
 		PurchaseListComponent,
-		PopupProductComponent,
 		ViewPurchaseComponent,
-		// PopupAddProductComponent,
-		// AddPurchaseComponent
 	]
 })
 

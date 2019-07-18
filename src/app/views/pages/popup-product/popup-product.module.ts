@@ -1,9 +1,13 @@
 // Angular
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { PopupAddProductComponent } from './popup-add-product.component';
+import { CommonModule } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+// Core Module
+import { CoreModule } from '../../../core/core.module';
+import { PartialsModule } from '../../partials/partials.module';
+// Translate
+import { TranslateModule } from '@ngx-translate/core';
 // Partials
 import { 
 	MatIconModule,
@@ -32,22 +36,31 @@ import {
 	MatTooltipModule,
  } from '@angular/material';
 
-import { PopupProductTotalCalculationComponent } from '../../popup-product/popup-add-product/popup-product-total-calculation/popup-product-total-calculation.component'
+//other component
+import { PopupProductComponent } from './popup-product.component'
+import { PopupAddProductComponent } from '../popup-product/popup-add-product/popup-add-product.component';
+import { PopupProductTotalCalculationComponent } from '../popup-product/popup-add-product/popup-product-total-calculation/popup-product-total-calculation.component'
 
 @NgModule({
 	declarations: [
+		PopupProductComponent,
 		PopupAddProductComponent,
 		PopupProductTotalCalculationComponent,
 	],
 	exports: [
+		PopupProductComponent,
 		PopupAddProductComponent,
 		PopupProductTotalCalculationComponent,
 	],
 	entryComponents: [
+		PopupProductComponent,
 		PopupProductTotalCalculationComponent
 	],
 	imports: [
 		CommonModule,
+		PartialsModule,
+		CoreModule,
+		TranslateModule.forChild(),
 		MatTabsModule,
 		MatTableModule,
 		MatPaginatorModule,
@@ -76,5 +89,6 @@ import { PopupProductTotalCalculationComponent } from '../../popup-product/popup
 	],
 	providers: []
 })
-export class PopupAddPproductModule {
+
+export class PopupProductModule {
 }

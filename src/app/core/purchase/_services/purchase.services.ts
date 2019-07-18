@@ -49,16 +49,6 @@ export class PurchaseService {
         return this.http.get<boolean>(API_ROLES_URL + '/checkIsRollAssignedToUser?purchaseId=' + purchaseId);
     }
 
-    // findPurchase(queryParams: QueryParamsModel): Observable<QueryResultsModel> {
-    //     // This code imitates server calls
-    //     const httpHeaders = new HttpHeaders();
-    //     httpHeaders.set('Content-Type', 'application/json');
-    //     return this.http.post<QueryResultsModel>(API_ROLES_URL + '/findPurchase', queryParams, { headers: httpHeaders});
-        
-    //     const url = `get-purchase`;
-    //     return this.http.post<Purchase[]>(url, data);
-    // }
-    
     // Purchase
     findPurchase(data: any): Observable<any> {
         const url = `get-purchase`;

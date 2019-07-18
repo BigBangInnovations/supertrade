@@ -7,9 +7,6 @@ import { ErrorPageComponent } from './content/error-page/error-page.component';
 // Auth
 import { AuthGuard } from '../../../core/auth';
 
-//other component
-// import { ViewSaleComponent } from '../../pages/sales/view-sale/view-sale.component'
-
 const routes: Routes = [
 	{
 		path: '',
@@ -40,10 +37,6 @@ const routes: Routes = [
 				path: 'add-purchase',
 				loadChildren: () => import('../../../../app/views/pages/purchase/add-purchase/add-purchase.module').then(m => m.AddPurchaseModule)
 			},
-			// {
-			// 	path: 'view-sale',
-			// 	component: ViewSaleComponent 
-			// },
 			{ path: 'error/:type', component: ErrorPageComponent },
 			{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 			{path: '**', redirectTo: 'dashboard', pathMatch: 'full'}
