@@ -8,7 +8,8 @@ import { FormGroup, FormArray } from "@angular/forms";
 export class PopupProductTotalCalculationComponent implements OnInit {
 
   @Input('group')
-  public saleForm: FormGroup;
+  // public saleForm: FormGroup;
+  public mainForm: FormGroup;
 
   @Output() newAddedProductsIds = new EventEmitter();
 
@@ -46,7 +47,8 @@ export class PopupProductTotalCalculationComponent implements OnInit {
     let totalTaxAmount = 0;
     let totalNetAmount = 0;
     
-    const currentProductArray = this.saleForm.get('products').value
+    // const currentProductArray = this.saleForm.get('products').value
+    const currentProductArray = this.mainForm.get('products').value
     this.addedProductsIds = [];
     Object.keys(currentProductArray).forEach((index) => {
       this.addedProductsIds.push(currentProductArray[index].productCtrl)

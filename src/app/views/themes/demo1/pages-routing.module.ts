@@ -32,6 +32,14 @@ const routes: Routes = [
 				path: 'add-sale',
 				loadChildren: () => import('../../../../app/views/pages/sales/add-sale/add-sale.module').then(m => m.AddSalesModule)
 			},
+			{
+				path: 'purchase',
+				loadChildren: () => import('../../../../app/views/pages/purchase/purchase.module').then(m => m.PurchaseModule)
+			},
+			{
+				path: 'add-purchase',
+				loadChildren: () => import('../../../../app/views/pages/purchase/add-purchase/add-purchase.module').then(m => m.AddPurchaseModule)
+			},
 			// {
 			// 	path: 'view-sale',
 			// 	component: ViewSaleComponent 

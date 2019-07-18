@@ -15,8 +15,10 @@ export const locale = {
 			DASHBOARD: 'Dashboard',
 			SALES: 'Sales',
 			SALES_LIST: 'Sales List',
-			PURCHASE: 'Purchase',
 			ADD_SALES: 'Add Sales',
+			PURCHASE: 'Purchase',
+			PURCHASE_LIST: 'Purchase list',
+			ADD_PURCHASE: 'Add Purchase',
 		},
 		AUTH: {
 			GENERAL: {

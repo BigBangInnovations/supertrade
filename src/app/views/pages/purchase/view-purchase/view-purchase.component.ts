@@ -12,7 +12,7 @@ import { Store, select } from '@ngrx/store';
 // State
 import { AppState } from '../../../../core/reducers';
 // Services and Models
-import { Sale, selectSaleById } from '../../../../core/sales';
+import { Purchase, selectPurchaseById } from '../../../../core/purchase';
 import { delay } from 'rxjs/operators';
 import { PopupProductComponent } from '../../popup-product/popup-product.component';
 
@@ -20,18 +20,18 @@ import { PopupProductTotalCalculationComponent } from '../../popup-product/popup
 import { dynamicProductTemplateSetting } from '../../../../core/common/common.model'
 
 @Component({
-  selector: 'kt-view-sale',
-  templateUrl: './view-sale.component.html',
+  selector: 'kt-view-purchase',
+  templateUrl: './view-purchase.component.html',
 })
-export class ViewSaleComponent implements OnInit, OnDestroy {
+export class ViewPurchaseComponent implements OnInit, OnDestroy {
 
 
-  sale$: Observable<Sale>;
+  purchase$: Observable<Purchase>;
   viewLoading$: Observable<boolean>;
   // Private properties
   private componentSubscriptions: Subscription;
-  sale: Sale;
-  saleForm: FormGroup;
+  purchase: Purchase;
+  purchaseForm: FormGroup;
   hasFormErrors: boolean = false;
   componentRef: any;
   OptionalSetting: dynamicProductTemplateSetting;
@@ -53,13 +53,13 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
  * @param dialogRef: MatDialogRef<RoleEditDialogComponent>
  * @param data: any
  * @param store: Store<AppState>
- * @param saleFB: FormBuilder
+ * @param purchaseFB: FormBuilder
  * 
  */
-  constructor(public dialogRef: MatDialogRef<ViewSaleComponent>,
+  constructor(public dialogRef: MatDialogRef<ViewPurchaseComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private store: Store<AppState>,
-    private saleFB: FormBuilder,
+    private purchaseFB: FormBuilder,
     private resolver: ComponentFactoryResolver
   ) {
     const OptionalSetting = new dynamicProductTemplateSetting();
@@ -70,9 +70,9 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (this.data.saleId) {
-      this.sale$ = this.store.pipe(select(selectSaleById(this.data.saleId)));
-      this.sale$.subscribe(res => {
+    if (this.data.purchaseId) {
+      this.purchase$ = this.store.pipe(select(selectPurchaseById(this.data.purchaseId)));
+      this.purchase$.subscribe(res => {
         this.createForm(res);
       });
     }
@@ -82,7 +82,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
 	 * Create form
 	 */
   createForm(res) {
-    this.saleForm = this.saleFB.group({
+    this.purchaseForm = this.purchaseFB.group({
       scheme_id: [res.scheme_id],
       name: [res.name],
       mobile_no: [res.mobile_no],
@@ -92,13 +92,13 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
       city: [res.city],
       pincode: [res.pincode],
       state: [res.state],
-      products: this.saleFB.array([])
+      products: this.purchaseFB.array([])
     });
     this.prepareProductView(res.product)
   }
 
   prepareProductView(products): any[] {
-    const currentProductArray = <FormArray>this.saleForm.controls['products'];
+    const currentProductArray = <FormArray>this.purchaseForm.controls['products'];
     products.forEach(element => {
       let res = {
         productCategoryCtrl: [''],
@@ -124,7 +124,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
       }
 
       currentProductArray.push(
-        this.saleFB.group(res)
+        this.purchaseFB.group(res)
       )
 
     });
@@ -147,7 +147,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
 	 * @param $event: Event
 	 */
   onAlertClose($event) {
-    console.log('sale view close');
+    console.log('purchase view close');
 
   }
 
@@ -157,7 +157,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
 	 */
   getTitle(): string {
     // tslint:disable-next-line:no-string-throw
-    return 'View Sale';
+    return 'View Purchase';
   }
 
   close() {
@@ -169,7 +169,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     const viewContainerRef = this.entry;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
-    // componentRef.instance.saleForm = this.saleForm;
-    componentRef.instance.mainForm = this.saleForm;
+    // componentRef.instance.purchaseForm = this.purchaseForm;
+    componentRef.instance.mainForm = this.purchaseForm;
   }
 }

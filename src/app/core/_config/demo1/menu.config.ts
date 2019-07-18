@@ -445,7 +445,24 @@ export class MenuConfig {
 					page: '/purchase',
 					translate: 'MENU.PURCHASE',
 					bullet: 'dot',
-					
+					submenu: [
+						{
+							title: 'Purchase',
+							root: true,
+							page: '/purchase',
+							translate: 'MENU.PURCHASE_LIST',
+							bullet: 'dot',
+						},
+						{
+							bullet: 'dot',
+							title: 'Add Purchase',
+							root: true,
+							alignment: 'left',
+							page: '/add-purchase',
+							translate: 'MENU.ADD_PURCHASE',
+						},
+						
+					]
 				},
 				
 				// {

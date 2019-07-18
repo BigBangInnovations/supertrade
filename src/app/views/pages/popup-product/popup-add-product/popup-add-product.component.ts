@@ -15,7 +15,8 @@ export class PopupAddProductComponent {
   public productForm: FormGroup;
 
   @Input('parantGroup')
-  public saleForm: FormGroup;
+  // public saleForm: FormGroup;
+  public mainForm: FormGroup;
 
   @Input() OptionalSetting: any;
 
@@ -103,7 +104,8 @@ export class PopupAddProductComponent {
 
   deleteProduct(index: number): void {
     // this.productForm.removeAt(index);
-    const arrayControl = <FormArray>this.saleForm.controls['products'];
+    // const arrayControl = <FormArray>this.saleForm.controls['products'];
+    const arrayControl = <FormArray>this.mainForm.controls['products'];
     arrayControl.removeAt(index);
     this.quantityChange.emit();
   }

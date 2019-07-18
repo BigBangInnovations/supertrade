@@ -16,15 +16,15 @@ import { AppState } from '../../../../core/reducers';
 import { SubheaderService, LayoutConfigService } from '../../../../core/_base/layout';
 import { LayoutUtilsService, MessageType } from '../../../../core/_base/crud';
 // Services and Models
-import { Sale } from '../../../../core/sales/_models/sale.model';
-import { getSalesActiveScheme } from '../../../../core/auth/_selectors/auth.selectors';
+import { Purchase } from '../../../../core/purchase/_models/purchase.model';
+import { getPurchaseActiveScheme } from '../../../../core/auth/_selectors/auth.selectors';
 import { EncrDecrServiceService } from '../../../../core/auth/_services/encr-decr-service.service'
 import { environment } from '../../../../../environments/environment';
 // Components
 import { PopupProductComponent } from '../../popup-product/popup-product.component';
 import { PopupAddProductComponent } from '../../popup-product/popup-add-product/popup-add-product.component';
 import { Product } from '../../../../core/product/_models/product.model'
-import { SalesService } from '../../../../core/sales/_services/index'
+import { PurchaseService } from '../../../../core/purchase/_services/index'
 import { APP_CONSTANTS } from '../../../../../config/default/constants'
 import { Logout } from '../../../../core/auth';
 import { PopupProductTotalCalculationComponent } from '../../popup-product/popup-add-product/popup-product-total-calculation/popup-product-total-calculation.component'
@@ -32,20 +32,20 @@ import { dynamicProductTemplateSetting } from '../../../../core/common/common.mo
 
 
 @Component({
-  selector: 'kt-add-sale',
-  templateUrl: './add-sale.component.html',
+  selector: 'kt-add-purchase',
+  templateUrl: './add-purchase.component.html',
   providers: [DatePipe],
   encapsulation: ViewEncapsulation.None
-  // styleUrls: ['./add-sale.component.scss'],
+  // styleUrls: ['./add-purchase.component.scss'],
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AddSalesComponent implements OnInit, OnDestroy {
+export class AddPurchaseComponent implements OnInit, OnDestroy {
   // Public properties
-  sale: Sale;
-  saleForm: FormGroup;
+  purchase: Purchase;
+  purchaseForm: FormGroup;
   hasFormErrors: boolean = false;
-  salesActiveScheme: any;
-  salesActiveSchemebooster: any;
+  purchaseActiveScheme: any;
+  purchaseActiveSchemebooster: any;
   userData: any;
   componentRef: any;
   loading = false;
@@ -64,7 +64,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
 	 *
 	 * @param activatedRoute: ActivatedRoute
 	 * @param router: Router
-	 * @param saleFB: FormBuilder
+	 * @param purchaseFB: FormBuilder
 	 * @param subheaderService: SubheaderService
 	 * @param layoutUtilsService: LayoutUtilsService
 	 * @param store: Store<AppState>
@@ -72,13 +72,13 @@ export class AddSalesComponent implements OnInit, OnDestroy {
    * @param EncrDecr: EncrDecrServiceService
    * @param dialog: MatDialog
    * @param datePipe: DatePipe
-   * @param salesService: SalesService,
+   * @param purchaseService: PurchaseService,
    * @param cdr
 	 */
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private saleFB: FormBuilder,
+    private purchaseFB: FormBuilder,
     private subheaderService: SubheaderService,
     private layoutUtilsService: LayoutUtilsService,
     private store: Store<AppState>,
@@ -86,7 +86,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
     private EncrDecr: EncrDecrServiceService,
     public dialog: MatDialog,
     private datePipe: DatePipe,
-    private salesService: SalesService,
+    private purchaseService: PurchaseService,
     private cdr: ChangeDetectorRef,
     private resolver: ComponentFactoryResolver
   ) {
@@ -108,12 +108,12 @@ export class AddSalesComponent implements OnInit, OnDestroy {
       let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
       this.userData = JSON.parse(sessionStorage)
 
-      this.salesActiveScheme = this.userData.salesActiveScheme[0];
-      this.salesActiveSchemebooster = this.userData.salesActiveSchemeBooster[0];
+      this.purchaseActiveScheme = this.userData.purchaseActiveScheme[0];
+      this.purchaseActiveSchemebooster = this.userData.purchaseActiveSchemeBooster[0];
 
-      this.sale = new Sale();
-      this.sale.clear();
-      this.initSale();
+      this.purchase = new Purchase();
+      this.purchase.clear();
+      this.initPurchase();
     });
     this.subscriptions.push(routeSubscription);
 
@@ -129,12 +129,12 @@ export class AddSalesComponent implements OnInit, OnDestroy {
 	/**
 	 * Init user
 	 */
-  initSale() {
+  initPurchase() {
     this.createForm();
-    this.subheaderService.setTitle('Add Sale');
+    this.subheaderService.setTitle('Add Purchase');
     this.subheaderService.setBreadcrumbs([
-      { title: 'Sale', page: `sale` },
-      { title: 'Add Sale', page: `add-sale` }
+      { title: 'Purchase', page: `purchase` },
+      { title: 'Add Purchase', page: `add-purchase` }
     ]);
   }
 
@@ -142,8 +142,8 @@ export class AddSalesComponent implements OnInit, OnDestroy {
 	 * Create form
 	 */
   createForm() {
-    this.saleForm = this.saleFB.group({
-      scheme_id: [this.salesActiveScheme.scheme_id, Validators.required],
+    this.purchaseForm = this.purchaseFB.group({
+      scheme_id: [this.purchaseActiveScheme.scheme_id, Validators.required],
       name: ['Kaushik', Validators.required],
       mobile_no: ['9687453313', Validators.required],
       address_line1: ['A301', Validators.required],
@@ -152,7 +152,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
       city: ['Ahmedabad', Validators.required],
       pincode: ['380054', Validators.required],
       state: ['gujrat', Validators.required],
-      products: this.saleFB.array([], Validators.required)
+      products: this.purchaseFB.array([], Validators.required)
     });
   }
 
@@ -163,9 +163,9 @@ export class AddSalesComponent implements OnInit, OnDestroy {
 	 */
   submit() {
     this.hasFormErrors = false;
-    const controls = this.saleForm.controls;
+    const controls = this.purchaseForm.controls;
     /** check form */
-    if (this.saleForm.invalid) {
+    if (this.purchaseForm.invalid) {
       Object.keys(controls).forEach(controlName => {
         return controls[controlName].markAsTouched()
       }
@@ -175,48 +175,48 @@ export class AddSalesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const addEditSale = this.prepareSale();
+    const addEditPurchase = this.preparePurchase();
 
-    this.addEditSale(addEditSale);
+    this.addEditPurchase(addEditPurchase);
   }
 
 
 	/**
 	 * Returns prepared data for save
 	 */
-  prepareSale(): Sale {
-    const controls = this.saleForm.controls;
-    const _sale = new Sale();
-    _sale.clear();
-    _sale.loyalty_id = this.salesActiveScheme.id;
-    _sale.scheme_id = controls['scheme_id'].value;
-    _sale.distributor_id = this.userData.Distributor_ID;
+  preparePurchase(): Purchase {
+    const controls = this.purchaseForm.controls;
+    const _purchase = new Purchase();
+    _purchase.clear();
+    _purchase.loyalty_id = this.purchaseActiveScheme.id;
+    _purchase.scheme_id = controls['scheme_id'].value;
+    _purchase.distributor_id = this.userData.Distributor_ID;
 
     //End Customer Detail
-    _sale.name = controls['name'].value;
-    _sale.mobile_no = controls['mobile_no'].value;
-    _sale.landline_no = controls['landline_no'].value;
-    _sale.address_line1 = controls['address_line1'].value;
-    _sale.address_line2 = controls['address_line2'].value;
-    _sale.city = controls['city'].value;
-    _sale.pincode = controls['pincode'].value;
-    _sale.state = controls['state'].value;
-    _sale.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
-    // _sale.product = controls['products'].value;
-    _sale.products_json = JSON.stringify(this.prepareProduct())
-    return _sale;
+    _purchase.name = controls['name'].value;
+    _purchase.mobile_no = controls['mobile_no'].value;
+    _purchase.landline_no = controls['landline_no'].value;
+    _purchase.address_line1 = controls['address_line1'].value;
+    _purchase.address_line2 = controls['address_line2'].value;
+    _purchase.city = controls['city'].value;
+    _purchase.pincode = controls['pincode'].value;
+    _purchase.state = controls['state'].value;
+    _purchase.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
+    // _purchase.product = controls['products'].value;
+    _purchase.products_json = JSON.stringify(this.prepareProduct())
+    return _purchase;
   }
 
   /**
 	 * Returns prepared data for product
 	 */
   prepareProduct(): Product[] {
-    const controls = this.saleForm.controls['products'].value;;
+    const controls = this.purchaseForm.controls['products'].value;;
     const _products = [];
     const product = new Product();
     let boost_point = 0;
-    if (this.salesActiveSchemebooster != undefined)
-      boost_point = this.salesActiveSchemebooster.boost_point;
+    if (this.purchaseActiveSchemebooster != undefined)
+      boost_point = this.purchaseActiveSchemebooster.boost_point;
     controls.forEach(data => {
       //Clear Product and set default value
       product.clear();
@@ -226,7 +226,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
       product.ProductAmount = data.productPriceCtrl * data.productQuantityCtrl;//Product Amount:: Product prive * Quantity
       product.Price = data.productPriceCtrl;//Product original price
       product.points = data.productLoyaltyPointCtrl;//Product original point
-      product.Quantity = data.productQuantityCtrl;//product original sale quantity
+      product.Quantity = data.productQuantityCtrl;//product original purchase quantity
       product.Discount = data.productDiscountCtrl;//product original discount(%)
       product.SGSTTax = data.productTaxSGSTCtrl;//Product original SGST Tax(%)
       product.SGSTSurcharges = data.productTaxSGSTSurchargesCtrl;//Product original SGST Surcharges Tax(%)
@@ -247,23 +247,23 @@ export class AddSalesComponent implements OnInit, OnDestroy {
 	/**
 	 * Add User
 	 *
-	 * @param _sale: User
+	 * @param _purchase: User
 	 */
-  addEditSale(_sale: Sale) {
+  addEditPurchase(_purchase: Purchase) {
     this.loading = true;
     let httpParams = new HttpParams();
-    Object.keys(_sale).forEach(function (key) {
-      httpParams = httpParams.append(key, _sale[key]);
+    Object.keys(_purchase).forEach(function (key) {
+      httpParams = httpParams.append(key, _purchase[key]);
     });
 
-    this.salesService
-      .createSale(httpParams)
+    this.purchaseService
+      .createPurchase(httpParams)
       .pipe(
         tap(response => {
           if (response.status == APP_CONSTANTS.response.SUCCESS) {
-            const message = `Sales successfully has been added.`;
+            const message = `Purchase successfully has been added.`;
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
-            this.router.navigateByUrl('sales'); // sales listing page
+            this.router.navigateByUrl('purchase'); // purchase listing page
           } else if (response.status == APP_CONSTANTS.response.ERROR) {
             const message = response.message;
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
@@ -286,7 +286,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
 	 * Returns component title
 	 */
   getComponentTitle() {
-    let result = 'Create Sale';
+    let result = 'Create Purchase';
     return result;
   }
 
@@ -329,9 +329,9 @@ export class AddSalesComponent implements OnInit, OnDestroy {
   * try to add dynamic product
   */
   createProduct(res) {
-    const currentProductArray = <FormArray>this.saleForm.controls['products'];
+    const currentProductArray = <FormArray>this.purchaseForm.controls['products'];
     currentProductArray.push(
-      this.saleFB.group(res)
+      this.purchaseFB.group(res)
     )
     this.commonCalculation()
   }
@@ -345,8 +345,8 @@ export class AddSalesComponent implements OnInit, OnDestroy {
     const viewContainerRef = this.entry;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
-    // componentRef.instance.saleForm = this.saleForm;
-    componentRef.instance.mainForm = this.saleForm;
+    // componentRef.instance.purchaseForm = this.purchaseForm;
+    componentRef.instance.mainForm = this.purchaseForm;
     const sub: Subscription = componentRef.instance.newAddedProductsIds.subscribe(
       event => {
         // console.log(event)
