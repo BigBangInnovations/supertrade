@@ -28,6 +28,8 @@ import { SalesService } from '../../../../core/sales/_services/index'
 import { APP_CONSTANTS } from '../../../../../config/default/constants'
 import { Logout } from '../../../../core/auth';
 import { PopupProductTotalCalculationComponent } from '../../popup-product/popup-add-product/popup-product-total-calculation/popup-product-total-calculation.component'
+import { dynamicProductTemplateSetting } from '../../../../core/common/common.model'
+
 
 @Component({
   selector: 'kt-add-sale',
@@ -47,6 +49,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
   userData: any;
   componentRef: any;
   loading = false;
+  OptionalSetting:dynamicProductTemplateSetting;
   // Private properties
   private subscriptions: Subscription[] = [];
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
@@ -88,6 +91,9 @@ export class AddSalesComponent implements OnInit, OnDestroy {
     private resolver: ComponentFactoryResolver
   ) {
     this.unsubscribe = new Subject();
+    const OptionalSetting = new dynamicProductTemplateSetting();
+    OptionalSetting.clear();
+    this.OptionalSetting = OptionalSetting;
   }
 
 	/**
@@ -302,7 +308,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
     const _messageType = MessageType.Read;
 
     const dialogRef = this.dialog.open(PopupProductComponent, {
-      data: { addedProductsIds: this.addedProductsIds },
+      data: { addedProductsIds: this.addedProductsIds, isDiscount:false },
       // data: { addedProductsIds: [] },
       width: '600px',
     });

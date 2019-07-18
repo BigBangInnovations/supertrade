@@ -5,12 +5,12 @@ export class CommonResponse {
     error: string;
     message: string;
     status: string;
-    data:[{
-        purchase:Purchase[],
-        sales:Sale[],
-        userPointsStatus:UserPointsStatus
+    data: [{
+        purchase: Purchase[],
+        sales: Sale[],
+        userPointsStatus: UserPointsStatus
     }]
-    | [];
+        | [];
 
     clear(): void {
         this.error = '';
@@ -20,45 +20,58 @@ export class CommonResponse {
     }
 }
 
-export class Product {
-    CGSTSurcharges: number;
-    CGSTTax: number;
-    Discount: number;
-    IGSTSurcharges: number;
-    IGSTTax: number;
-    InclusiveExclusive: number;
-    Name: string;
-    Price: number;
-    ProductAmount: number;
-    ProductID: number;
-    Quantity: number;
-    ReturnQuantity: number;
-    SGSTSurcharges: number;
-    SGSTTax: number;
-    VATFrom: string;
-    VATPercentage: number;
-    points: number;
-    points_boost: number;
+// export class Product {
+//     CGSTSurcharges: number;
+//     CGSTTax: number;
+//     Discount: number;
+//     IGSTSurcharges: number;
+//     IGSTTax: number;
+//     InclusiveExclusive: number;
+//     Name: string;
+//     Price: number;
+//     ProductAmount: number;
+//     ProductID: number;
+//     Quantity: number;
+//     ReturnQuantity: number;
+//     SGSTSurcharges: number;
+//     SGSTTax: number;
+//     VATFrom: string;
+//     VATPercentage: number;
+//     points: number;
+//     points_boost: number;
+
+//     clear(): void {
+//         this.CGSTSurcharges = undefined;
+//         this.CGSTTax = undefined;
+//         this.Discount = undefined;
+//         this.IGSTSurcharges = undefined;
+//         this.IGSTTax = undefined;
+//         this.InclusiveExclusive = undefined;
+//         this.Name = '';
+//         this.Price = undefined;
+//         this.ProductAmount = undefined;
+//         this.ProductID = undefined;
+//         this.Quantity = undefined;
+//         this.ReturnQuantity = undefined;
+//         this.SGSTSurcharges = undefined;
+//         this.SGSTTax = undefined;
+//         this.VATFrom = '';
+//         this.VATPercentage = undefined;
+//         this.points = undefined;
+//         this.points_boost = undefined;
+//     }
+// }
+
+export class dynamicProductTemplateSetting {
+    // To display delete button ot not
+    displayDeleteButton: boolean;
+
+    //To display loyalty point or not
+    displayPointCalculation: boolean;
 
     clear(): void {
-        this.CGSTSurcharges = undefined;
-        this.CGSTTax = undefined;
-        this.Discount = undefined;
-        this.IGSTSurcharges = undefined;
-        this.IGSTTax = undefined;
-        this.InclusiveExclusive = undefined;
-        this.Name = '';
-        this.Price = undefined;
-        this.ProductAmount = undefined;
-        this.ProductID = undefined;
-        this.Quantity = undefined;
-        this.ReturnQuantity = undefined;
-        this.SGSTSurcharges = undefined;
-        this.SGSTTax = undefined;
-        this.VATFrom = '';
-        this.VATPercentage = undefined;
-        this.points = undefined;
-        this.points_boost = undefined;
+        this.displayDeleteButton = true;
+        this.displayPointCalculation = true;
     }
 }
 

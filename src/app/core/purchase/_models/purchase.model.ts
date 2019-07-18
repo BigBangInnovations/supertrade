@@ -1,4 +1,4 @@
-import { Product } from '../../common/common.model'
+import { Product } from '../../product/_models/product.model'
 
 export class Purchase {
     GrossAmount: number;

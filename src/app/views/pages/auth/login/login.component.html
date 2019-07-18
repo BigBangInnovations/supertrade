@@ -20,7 +20,7 @@
             <div class="form-group">
                 <mat-form-field appearance="outline">
                     <mat-label>{{ 'AUTH.INPUT.MOBILE_NO' | translate }}</mat-label>
-                    <input matInput type="mobile_no" placeholder="{{ 'AUTH.INPUT.MOBILE_NO' | translate }}" formControlName="mobile_no" autocomplete="off" />
+                    <input maxlength="15" matInput type="mobile_no" placeholder="{{ 'AUTH.INPUT.MOBILE_NO' | translate }}" formControlName="mobile_no" autocomplete="off" />
                     <mat-error *ngIf="isControlHasError('mobile_no','required')">
                         <strong>{{ 'AUTH.VALIDATION.REQUIRED_FIELD' | translate }}</strong>
                     </mat-error>
@@ -41,7 +41,7 @@
             <div class="form-group">
                 <mat-form-field appearance="outline">
                     <mat-label>{{ 'AUTH.INPUT.PASSWORD' | translate }}</mat-label>
-                    <input matInput type="password" placeholder="{{ 'AUTH.INPUT.PASSWORD' | translate }}" formControlName="password" autocomplete="off" />
+                    <input maxlength="20" matInput type="password" placeholder="{{ 'AUTH.INPUT.PASSWORD' | translate }}" formControlName="password" autocomplete="off" />
                     <mat-error *ngIf="isControlHasError('password','required')">
                         <strong>{{ 'AUTH.VALIDATION.REQUIRED_FIELD' | translate }}</strong>
                     </mat-error>

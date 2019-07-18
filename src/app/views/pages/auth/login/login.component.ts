@@ -17,6 +17,9 @@ import { HttpParams } from "@angular/common/http";
 import { APP_CONSTANTS } from '../../../../../config/default/constants'
 
 import { isLoggedIn, isRetailer, isDistributor } from '../../../../core/auth/_selectors/auth.selectors';
+import { LayoutUtilsService, MessageType } from '../../../../core/_base/crud';
+import { environment } from '../../../../../environments/environment'
+import { CommonResponse } from '../../../../core/common/common.model';
 
 @Component({
 	selector: 'kt-login',
@@ -48,6 +51,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 	 * @param fb: FormBuilder
 	 * @param cdr
 	 * @param route
+	 * @param layoutUtilsService: LayoutUtilsService
 	 */
 	constructor(
 		private router: Router,
@@ -57,7 +61,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 		private store: Store<AppState>,
 		private fb: FormBuilder,
 		private cdr: ChangeDetectorRef,
-		private route: ActivatedRoute
+		private route: ActivatedRoute,
+		private layoutUtilsService: LayoutUtilsService,
 	) {
 		this.unsubscribe = new Subject();
 	}
@@ -187,8 +192,36 @@ export class LoginComponent implements OnInit, OnDestroy {
 							response.data[0].user['salesActiveSchemeBooster'] = salesActiveSchemeBooster;
 							response.data[0].user['purchaseActiveScheme'] = purchaseActiveScheme;
 							response.data[0].user['purchaseActiveSchemeBooster'] = purchaseActiveSchemeBooster;
+
+							const message = `login successfully!`;
+							this.layoutUtilsService.showActionNotification(message, MessageType.Read, 5000, false, false);
 							this.store.dispatch(new LoginSuccess(response.data[0].user));
 							this.router.navigateByUrl(this.returnUrl);
+
+							/** 
+							 * get company setting
+							 */
+							// let getSettingUrl = environment.superSALESApi+'getSettings';
+							// let paramString = {}
+							// paramString['CompanyID'] = 105;
+							// let param = { get_Settings:JSON.stringify(paramString)}
+							// this.auth
+							// 	.getCompanySettings(getSettingUrl, param)
+							// 	.pipe(
+							// 		tap((setResponse:CommonResponse) => {
+							// 			if (setResponse.status == APP_CONSTANTS.response.SUCCESS) {
+							// 				const message = `login successfully!`;
+							// 				this.layoutUtilsService.showActionNotification(message, MessageType.Read, 5000, false, false);
+							// 				// this.store.dispatch(new LoginSuccess(response.data[0].user));
+							// 				// this.router.navigateByUrl(this.returnUrl);
+							// 			} else {
+							// 				const message = `Error in getting company setting!`;
+							// 				this.layoutUtilsService.showActionNotification(message, MessageType.Read, 5000, false, false);
+							// 			}
+							// 		}),
+							// 		takeUntil(this.unsubscribe)
+							// 	)
+							// 	.subscribe();
 						}
 					} else {
 						this.authNoticeService.setNotice(this.translate.instant('AUTH.VALIDATION.INVALID_LOGIN'), 'danger');

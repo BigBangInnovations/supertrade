@@ -30,7 +30,7 @@
                                 <div [formGroupName]="i">
                                     <!-- <input formControlName="productBarCodeCtrl" placeholder="Item name"> -->
                                     <!-- index: {{productBarCodeCtrl}} -->
-                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="saleForm.controls.products.controls[i]" [parantGroup]="saleForm" [index]="i"></kt-popup-add-product>
+                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="saleForm.controls.products.controls[i]" [parantGroup]="saleForm" [index]="i" [OptionalSetting]="OptionalSetting"></kt-popup-add-product>
                                 </div>
                             </div>
                         </div>

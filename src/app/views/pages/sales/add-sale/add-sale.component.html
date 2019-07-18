@@ -30,7 +30,7 @@
                                 <div [formGroupName]="i">
                                     <!-- <input formControlName="productBarCodeCtrl" placeholder="Item name"> -->
                                     <!-- index: {{productBarCodeCtrl}} -->
-                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="saleForm.controls.products.controls[i]" [parantGroup]="saleForm" [index]="i"></kt-popup-add-product>
+                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="saleForm.controls.products.controls[i]" [parantGroup]="saleForm" [index]="i" [OptionalSetting]="OptionalSetting"></kt-popup-add-product>
                                 </div>
                             </div>
                         </div>
@@ -46,20 +46,20 @@
 
                     <div class="col-lg-4 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input matInput placeholder="Enter customer name" formControlName="name" />
+                            <input matInput placeholder="Enter customer name" formControlName="name" maxlength="20" />
                             <mat-error>Customer name is<strong>required</strong> </mat-error>
                         </mat-form-field>
                     </div>
                     <div class="col-lg-4 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input matInput placeholder="Enter mobile number" formControlName="mobile_no" />
+                            <input matInput placeholder="Enter mobile number" formControlName="mobile_no" maxlength="15" />
                             <mat-error>Mobile number is <strong>required</strong></mat-error>
                         </mat-form-field>
                     </div>
 
                     <div class="col-lg-4 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input matInput placeholder="Enter landline number" formControlName="landline_no" />
+                            <input matInput placeholder="Enter landline number" formControlName="landline_no" maxlength="15" />
                             <mat-error>Address line 1 is <strong>required</strong></mat-error>
                         </mat-form-field>
                     </div>
@@ -67,19 +67,19 @@
                 <div class="form-group kt-form__group row">
                     <div class="col-lg-4 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input type="text" matInput placeholder="Enter address line 1" formControlName="address_line1" />
+                            <input type="text" matInput placeholder="Enter address line 1" formControlName="address_line1" maxlength="50" />
                             <mat-error>Address line 1 is <strong>required</strong></mat-error>
                         </mat-form-field>
                     </div>
                     <div class="col-lg-4 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input matInput placeholder="Enter address line 2" formControlName="address_line2" />
+                            <input matInput placeholder="Enter address line 2" formControlName="address_line2" maxlength="50" />
                             <mat-error>Address line 2 is <strong>required</strong></mat-error>
                         </mat-form-field>
                     </div>
                     <div class="col-lg-4 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input matInput placeholder="Enter city" formControlName="city" />
+                            <input matInput placeholder="Enter city" formControlName="city" maxlength="30" />
                             <mat-error>City is <strong>required</strong></mat-error>
                         </mat-form-field>
                     </div>
@@ -87,14 +87,14 @@
                 <div class="form-group kt-form__group row">
                     <div class="col-lg-4 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input matInput placeholder="Enter pincode" formControlName="pincode" />
+                            <input matInput placeholder="Enter pincode" formControlName="pincode" maxlength="10" />
                             <mat-error>Pincode is <strong>required</strong></mat-error>
                         </mat-form-field>
                     </div>
 
                     <div class="col-lg-4 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input matInput placeholder="Enter state" formControlName="state" />
+                            <input matInput placeholder="Enter state" formControlName="state" maxlength="10" />
                             <mat-error>State is <strong>required</strong></mat-error>
                         </mat-form-field>
                     </div>

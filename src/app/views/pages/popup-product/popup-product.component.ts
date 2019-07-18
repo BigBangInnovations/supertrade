@@ -93,7 +93,12 @@ export class PopupProductComponent implements OnInit {
       productTaxCGSTSurchargesCtrl: [''],
       productTaxIGSTCtrl: [''],
       productTaxIGSTSurchargesCtrl: [''],
-      productQuantityCtrl: ['', [Validators.required, Validators.pattern(numberPatern)]],
+      productQuantityCtrl: ['', [
+        Validators.required,
+        Validators.pattern(numberPatern),
+        Validators.minLength(1),
+        Validators.maxLength(5)
+      ]],
       productDiscountCtrl: [''],
       productLoyaltyPointCtrl: [''],
       productBarCodeCtrl: [''],
@@ -111,12 +116,13 @@ export class PopupProductComponent implements OnInit {
   onSubmit() {
     const controls = this.popupProductForm.controls;
     /** check form */
-		if (this.popupProductForm.invalid) {
-			Object.keys(controls).forEach(controlName =>
-				controls[controlName].markAsTouched()
-			);
-			return;
-		}
+    if (this.popupProductForm.invalid) {
+      Object.keys(controls).forEach(controlName =>
+        controls[controlName].markAsTouched()
+      );
+      return;
+    }
+    const numberPatern = '^[0-9.,]+$';
     this.productFormArray = {
       productCategoryCtrl: [this.popupProductForm.controls['productCategoryCtrl'].value],
       productSubCategoryCtrl: [this.popupProductForm.controls['productSubCategoryCtrl'].value],
@@ -129,7 +135,15 @@ export class PopupProductComponent implements OnInit {
       productTaxCGSTSurchargesCtrl: [this.popupProductForm.controls['productTaxCGSTSurchargesCtrl'].value],
       productTaxIGSTCtrl: [this.popupProductForm.controls['productTaxIGSTCtrl'].value],
       productTaxIGSTSurchargesCtrl: [this.popupProductForm.controls['productTaxIGSTSurchargesCtrl'].value],
-      productQuantityCtrl: [this.popupProductForm.controls['productQuantityCtrl'].value, Validators.required],
+      productQuantityCtrl: [this.popupProductForm.controls['productQuantityCtrl'].value,
+      Validators.compose([
+        Validators.required,
+        Validators.pattern(numberPatern),
+        Validators.minLength(1),
+        Validators.maxLength(5)
+      ])
+
+      ],
       productDiscountCtrl: [this.popupProductForm.controls['productDiscountCtrl'].value],
       productLoyaltyPointCtrl: [this.popupProductForm.controls['productLoyaltyPointCtrl'].value],
       productBarCodeCtrl: [this.popupProductForm.controls['productBarCodeCtrl'].value],
@@ -181,7 +195,7 @@ export class PopupProductComponent implements OnInit {
   }
 
   changeProduct(productID) {
-    if(this.data.addedProductsIds.indexOf(productID) > -1){
+    if (this.data.addedProductsIds.indexOf(productID) > -1) {
       this.popupProductForm.controls['productCtrl'].setValue('');
       const message = `Already product added`;
       this.layoutUtilsService.showActionNotification(message, MessageType.Read, 5000, false, false);
@@ -190,7 +204,10 @@ export class PopupProductComponent implements OnInit {
     let allProducts = this.productArray;
     allProducts.filter((data: any) => {
       if (data.ID == productID) {
-        this.popupProductForm.controls['productDiscountCtrl'].setValue(data.MaxDiscount);
+        if (this.data.isDiscount)
+          this.popupProductForm.controls['productDiscountCtrl'].setValue(data.MaxDiscount);
+        else
+          this.popupProductForm.controls['productDiscountCtrl'].setValue(0);
         this.popupProductForm.controls['productLoyaltyPointCtrl'].setValue(data.loyalty_point);
         this.popupProductForm.controls['productPriceCtrl'].setValue(data.Price);
         this.popupProductForm.controls['productBarCodeCtrl'].setValue(data.BarCode);

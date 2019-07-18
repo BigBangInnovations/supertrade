@@ -16,7 +16,8 @@ import { Sale, selectSaleById } from '../../../../core/sales';
 import { delay } from 'rxjs/operators';
 import { PopupProductComponent } from '../../popup-product/popup-product.component';
 
-import { PopupProductTotalCalculationComponent  } from '../../popup-product/popup-add-product/popup-product-total-calculation/popup-product-total-calculation.component'
+import { PopupProductTotalCalculationComponent } from '../../popup-product/popup-add-product/popup-product-total-calculation/popup-product-total-calculation.component'
+import { dynamicProductTemplateSetting } from '../../../../core/common/common.model'
 
 @Component({
   selector: 'kt-view-sale',
@@ -33,8 +34,9 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
   saleForm: FormGroup;
   hasFormErrors: boolean = false;
   componentRef: any;
+  OptionalSetting: dynamicProductTemplateSetting;
 
-  @ViewChild('popupProductCalculation', { read: ViewContainerRef , static: true }) entry: ViewContainerRef;
+  @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
 
   //Product properry
   totalAmount: number;
@@ -59,7 +61,13 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     private store: Store<AppState>,
     private saleFB: FormBuilder,
     private resolver: ComponentFactoryResolver
-  ) { }
+  ) {
+    const OptionalSetting = new dynamicProductTemplateSetting();
+    OptionalSetting.clear();
+    OptionalSetting.displayDeleteButton = false;
+    this.OptionalSetting = OptionalSetting;
+
+  }
 
   ngOnInit() {
     if (this.data.saleId) {
@@ -89,7 +97,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     this.prepareProductView(res.product)
   }
 
-  prepareProductView(products):any[] {
+  prepareProductView(products): any[] {
     const currentProductArray = <FormArray>this.saleForm.controls['products'];
     products.forEach(element => {
       let res = {
@@ -156,11 +164,11 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     this.dialogRef.close();
   }
   commonCalculation() {
-      //Total Calculate
-      const componentFactory = this.resolver.resolveComponentFactory(PopupProductTotalCalculationComponent);
-      const viewContainerRef = this.entry;
-      viewContainerRef.clear();
-      const componentRef = viewContainerRef.createComponent(componentFactory);
-      componentRef.instance.saleForm = this.saleForm;
+    //Total Calculate
+    const componentFactory = this.resolver.resolveComponentFactory(PopupProductTotalCalculationComponent);
+    const viewContainerRef = this.entry;
+    viewContainerRef.clear();
+    const componentRef = viewContainerRef.createComponent(componentFactory);
+    componentRef.instance.saleForm = this.saleForm;
   }
 }
