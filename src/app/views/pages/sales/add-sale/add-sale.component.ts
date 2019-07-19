@@ -202,7 +202,6 @@ export class AddSalesComponent implements OnInit, OnDestroy {
     _sale.pincode = controls['pincode'].value;
     _sale.state = controls['state'].value;
     _sale.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
-    // _sale.product = controls['products'].value;
     _sale.products_json = JSON.stringify(this.prepareProduct())
     return _sale;
   }
@@ -213,12 +212,12 @@ export class AddSalesComponent implements OnInit, OnDestroy {
   prepareProduct(): Product[] {
     const controls = this.saleForm.controls['products'].value;;
     const _products = [];
-    const product = new Product();
     let boost_point = 0;
     if (this.salesActiveSchemebooster != undefined)
       boost_point = this.salesActiveSchemebooster.boost_point;
     controls.forEach(data => {
       //Clear Product and set default value
+      const product = new Product();
       product.clear();
       product.ProductID = data.productCtrl;//Product Original ID
       product.ProductCode = data.productProductCodeCtrl;//Product Original ID

@@ -11,9 +11,6 @@
                 <mat-spinner [diameter]="20"></mat-spinner>
             </div>
 
-            <kt-alert *ngIf="hasFormErrors" type="warn" [duration]="30000" [showCloseButton]="true" (close)="onAlertClose($event)">
-                Oh snap! Change a few things up and try submitting again.
-            </kt-alert>
             <form class="kt-form" [formGroup]="popupProductForm" autocomplete="off">
                 <div class="form-group kt-form__group row d-block">
                     <div class="col-lg-12 kt-margin-bottom-20-mobile">

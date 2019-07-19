@@ -26,7 +26,8 @@
                             <h3 class="kt-form__heading-title pointer-cursor">Product detail</h3>
                         </div>
                         <div formArrayName="products">
-                            <div *ngFor="let product of saleForm.controls.products.controls; let i=index">
+                            <div *ngFor="let product of saleForm['controls'].products['controls']; let i=index">
+                                <!-- <div *ngFor="let product of saleForm.controls.products.controls; let i=index"> -->
                                 <div [formGroupName]="i">
                                     <!-- <input formControlName="productBarCodeCtrl" placeholder="Item name"> -->
                                     <!-- index: {{productBarCodeCtrl}} -->

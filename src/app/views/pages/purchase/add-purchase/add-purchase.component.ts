@@ -213,12 +213,13 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
   prepareProduct(): Product[] {
     const controls = this.purchaseForm.controls['products'].value;;
     const _products = [];
-    const product = new Product();
+    
     let boost_point = 0;
     if (this.purchaseActiveSchemebooster != undefined)
       boost_point = this.purchaseActiveSchemebooster.boost_point;
     controls.forEach(data => {
       //Clear Product and set default value
+      const product = new Product();
       product.clear();
       product.ProductID = data.productCtrl;//Product Original ID
       product.ProductCode = data.productProductCodeCtrl;//Product Original ID
