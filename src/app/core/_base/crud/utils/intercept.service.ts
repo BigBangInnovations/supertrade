@@ -27,9 +27,6 @@ export class InterceptService implements HttpInterceptor {
 		const userSession = this.EncrDecr.getLocalStorage(environment.localStorageKey)
 		// console.log(request);
 
-		console.log('request.url');
-		console.log(request.url);
-
 		let clonedRequest = request.clone({
 			setHeaders: {
 				'Content-Type': 'application/x-www-form-urlencoded',

@@ -47,7 +47,7 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 
 	// Table fields
 	dataSource: PurchaseDataSource;
-	displayedColumns = ["date", "customer_name", "invoice_id", "scheme_id", "total_quantity", "total_amount", "total_loyalty_point", "total_loyalty_boost_point", 'actions'];
+	displayedColumns = ["date", "invoice_id", "scheme_id", "total_quantity", "total_amount", "total_loyalty_point", "total_loyalty_boost_point", 'actions'];
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 	@ViewChild('sort1', { static: true }) sort: MatSort;
 	// Filter fields

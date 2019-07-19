@@ -24,12 +24,13 @@ import { environment } from '../../../../../environments/environment';
 import { PopupProductComponent } from '../../popup-product/popup-product.component';
 import { PopupAddProductComponent } from '../../popup-product/popup-add-product/popup-add-product.component';
 import { Product } from '../../../../core/product/_models/product.model'
+import { Distributor } from '../../../../core/distributor/_models/distributor.model'
 import { PurchaseService } from '../../../../core/purchase/_services/index'
 import { APP_CONSTANTS } from '../../../../../config/default/constants'
 import { Logout } from '../../../../core/auth';
 import { PopupProductTotalCalculationComponent } from '../../popup-product/popup-add-product/popup-product-total-calculation/popup-product-total-calculation.component'
 import { dynamicProductTemplateSetting } from '../../../../core/common/common.model'
-
+import * as fromDistributor from '../../../../core/distributor'
 
 @Component({
   selector: 'kt-add-purchase',
@@ -49,7 +50,9 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
   userData: any;
   componentRef: any;
   loading = false;
-  OptionalSetting:dynamicProductTemplateSetting;
+  OptionalSetting: dynamicProductTemplateSetting;
+  viewLoading$: Observable<boolean>;
+  distributor$: Observable<Distributor[]>;
   // Private properties
   private subscriptions: Subscription[] = [];
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
@@ -114,6 +117,19 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
       this.purchase = new Purchase();
       this.purchase.clear();
       this.initPurchase();
+
+      //Load distribiutor
+      this.store.select(fromDistributor.selectDistributorLoaded).pipe().subscribe(data => {
+        if (data) {
+          this.distributor$ = this.store.pipe(select(fromDistributor.selectAllDistributor));
+        } else {
+          let httpParams = new HttpParams();
+          this.store.dispatch(new fromDistributor.LoadDistributor(httpParams))
+          this.distributor$ = this.store.pipe(select(fromDistributor.selectAllDistributor));
+        }
+      });
+      this.viewLoading$ = this.store.pipe(select(fromDistributor.selectDistributorLoading));
+
     });
     this.subscriptions.push(routeSubscription);
 
@@ -144,14 +160,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
   createForm() {
     this.purchaseForm = this.purchaseFB.group({
       scheme_id: [this.purchaseActiveScheme.scheme_id, Validators.required],
-      name: ['Kaushik', Validators.required],
-      mobile_no: ['9687453313', Validators.required],
-      address_line1: ['A301', Validators.required],
-      address_line2: ['Anand nagar', Validators.required],
-      landline_no: ['6985745632', Validators.required],
-      city: ['Ahmedabad', Validators.required],
-      pincode: ['380054', Validators.required],
-      state: ['gujrat', Validators.required],
+      distributor_id: ['', Validators.required],
       products: this.purchaseFB.array([], Validators.required)
     });
   }
@@ -176,7 +185,6 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
     }
 
     const addEditPurchase = this.preparePurchase();
-
     this.addEditPurchase(addEditPurchase);
   }
 
@@ -190,19 +198,8 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
     _purchase.clear();
     _purchase.loyalty_id = this.purchaseActiveScheme.id;
     _purchase.scheme_id = controls['scheme_id'].value;
-    _purchase.distributor_id = this.userData.Distributor_ID;
-
-    //End Customer Detail
-    _purchase.name = controls['name'].value;
-    _purchase.mobile_no = controls['mobile_no'].value;
-    _purchase.landline_no = controls['landline_no'].value;
-    _purchase.address_line1 = controls['address_line1'].value;
-    _purchase.address_line2 = controls['address_line2'].value;
-    _purchase.city = controls['city'].value;
-    _purchase.pincode = controls['pincode'].value;
-    _purchase.state = controls['state'].value;
+    _purchase.distributor_id = controls['distributor_id'].value;
     _purchase.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
-    // _purchase.product = controls['products'].value;
     _purchase.products_json = JSON.stringify(this.prepareProduct())
     return _purchase;
   }
@@ -213,7 +210,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
   prepareProduct(): Product[] {
     const controls = this.purchaseForm.controls['products'].value;;
     const _products = [];
-    
+
     let boost_point = 0;
     if (this.purchaseActiveSchemebooster != undefined)
       boost_point = this.purchaseActiveSchemebooster.boost_point;
@@ -309,7 +306,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
     const _messageType = MessageType.Read;
 
     const dialogRef = this.dialog.open(PopupProductComponent, {
-      data: { addedProductsIds: this.addedProductsIds, isDiscount:false },
+      data: { addedProductsIds: this.addedProductsIds, isDiscount: false },
       // data: { addedProductsIds: [] },
       width: '600px',
     });

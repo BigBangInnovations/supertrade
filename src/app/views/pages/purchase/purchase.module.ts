@@ -8,8 +8,8 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { CoreModule } from '../../../core/core.module';
 import { PartialsModule } from '../../partials/partials.module';
 import { PurchaseEffects, PurchaseService, purchaseReducer  } from '../../../core/purchase'
-import { ProductEffects, productReducer } from '../../../core/product'
-import { ProductService } from '../../../core/product'
+import { ProductEffects, productReducer, ProductService } from '../../../core/product'
+import { DistributorEffects, distributorReducer, DistributorService } from '../../../core/distributor'
 // Translate
 import { TranslateModule } from '@ngx-translate/core';
 // NGRX
@@ -79,6 +79,9 @@ const routes: Routes = [
 		//product
 		EffectsModule.forFeature([ProductEffects]),
 		StoreModule.forFeature('product', productReducer),
+		//distributor
+		EffectsModule.forFeature([DistributorEffects]),
+		StoreModule.forFeature('distributor', distributorReducer),
 
 		MatIconModule,
 		MatListModule,
@@ -119,7 +122,8 @@ const routes: Routes = [
 			multi: true
 		},		
 		PurchaseService,
-		ProductService
+		ProductService,
+		DistributorService
 	],
 	entryComponents: [
 		ActionNotificationComponent,
@@ -138,7 +142,9 @@ export class PurchaseModule {
 			ngModule: PurchaseModule,
 			providers: [
 				PurchaseService,
-				ProductService
+				ProductService,
+				DistributorService
+
 			]
 		};
 	}

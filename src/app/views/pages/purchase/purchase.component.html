@@ -146,11 +146,6 @@
                     <mat-cell *matCellDef="let purchase">{{purchase.date | date: 'dd-MM-yyyy'}}</mat-cell>
                 </ng-container>
 
-                <ng-container matColumnDef="customer_name">
-                    <mat-header-cell *matHeaderCellDef>Customer</mat-header-cell>
-                    <mat-cell *matCellDef="let purchase">{{purchase.name}}</mat-cell>
-                </ng-container>
-
                 <ng-container matColumnDef="invoice_id">
                     <mat-header-cell *matHeaderCellDef>Invoice ID</mat-header-cell>
                     <mat-cell *matCellDef="let purchase">{{purchase.invoice_id}}</mat-cell>

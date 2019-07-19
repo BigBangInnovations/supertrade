@@ -84,14 +84,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
   createForm(res) {
     this.purchaseForm = this.purchaseFB.group({
       scheme_id: [res.scheme_id],
-      name: [res.name],
-      mobile_no: [res.mobile_no],
-      address_line1: [res.address_line1],
-      address_line2: [res.address_line2],
-      landline_no: [res.landline_no],
-      city: [res.city],
-      pincode: [res.pincode],
-      state: [res.state],
+      distributor_id: [res.Name],
       products: this.purchaseFB.array([])
     });
     this.prepareProductView(res.product)

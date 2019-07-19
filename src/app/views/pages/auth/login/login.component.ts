@@ -162,6 +162,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 			.pipe(
 				tap(response => {
 					if (response.status == APP_CONSTANTS.response.SUCCESS) {
+						console.log(response.data);
+						
 						/*
 						* Filter data
 						* Get active loyalty scheme
