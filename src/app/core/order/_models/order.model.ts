@@ -1,8 +1,7 @@
 import { Product } from '../../product/_models/product.model';
 
-export class Sale {
+export class Order {
     id: number;
-    sl_sales_id:number //Sales ID Return time same as id
     // invoice_id: string;
     // transaction_id: string;
     date: string;

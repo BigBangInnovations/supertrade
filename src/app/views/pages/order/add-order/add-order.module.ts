@@ -5,18 +5,19 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 // Core Module
-import { CoreModule } from '../../../core/core.module';
-import { PartialsModule } from '../../partials/partials.module';
-import { SaleEffects, SalesService, salesReducer  } from '../../../core/sales'
-import { ProductEffects, productReducer } from '../../../core/product'
-import { ProductService } from '../../../core/product'
+import { CoreModule } from '../../../../core/core.module';
+import { PartialsModule } from '../../../partials/partials.module';
+import { AddOrderComponent } from './add-order.component';
+// import { OrderEffects, OrderService, orderReducer  } from '../../../core/order'
 // Translate
 import { TranslateModule } from '@ngx-translate/core';
 // NGRX
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 // CRUD
-import { InterceptService } from '../../../core/_base/crud/';
+import { InterceptService } from '../../../../core/_base/crud/';
+import { PopupProductModule } from '../../popup-product/popup-product.module'
+
 
 import { 
 	MatIconModule,
@@ -42,25 +43,18 @@ import {
 	MatAutocompleteModule,
 	MAT_DIALOG_DEFAULT_OPTIONS,
 	MatSnackBarModule,
-	MatTooltipModule
+	MatTooltipModule,
  } from '@angular/material';
 
  import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
- import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-
-//component
- import { SalesListComponent } from './sales.component';
-import { ActionNotificationComponent } from '../../partials/content/crud';
-import { ViewSaleComponent } from './view-sale/view-sale.component';
-import { PopupProductModule } from '../popup-product/popup-product.module'
 import { from } from 'rxjs';
+//  import { PopupAddProductComponent } from '../../popup-product/popup-add-product/popup-add-product.component'
 
 const routes: Routes = [
 	{
 		path: '',
-		component: SalesListComponent,
+		component: AddOrderComponent
 	},
-	
 ];
 
 @NgModule({
@@ -72,13 +66,8 @@ const routes: Routes = [
 		RouterModule.forChild(routes),
 		MatTabsModule,
 		TranslateModule.forChild(),
-		//sales
-		StoreModule.forFeature('sales', salesReducer),
-		EffectsModule.forFeature([SaleEffects]),
-		//product
-		EffectsModule.forFeature([ProductEffects]),
-		StoreModule.forFeature('product', productReducer),
-
+		// StoreModule.forFeature('order', orderReducer),
+		// EffectsModule.forFeature([OrderEffects]),
 		MatIconModule,
 		MatListModule,
 		MatProgressSpinnerModule,
@@ -104,11 +93,9 @@ const routes: Routes = [
 		MatDialogModule,
 		FormsModule,
 		ReactiveFormsModule,
-		NgxMatSelectSearchModule
 	],
 	exports:[
-		SalesListComponent,
-		ViewSaleComponent,
+		AddOrderComponent,
 	],
 	providers: [
 		InterceptService,
@@ -117,28 +104,25 @@ const routes: Routes = [
 			useClass: InterceptService,
 			multi: true
 		},
-		
-		// SalesService,
-		ProductService
-	],
-	entryComponents: [
-		ActionNotificationComponent,
-		ViewSaleComponent,
-
+		// OrderService
 	],
 	declarations: [
-		SalesListComponent,
-		ViewSaleComponent,
+		AddOrderComponent,
+		// PopupAddProductComponent
+		// AddOrderComponent,
+		
+	],
+	entryComponents: [
+		
 	]
 })
 
-export class SalesModule {
+export class AddOrderModule {
 	static forRoot(): ModuleWithProviders {
 		return {
-			ngModule: SalesModule,
+			ngModule: AddOrderModule,
 			providers: [
-				// SalesService,
-				ProductService
+				// OrderService
 			]
 		};
 	}

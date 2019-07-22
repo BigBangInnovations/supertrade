@@ -29,6 +29,12 @@ export class SalesService {
 	createSale(data: any): Observable<any> {
 		const url = `add-sales`;
         return this.http.post(url, data)
+    }
+    
+    // CREATE =>  POST: add a new sale return to the server
+	returnSale(data: any): Observable<any> {
+		const url = `add-sales-return`;
+        return this.http.post(url, data)
 	}
 
     // UPDATE => PUT: update the sale on the server

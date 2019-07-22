@@ -29,6 +29,11 @@ export class PurchaseService {
 	createPurchase(data: any): Observable<any> {
 		const url = `add-purchase`;
         return this.http.post(url, data)
+    }
+    
+    returnPurchase(data: any): Observable<any> {
+		const url = `add-purchase-return`;
+        return this.http.post(url, data)
 	}
 
     // UPDATE => PUT: update the purchase on the server

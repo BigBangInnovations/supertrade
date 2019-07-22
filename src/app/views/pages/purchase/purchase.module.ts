@@ -121,7 +121,7 @@ const routes: Routes = [
 			useClass: InterceptService,
 			multi: true
 		},		
-		PurchaseService,
+		// PurchaseService,
 		ProductService,
 		DistributorService
 	],
@@ -141,7 +141,7 @@ export class PurchaseModule {
 		return {
 			ngModule: PurchaseModule,
 			providers: [
-				PurchaseService,
+				// PurchaseService,
 				ProductService,
 				DistributorService
 

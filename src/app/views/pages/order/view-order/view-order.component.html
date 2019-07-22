@@ -1,10 +1,10 @@
 <kt-portlet>
-    <kt-portlet-header title="{{ getTitle() }}" [class]="'kt-portlet__head--lg'">
+    <kt-portlet-header title="View Order" [class]="'kt-portlet__head--lg'">
     </kt-portlet-header>
 
-    <!--begin::Form-->
-    <form [formGroup]="purchaseForm" class="kt-form kt-form--group-seperator-dashed">
-        <kt-portlet-body>
+    <kt-portlet-body>
+        <!--begin::Form-->
+        <form [formGroup]="orderForm" class="kt-form kt-form--group-seperator-dashed">
             <!-- <div class="row">
                         <div class="col-lg-2"></div>
                         <div class="col-lg-8 kt-ribbon--border-dash-hor"> -->
@@ -30,9 +30,11 @@
                             <h3 class="kt-form__heading-title pointer-cursor">Product detail</h3>
                         </div>
                         <div formArrayName="products">
-                            <div *ngFor="let product of purchaseForm['controls'].products['controls']; let i=index">
+                            <div *ngFor="let product of orderForm['controls'].products['controls']; let i=index">
                                 <div [formGroupName]="i">
-                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="purchaseForm.controls.products.controls[i]" [parantGroup]="purchaseForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction"></kt-popup-add-product>
+                                    <!-- <input formControlName="productBarCodeCtrl" placeholder="Item name"> -->
+                                    <!-- index: {{productBarCodeCtrl}} -->
+                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="orderForm.controls.products.controls[i]" [parantGroup]="orderForm" [index]="i" [OptionalSetting]="OptionalSetting"></kt-popup-add-product>
                                 </div>
                             </div>
                         </div>
@@ -40,24 +42,13 @@
                     </div>
                 </div>
             </div>
-        </kt-portlet-body>
-        <div class="kt-portlet__foot kt-portlet__foot--fit kt-portlet__no-border">
-            <div class="kt-form__actions kt-form__actions--solid">
-                <div class="row text-right">
-                    <div class="col-lg-12">
-                        <button type="button" (click)="close()" mat-raised-button matTooltip="Close">
-                                            Cancel
-                                        </button>&nbsp;
-                        <ng-container *ngIf="pageAction == 'purchaseReturn'">
-                            <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!purchaseForm.valid" mat-raised-button color="primary" (click)="ReuturnPurchase()" matTooltip="Return Purchase">
-                                            Return
-                                        </button>
-                        </ng-container>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-    <!--end::Form-->
-
+            <button type="button" mat-raised-button (click)="close()" cdkFocusInitial matTooltip="Close">
+                        Close
+                    </button>
+            <!-- </div>
+                        <div class="col-lg-2"></div>
+                    </div> -->
+        </form>
+        <!--end::Form-->
+    </kt-portlet-body>
 </kt-portlet>

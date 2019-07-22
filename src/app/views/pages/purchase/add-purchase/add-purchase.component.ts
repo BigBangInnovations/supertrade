@@ -51,6 +51,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
   componentRef: any;
   loading = false;
   OptionalSetting: dynamicProductTemplateSetting;
+  pageAction: string;
   viewLoading$: Observable<boolean>;
   distributor$: Observable<Distributor[]>;
   // Private properties
@@ -58,8 +59,6 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
   today = new Date();
   private addedProductsIds: any[] = [];
-
-
   private unsubscribe: Subject<any>;
 
 	/**
@@ -97,6 +96,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
     const OptionalSetting = new dynamicProductTemplateSetting();
     OptionalSetting.clear();
     this.OptionalSetting = OptionalSetting;
+    this.pageAction = 'addPurchase'
   }
 
 	/**

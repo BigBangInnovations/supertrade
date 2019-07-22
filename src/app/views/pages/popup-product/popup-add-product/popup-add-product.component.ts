@@ -20,6 +20,8 @@ export class PopupAddProductComponent {
 
   @Input() OptionalSetting: any;
 
+  @Input() pageAction: string;
+
   @Input() index: number;
 
   @Output() quantityChange = new EventEmitter();

@@ -16,14 +16,14 @@ import { Store, select } from '@ngrx/store';
 import { LayoutUtilsService, MessageType } from '../../../core/_base/crud';
 import { EncrDecrServiceService } from '../../../core/auth/_services/encr-decr-service.service'
 // Models
-import { Sale, SalesDataSource, SaleDeleted, SalesPageRequested, UserPointsStatus } from '../../../core/sales';
+import { Order, OrderDataSource, OrderDeleted, OrderPageRequested, UserPointsStatus } from '../../../core/order';
 import { AppState } from '../../../core/reducers';
 import { QueryParamsModel } from '../../../core/_base/crud';
 //
-import { getSalesActiveScheme } from '../../../core/auth/_selectors/auth.selectors';
+// import { getOrderActiveScheme } from '../../../core/auth/_selectors/auth.selectors';
 import { environment } from '../../../../environments/environment';
 // Components
-import { ViewSaleComponent } from './view-sale/view-sale.component';
+import { ViewOrderComponent } from './view-order/view-order.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 // Table with EDIT item in MODAL
@@ -34,20 +34,20 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 // https://v5.material.angular.io/components/table/overview#sorting
 // https://www.youtube.com/watch?v=NSt9CI3BXv4
 @Component({
-	selector: 'kt-sales-list',
-	templateUrl: './sales.component.html',
+	selector: 'kt-order-list',
+	templateUrl: './order.component.html',
 	// changeDetection: ChangeDetectionStrategy.OnPush,
-	styleUrls: ['sales.component.scss'],
+	styleUrls: ['order.component.scss'],
 	providers: [DatePipe]
 })
-export class SalesListComponent implements OnInit, OnDestroy {
+export class OrderListComponent implements OnInit, OnDestroy {
 
 	// Public params
 	filterForm: FormGroup;
-	hasDateError: boolean = false;
+
 	// Table fields
-	dataSource: SalesDataSource;
-	displayedColumns = ["date", "customer_name", "invoice_id", "scheme_id", "total_quantity", "total_amount", "total_loyalty_point", "total_loyalty_boost_point", 'actions'];
+	dataSource: OrderDataSource;
+	displayedColumns = ["date", "invoice_id", "scheme_id", "total_quantity", "total_amount", "total_loyalty_point", "total_loyalty_boost_point", 'actions'];
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 	@ViewChild('sort1', { static: true }) sort: MatSort;
 	// Filter fields
@@ -56,11 +56,11 @@ export class SalesListComponent implements OnInit, OnDestroy {
 	@ViewChild('endDateInput', { static: true }) endDateInput: ElementRef;
 	// @ViewChild('filterButton', {static: true}) filterButton: ElementRef;
 	// Selection
-	selection = new SelectionModel<Sale>(true, []);
-	salesResult: Sale[] = [];
+	selection = new SelectionModel<Order>(true, []);
+	orderResult: Order[] = [];
 	userPointsResult: UserPointsStatus[] = [];
-	salesActiveScheme: string;
-	salesActiveSchemeDetail: any[] = [];
+	orderActiveScheme: string;
+	orderActiveSchemeDetail: any[] = [];
 	// Subscriptions
 	private subscriptions: Subscription[] = [];
 	progressBarValue: number;
@@ -106,7 +106,7 @@ export class SalesListComponent implements OnInit, OnDestroy {
 		**/
 		const paginatorSubscriptions = merge(this.sort.sortChange, this.paginator.page).pipe(
 			tap(() => {
-				this.loadSalesList();
+				this.loadOrderList();
 			})
 		)
 			.subscribe();
@@ -119,7 +119,7 @@ export class SalesListComponent implements OnInit, OnDestroy {
 		// 	distinctUntilChanged(), // This operator will eliminate duplicate values
 		// 	tap(() => {
 		// 		this.paginator.pageIndex = 0;
-		// 		this.loadSalesList();
+		// 		this.loadOrderList();
 		// 	})
 		// )
 		// .subscribe();
@@ -132,20 +132,20 @@ export class SalesListComponent implements OnInit, OnDestroy {
 		// 	distinctUntilChanged(), // This operator will eliminate duplicate values
 		// 	tap(() => {
 		// 		this.paginator.pageIndex = 0;
-		// 		this.loadSalesList();
+		// 		this.loadOrderList();
 		// 	})
 		// )
 		// .subscribe();
 		// this.subscriptions.push(searchSubscription);
 
 		// Init DataSource
-		this.dataSource = new SalesDataSource(this.store);
+		this.dataSource = new OrderDataSource(this.store);
 
 		const entitiesSubscription = this.dataSource.entitySubject.pipe(
 			skip(1),
 			distinctUntilChanged()
 		).subscribe(res => {
-			this.salesResult = res;
+			this.orderResult = res;
 		});
 		this.subscriptions.push(entitiesSubscription);
 
@@ -159,17 +159,17 @@ export class SalesListComponent implements OnInit, OnDestroy {
 				this.userPointsResult = res;
 				let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
 				sessionStorage = JSON.parse(sessionStorage)
-				let salesActiveScheme = sessionStorage.salesActiveScheme.filter((item: any) => {
+				let orderActiveScheme = sessionStorage.orderActiveScheme.filter((item: any) => {
 					return item.from <= res.accumulated_points && item.to >= res.accumulated_points;
 				});
-				if (salesActiveScheme.length <= 0) {
-					salesActiveScheme = sessionStorage.salesActiveScheme[0];
+				if (orderActiveScheme.length <= 0) {
+					orderActiveScheme = sessionStorage.orderActiveScheme[0];
 				} else {
-					salesActiveScheme = salesActiveScheme[0];
+					orderActiveScheme = orderActiveScheme[0];
 				}
 				this.accumulated_points = res.accumulated_points;
-				this.progressBarValue = (res.accumulated_points * 100) / salesActiveScheme.to
-				this.salesActiveSchemeDetail = salesActiveScheme
+				this.progressBarValue = (res.accumulated_points * 100) / orderActiveScheme.to
+				this.orderActiveSchemeDetail = orderActiveScheme
 			}
 		});
 		this.subscriptions.push(userPointsSubscription);
@@ -177,7 +177,7 @@ export class SalesListComponent implements OnInit, OnDestroy {
 
 		// First load
 		// of(undefined).pipe(take(1), delay(1000)).subscribe(() => { // Remove this line, just loading imitation
-		this.loadSalesList();
+		this.loadOrderList();
 		// });
 	}
 
@@ -219,9 +219,9 @@ export class SalesListComponent implements OnInit, OnDestroy {
 	}
 
 	/**
-	 * Load Sales List
+	 * Load Order List
 	 */
-	loadSalesList() {
+	loadOrderList() {
 		this.selection.clear();
 		const queryParams = new QueryParamsModel(
 			this.filterConfiguration(),
@@ -231,30 +231,24 @@ export class SalesListComponent implements OnInit, OnDestroy {
 			this.paginator.pageSize
 		);
 
-		this.store.select(getSalesActiveScheme).pipe(take(1)).subscribe(data => {
-			this.hasDateError = false;
+		// this.store.select(getOrderActiveScheme).pipe(take(1)).subscribe(data => {
 			let startDate = this.startDateInput.nativeElement.value
 			let endDate = this.endDateInput.nativeElement.value
 
-			this.salesActiveScheme = data;
+			// this.orderActiveScheme = data;
 			let httpParams = new HttpParams();
 			//filter
-			if (startDate != '' || endDate != '') {
-				if (startDate != '' && endDate != '' && new Date(startDate) <= new Date(endDate)) {
-					let myFormattedStartDate = this.datePipe.transform(new Date(startDate), 'yyyy-MM-dd');
-					let myFormattedEndDate = this.datePipe.transform(new Date(endDate), 'yyyy-MM-dd');
-					httpParams = httpParams.append('start_date', myFormattedStartDate);
-					httpParams = httpParams.append('end_date', myFormattedEndDate);
-				} else {
-					this.hasDateError = true;
-					return;
-				}
+			if (startDate != '' && endDate != '' && new Date(startDate) <= new Date(endDate)) {
+				let myFormattedStartDate = this.datePipe.transform(new Date(startDate), 'yyyy-MM-dd');
+				let myFormattedEndDate = this.datePipe.transform(new Date(endDate), 'yyyy-MM-dd');
+				httpParams = httpParams.append('start_date', myFormattedStartDate);
+				httpParams = httpParams.append('end_date', myFormattedEndDate);
 			}
-			httpParams = httpParams.append('scheme_id', this.salesActiveScheme);
+			httpParams = httpParams.append('scheme_id', this.orderActiveScheme);
 			// Call request from server
-			this.store.dispatch(new SalesPageRequested({ page: queryParams, body: httpParams }));
+			this.store.dispatch(new OrderPageRequested({ page: queryParams, body: httpParams }));
 			this.selection.clear();
-		});
+		// });
 
 	}
 
@@ -270,15 +264,15 @@ export class SalesListComponent implements OnInit, OnDestroy {
 
 	/** ACTIONS */
 	/**
-	 * Delete sale
+	 * Delete order
 	 *
-	 * @param _item: Sale
+	 * @param _item: Order
 	 */
-	deleteSale(_item: Sale) {
-		const _title: string = 'User Sale';
-		const _description: string = 'Are you sure to permanently delete this sale?';
-		const _waitDesciption: string = 'Sale is deleting...';
-		const _deleteMessage = `Sale has been deleted`;
+	deleteOrder(_item: Order) {
+		const _title: string = 'User Order';
+		const _description: string = 'Are you sure to permanently delete this order?';
+		const _waitDesciption: string = 'Order is deleting...';
+		const _deleteMessage = `Order has been deleted`;
 
 		const dialogRef = this.layoutUtilsService.deleteElement(_title, _description, _waitDesciption);
 		dialogRef.afterClosed().subscribe(res => {
@@ -286,9 +280,9 @@ export class SalesListComponent implements OnInit, OnDestroy {
 				return;
 			}
 
-			this.store.dispatch(new SaleDeleted({ id: _item.id }));
+			this.store.dispatch(new OrderDeleted({ id: _item.id }));
 			this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete);
-			this.loadSalesList();
+			this.loadOrderList();
 		});
 	}
 
@@ -296,7 +290,7 @@ export class SalesListComponent implements OnInit, OnDestroy {
 	/**
 	 * Fetch selected rows
 	 */
-	// fetchSales() {
+	// fetchOrder() {
 	// 	const messages = [];
 	// 	this.selection.selected.forEach(elem => {
 	// 		messages.push({
@@ -309,30 +303,30 @@ export class SalesListComponent implements OnInit, OnDestroy {
 	// }
 
 	/**
-	 * Add sale
+	 * Add order
 	 */
-	addSale() {
-		const newSale = new Sale();
-		newSale.clear(); // Set all defaults fields
-		this.editSale(newSale);
+	addOrder() {
+		const newOrder = new Order();
+		newOrder.clear(); // Set all defaults fields
+		this.editOrder(newOrder);
 	}
 
 	/**
-	 * Edit sale
+	 * Edit order
 	 *
-	 * @param sale: Sale
+	 * @param order: Order
 	 */
-	editSale(sale: Sale) {
-		const _saveMessage = `Sale successfully has been saved.`;
-		const _messageType = sale.id ? MessageType.Update : MessageType.Create;
-		// const dialogRef = this.dialog.open(SaleEditDialogComponent, { data: { saleId: sale.id } });
+	editOrder(order: Order) {
+		const _saveMessage = `Order successfully has been saved.`;
+		const _messageType = order.id ? MessageType.Update : MessageType.Create;
+		// const dialogRef = this.dialog.open(OrderEditDialogComponent, { data: { orderId: order.id } });
 		// dialogRef.afterClosed().subscribe(res => {
 		// 	if (!res) {
 		// 		return;
 		// 	}
 
 		// 	this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 10000, true, true);
-		// 	this.loadSalesList();
+		// 	this.loadOrderList();
 		// });
 	}
 
@@ -341,7 +335,7 @@ export class SalesListComponent implements OnInit, OnDestroy {
 	 */
 	isAllSelected(): boolean {
 		const numSelected = this.selection.selected.length;
-		const numRows = this.salesResult.length;
+		const numRows = this.orderResult.length;
 		return numSelected === numRows;
 	}
 
@@ -349,10 +343,10 @@ export class SalesListComponent implements OnInit, OnDestroy {
 	 * Toggle selection
 	 */
 	masterToggle() {
-		if (this.selection.selected.length === this.salesResult.length) {
+		if (this.selection.selected.length === this.orderResult.length) {
 			this.selection.clear();
 		} else {
-			this.salesResult.forEach(row => this.selection.select(row));
+			this.orderResult.forEach(row => this.selection.select(row));
 		}
 	}
 
@@ -393,17 +387,13 @@ export class SalesListComponent implements OnInit, OnDestroy {
 	}
 
 	/** 
-	 * View sale in popup
+	 * View order in popup
 	 */
-	viewSale(saleId, action) {
-		const dialogRef = this.dialog.open(ViewSaleComponent, {
-			data: { saleId: saleId, action: action },
+	viewOrder(orderId){
+		const dialogRef = this.dialog.open(ViewOrderComponent, {
+			data: { orderId: orderId },
 			width: '600px',
 			height: '550px'
-		});
-		dialogRef.afterClosed().subscribe(res => {
-			if (action == 'saleReturn' && res == 'reload')
-				this.loadSalesList();
-		});
+		  });
 	}
 }

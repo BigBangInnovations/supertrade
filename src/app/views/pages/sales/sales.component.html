@@ -91,16 +91,17 @@
                             <tr>
                                 <td>
                                     <mat-form-field>
-                                        <input matInput [matDatepicker]="dp3" #startDateInput placeholder="Satrt Date" disabled>
+                                        <input matInput [matDatepicker]="dp3" (focus)="dp3.open()" #startDateInput placeholder="Satrt Date" readonly>
                                         <mat-datepicker-toggle matSuffix [for]="dp3">
                                         </mat-datepicker-toggle>
                                         <mat-datepicker touchUi #dp3 disabled="false"></mat-datepicker>
                                     </mat-form-field>
+                                    <small *ngIf="hasDateError" class="alert-danger">Enter valid date</small>
                                 </td>
 
                                 <td>
                                     <mat-form-field>
-                                        <input matInput [matDatepicker]="dp4" #endDateInput placeholder="End Date" disabled>
+                                        <input matInput [matDatepicker]="dp4" (focus)="dp4.open()" #endDateInput placeholder="End Date" readonly>
                                         <mat-datepicker-toggle matSuffix [for]="dp4">
                                         </mat-datepicker-toggle>
                                         <mat-datepicker touchUi #dp4 disabled="false"></mat-datepicker>
@@ -184,8 +185,11 @@
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
                     <mat-cell *matCellDef="let sales">
-                        <button mat-icon-button color="primary" matTooltip="View sales" (click)="viewSale(sales.id)">
+                        <button mat-icon-button color="primary" matTooltip="View sales" (click)="viewSale(sales.id, 'viewSale')">
 							<mat-icon> visibility </mat-icon>
+                        </button>
+                        <button mat-icon-button color="warn" matTooltip="Return sales" (click)="viewSale(sales.id, 'saleReturn')">
+							<mat-icon> undo </mat-icon>
 						</button>
                     </mat-cell>
                 </ng-container>

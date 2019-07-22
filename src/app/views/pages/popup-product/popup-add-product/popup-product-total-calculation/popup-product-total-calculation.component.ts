@@ -4,6 +4,7 @@ import { FormGroup, FormArray } from "@angular/forms";
 @Component({
   selector: 'kt-popup-product-total-calculation',
   templateUrl: './popup-product-total-calculation.component.html',
+  styleUrls: ['popup-product-total-calculation.component.scss'],
 })
 export class PopupProductTotalCalculationComponent implements OnInit {
 

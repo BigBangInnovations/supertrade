@@ -14,39 +14,60 @@
                             <mat-icon class="mat-24 kt-font-danger">delete</mat-icon>
                           </button>
                 </mat-list-item>
+                <ng-container *ngIf="
+pageAction != 'addSale' &&
+pageAction != 'addPurchase'
+">
 
-                <mat-list-item role="listitem">
+                    <mat-list-item role="listitem">
+                        <span matLine>Original sale quantity </span>
+                        <div class="kt-align-right">{{getControlLabel('productOriginalQuantityCtrl')}}</div>
+                    </mat-list-item>
+                    <mat-divider></mat-divider>
+
+                    <mat-list-item role="listitem">
+                        <span matLine>Total return quantity </span>
+                        <div class="kt-align-right">{{ getControlLabel('productReturnedQuantityCtrl') }}</div>
+                    </mat-list-item>
+                </ng-container>
+                <mat-list-item role="listitem" *ngIf="
+                pageAction == 'saleReturn' ||
+                pageAction == 'purchaseReturn' || 
+                pageAction == 'addSale' || 
+                pageAction == 'addPurchase' 
+                ">
                     <mat-form-field>
                         <input maxlength="5" matInput formControlName="productQuantityCtrl" placeholder="Quantity" (input)="getProductAmount($event.target.value);">
                     </mat-form-field>
                 </mat-list-item>
+
                 <mat-list-item role="listitem">
-                    <span matLine>Product Amount: </span>
+                    <span matLine>Product Amount </span>
                     <div class="kt-align-right">{{ productAmount | number:'1.2-2' }}</div>
                 </mat-list-item>
                 <mat-divider></mat-divider>
                 <mat-list-item role="listitem">
-                    <span matLine>Discount @{{getControlLabel('productDiscountCtrl')}}%: </span>
+                    <span matLine>Discount @{{getControlLabel('productDiscountCtrl')}}% </span>
                     <div class="kt-align-right">{{ productDiscount | number:'1.2-2' }}</div>
                 </mat-list-item>
                 <mat-divider></mat-divider>
                 <mat-list-item role="listitem">
-                    <span matLine>Gross Amount: </span>
+                    <span matLine>Gross Amount </span>
                     <div class="kt-align-right">{{ productGrossAmount | number:'1.2-2' }}</div>
                 </mat-list-item>
                 <mat-divider></mat-divider>
                 <mat-list-item role="listitem">
-                    <span matLine>CGST @{{getControlLabel('productTaxCGSTCtrl')}}%: </span>
+                    <span matLine>CGST @{{getControlLabel('productTaxCGSTCtrl')}}% </span>
                     <div class="kt-align-right">{{ productCGST | number:'1.2-2' }}</div>
                 </mat-list-item>
                 <mat-divider></mat-divider>
                 <mat-list-item role="listitem">
-                    <span matLine>SGST @{{getControlLabel('productTaxSGSTCtrl')}}%: </span>
+                    <span matLine>SGST @{{getControlLabel('productTaxSGSTCtrl')}}% </span>
                     <div class="kt-align-right">{{ productSGST | number:'1.2-2' }}</div>
                 </mat-list-item>
                 <mat-divider></mat-divider>
                 <mat-list-item role="listitem">
-                    <span matLine>Product Net Amount: </span>
+                    <span matLine>Product Net Amount </span>
                     <div class="kt-align-right">{{ productNetAmount | number:'1.2-2' }}</div>
                 </mat-list-item>
                 <ng-template [ngIf]="OptionalSetting.displayPointCalculation">
@@ -57,7 +78,7 @@
                     </mat-list-item>
                     <mat-divider></mat-divider>
                     <mat-list-item role="listitem">
-                        <span matLine class="text-info">Loyalty Boost Point: </span>
+                        <span matLine class="text-info">Loyalty Boost Point </span>
                         <div class="kt-align-right">{{ productLoyaltyBoostPoint | number:'1.2-2' }}</div>
                     </mat-list-item>
                 </ng-template>

@@ -58,9 +58,13 @@ import { DashboardService } from './core/dashboard'
 import { SalesModule } from './views/pages/sales/sales.module'
 import { SalesService } from './core/sales'
 
-//Sales
+//Purchase
 import { PurchaseModule } from './views/pages/purchase/purchase.module'
 import { PurchaseService } from './core/purchase'
+
+//Order
+import { OrderModule } from './views/pages/order/order.module'
+import { OrderService } from './core/order'
 
 // CRUD
 import { HttpUtilsService, LayoutUtilsService, TypesUtilsService } from './core/_base/crud';
@@ -125,6 +129,7 @@ export function hljsLanguages(): HighlightLanguage[] {
 		DashboardModule.forRoot(),
 		SalesModule.forRoot(),
 		PurchaseModule.forRoot(),
+		OrderModule.forRoot(),
 		TranslateModule.forRoot(),
 		MatProgressSpinnerModule,
 		InlineSVGModule.forRoot(),
@@ -135,6 +140,7 @@ export function hljsLanguages(): HighlightLanguage[] {
 		DashboardService,
 		SalesService,
 		PurchaseService,
+		OrderService,
 		LayoutConfigService,
 		LayoutRefService,
 		MenuConfigService,

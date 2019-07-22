@@ -44,7 +44,7 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 
 	// Public params
 	filterForm: FormGroup;
-
+	hasDateError: boolean = false;
 	// Table fields
 	dataSource: PurchaseDataSource;
 	displayedColumns = ["date", "invoice_id", "scheme_id", "total_quantity", "total_amount", "total_loyalty_point", "total_loyalty_boost_point", 'actions'];
@@ -232,17 +232,23 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 		);
 
 		this.store.select(getPurchaseActiveScheme).pipe(take(1)).subscribe(data => {
+			this.hasDateError = false;
 			let startDate = this.startDateInput.nativeElement.value
 			let endDate = this.endDateInput.nativeElement.value
 
 			this.purchaseActiveScheme = data;
 			let httpParams = new HttpParams();
 			//filter
-			if (startDate != '' && endDate != '' && new Date(startDate) <= new Date(endDate)) {
-				let myFormattedStartDate = this.datePipe.transform(new Date(startDate), 'yyyy-MM-dd');
-				let myFormattedEndDate = this.datePipe.transform(new Date(endDate), 'yyyy-MM-dd');
-				httpParams = httpParams.append('start_date', myFormattedStartDate);
-				httpParams = httpParams.append('end_date', myFormattedEndDate);
+			if (startDate != '' || endDate != '') {
+				if (startDate != '' && endDate != '' && new Date(startDate) <= new Date(endDate)) {
+					let myFormattedStartDate = this.datePipe.transform(new Date(startDate), 'yyyy-MM-dd');
+					let myFormattedEndDate = this.datePipe.transform(new Date(endDate), 'yyyy-MM-dd');
+					httpParams = httpParams.append('start_date', myFormattedStartDate);
+					httpParams = httpParams.append('end_date', myFormattedEndDate);
+				} else {
+					this.hasDateError = true;
+					return;
+				}
 			}
 			httpParams = httpParams.append('scheme_id', this.purchaseActiveScheme);
 			// Call request from server
@@ -389,11 +395,15 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 	/** 
 	 * View purchase in popup
 	 */
-	viewPurchase(purchaseId){
+	viewPurchase(purchaseId, action) {
 		const dialogRef = this.dialog.open(ViewPurchaseComponent, {
-			data: { purchaseId: purchaseId },
+			data: { purchaseId: purchaseId, action: action },
 			width: '600px',
 			height: '550px'
-		  });
+		});
+		dialogRef.afterClosed().subscribe(res => {
+			if (action == 'purchaseReturn' && res == 'reload')
+				this.loadPurchaseList();
+		});
 	}
 }

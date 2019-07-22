@@ -464,6 +464,32 @@ export class MenuConfig {
 						
 					]
 				},
+				{
+					title: 'Order',
+					root: true,
+					icon: 'flaticon2-expand',
+					page: '/order',
+					translate: 'MENU.ORDER',
+					bullet: 'dot',
+					submenu: [
+						{
+							title: 'Order',
+							root: true,
+							page: '/order',
+							translate: 'MENU.ORDER_LIST',
+							bullet: 'dot',
+						},
+						{
+							bullet: 'dot',
+							title: 'Add Order',
+							root: true,
+							alignment: 'left',
+							page: '/add-order',
+							translate: 'MENU.ADD_ORDER',
+						},
+						
+					]
+				},
 				
 				// {
 				// 	title: 'Layout Builder',

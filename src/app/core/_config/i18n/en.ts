@@ -19,6 +19,9 @@ export const locale = {
 			PURCHASE: 'Purchase',
 			PURCHASE_LIST: 'Purchase list',
 			ADD_PURCHASE: 'Add Purchase',
+			ORDER: 'Order',
+			ORDER_LIST: 'Order list',
+			ADD_ORDER: 'Add Order',
 		},
 		AUTH: {
 			GENERAL: {

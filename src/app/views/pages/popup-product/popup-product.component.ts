@@ -135,6 +135,8 @@ export class PopupProductComponent implements OnInit {
       productTaxCGSTSurchargesCtrl: [this.popupProductForm.controls['productTaxCGSTSurchargesCtrl'].value],
       productTaxIGSTCtrl: [this.popupProductForm.controls['productTaxIGSTCtrl'].value],
       productTaxIGSTSurchargesCtrl: [this.popupProductForm.controls['productTaxIGSTSurchargesCtrl'].value],
+      productOriginalQuantityCtrl: [this.popupProductForm.controls['productQuantityCtrl'].value],
+      productReturnedQuantityCtrl: [0],
       productQuantityCtrl: [this.popupProductForm.controls['productQuantityCtrl'].value,
       Validators.compose([
         Validators.required,

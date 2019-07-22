@@ -1,21 +1,31 @@
-<mat-divider></mat-divider>
-<div class="col-lg-12 kt-margin-t-20 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
-    <h6 class="kt-portlet__head-title ng-star-inserted"> Total product amount: <strong>{{ totalAmount | number:'1.2-2' }}</strong></h6>
-</div>
-<mat-divider></mat-divider>
-<div class="col-lg-12 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
-    <h6 class="kt-portlet__head-title ng-star-inserted"> Total discount amount: <strong>{{ totalDiscount | number:'1.2-2' }}</strong></h6>
-</div>
-<mat-divider></mat-divider>
-<div class="col-lg-12 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
-    <h6 class="kt-portlet__head-title ng-star-inserted"> Total gross amount: <strong>{{ totalGrossAmount | number:'1.2-2' }}</strong></h6>
-</div>
-<mat-divider></mat-divider>
-<div class="col-lg-12 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
-    <h6 class="kt-portlet__head-title ng-star-inserted"> Total tax amount: <strong>{{ totalTaxAmount | number:'1.2-2' }}</strong></h6>
-</div>
-<mat-divider></mat-divider>
-<div class="col-lg-12 kt-margin-bottom-20 kt-margin-bottom-20-mobile">
-    <h6 class="kt-portlet__head-title ng-star-inserted"> Total net amount: <strong>{{ totalNetAmount | number:'1.2-2' }}</strong></h6>
-</div>
-<mat-divider></mat-divider>
+<mat-list role="list" class="popup-product">
+    <mat-list-item role="listitem">
+        <span matLine>Total product amount </span>
+        <div class="kt-align-left">{{ totalAmount | number:'1.2-2' }}</div>
+    </mat-list-item>
+    <mat-divider></mat-divider>
+
+    <mat-list-item role="listitem">
+        <span matLine>Total discount amount </span>
+        <div class="kt-align-left">{{ totalDiscount | number:'1.2-2' }}</div>
+    </mat-list-item>
+    <mat-divider></mat-divider>
+
+    <mat-list-item role="listitem">
+        <span matLine>Total gross amount </span>
+        <div class="kt-align-left">{{ totalGrossAmount | number:'1.2-2' }}</div>
+    </mat-list-item>
+    <mat-divider></mat-divider>
+
+    <mat-list-item role="listitem">
+        <span matLine>Total tax amount </span>
+        <div class="kt-align-left">{{ totalTaxAmount | number:'1.2-2' }}</div>
+    </mat-list-item>
+    <mat-divider></mat-divider>
+
+    <mat-list-item role="listitem">
+        <span matLine>Total net amount </span>
+        <div class="kt-align-left">{{ totalNetAmount | number:'1.2-2' }}</div>
+    </mat-list-item>
+    <mat-divider></mat-divider>
+</mat-list>

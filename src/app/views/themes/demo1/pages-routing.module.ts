@@ -37,6 +37,14 @@ const routes: Routes = [
 				path: 'add-purchase',
 				loadChildren: () => import('../../../../app/views/pages/purchase/add-purchase/add-purchase.module').then(m => m.AddPurchaseModule)
 			},
+			{
+				path: 'order',
+				loadChildren: () => import('../../../../app/views/pages/order/order.module').then(m => m.OrderModule)
+			},
+			{
+				path: 'add-order',
+				loadChildren: () => import('../../../../app/views/pages/order/add-order/add-order.module').then(m => m.AddOrderModule)
+			},
 			{ path: 'error/:type', component: ErrorPageComponent },
 			{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 			{path: '**', redirectTo: 'dashboard', pathMatch: 'full'}

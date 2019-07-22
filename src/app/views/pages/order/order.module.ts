@@ -7,9 +7,9 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 // Core Module
 import { CoreModule } from '../../../core/core.module';
 import { PartialsModule } from '../../partials/partials.module';
-import { SaleEffects, SalesService, salesReducer  } from '../../../core/sales'
-import { ProductEffects, productReducer } from '../../../core/product'
-import { ProductService } from '../../../core/product'
+import { OrderEffects, OrderService, orderReducer  } from '../../../core/order'
+import { ProductEffects, productReducer, ProductService } from '../../../core/product'
+import { DistributorEffects, distributorReducer, DistributorService } from '../../../core/distributor'
 // Translate
 import { TranslateModule } from '@ngx-translate/core';
 // NGRX
@@ -49,16 +49,17 @@ import {
  import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 //component
- import { SalesListComponent } from './sales.component';
+ import { OrderListComponent } from './order.component';
 import { ActionNotificationComponent } from '../../partials/content/crud';
-import { ViewSaleComponent } from './view-sale/view-sale.component';
+import { ViewOrderComponent } from './view-order/view-order.component';
+
 import { PopupProductModule } from '../popup-product/popup-product.module'
 import { from } from 'rxjs';
 
 const routes: Routes = [
 	{
 		path: '',
-		component: SalesListComponent,
+		component: OrderListComponent,
 	},
 	
 ];
@@ -72,12 +73,15 @@ const routes: Routes = [
 		RouterModule.forChild(routes),
 		MatTabsModule,
 		TranslateModule.forChild(),
-		//sales
-		StoreModule.forFeature('sales', salesReducer),
-		EffectsModule.forFeature([SaleEffects]),
+		//order
+		StoreModule.forFeature('order', orderReducer),
+		EffectsModule.forFeature([OrderEffects]),
 		//product
 		EffectsModule.forFeature([ProductEffects]),
 		StoreModule.forFeature('product', productReducer),
+		//distributor
+		EffectsModule.forFeature([DistributorEffects]),
+		StoreModule.forFeature('distributor', distributorReducer),
 
 		MatIconModule,
 		MatListModule,
@@ -107,8 +111,8 @@ const routes: Routes = [
 		NgxMatSelectSearchModule
 	],
 	exports:[
-		SalesListComponent,
-		ViewSaleComponent,
+		OrderListComponent,
+		ViewOrderComponent,
 	],
 	providers: [
 		InterceptService,
@@ -116,29 +120,31 @@ const routes: Routes = [
 			provide: HTTP_INTERCEPTORS,
 			useClass: InterceptService,
 			multi: true
-		},
-		
-		// SalesService,
-		ProductService
+		},		
+		OrderService,
+		ProductService,
+		DistributorService
 	],
 	entryComponents: [
 		ActionNotificationComponent,
-		ViewSaleComponent,
+		ViewOrderComponent,
 
 	],
 	declarations: [
-		SalesListComponent,
-		ViewSaleComponent,
+		OrderListComponent,
+		ViewOrderComponent,
 	]
 })
 
-export class SalesModule {
+export class OrderModule {
 	static forRoot(): ModuleWithProviders {
 		return {
-			ngModule: SalesModule,
+			ngModule: OrderModule,
 			providers: [
-				// SalesService,
-				ProductService
+				OrderService,
+				ProductService,
+				DistributorService
+
 			]
 		};
 	}

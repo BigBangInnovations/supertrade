@@ -16,41 +16,43 @@ import { AppState } from '../../../../core/reducers';
 import { SubheaderService, LayoutConfigService } from '../../../../core/_base/layout';
 import { LayoutUtilsService, MessageType } from '../../../../core/_base/crud';
 // Services and Models
-import { Sale } from '../../../../core/sales/_models/sale.model';
-import { getSalesActiveScheme } from '../../../../core/auth/_selectors/auth.selectors';
+import { Order } from '../../../../core/order/_models/order.model';
+// import { getOrderActiveScheme } from '../../../../core/auth/_selectors/auth.selectors';
 import { EncrDecrServiceService } from '../../../../core/auth/_services/encr-decr-service.service'
 import { environment } from '../../../../../environments/environment';
 // Components
 import { PopupProductComponent } from '../../popup-product/popup-product.component';
 import { PopupAddProductComponent } from '../../popup-product/popup-add-product/popup-add-product.component';
 import { Product } from '../../../../core/product/_models/product.model'
-import { SalesService } from '../../../../core/sales/_services/index' 
+import { Distributor } from '../../../../core/distributor/_models/distributor.model'
+import { OrderService } from '../../../../core/order/_services/index'
 import { APP_CONSTANTS } from '../../../../../config/default/constants'
 import { Logout } from '../../../../core/auth';
 import { PopupProductTotalCalculationComponent } from '../../popup-product/popup-add-product/popup-product-total-calculation/popup-product-total-calculation.component'
 import { dynamicProductTemplateSetting } from '../../../../core/common/common.model'
-
+import * as fromDistributor from '../../../../core/distributor'
 
 @Component({
-  selector: 'kt-add-sale',
-  templateUrl: './add-sale.component.html',
+  selector: 'kt-add-order',
+  templateUrl: './add-order.component.html',
   providers: [DatePipe],
   encapsulation: ViewEncapsulation.None
-  // styleUrls: ['./add-sale.component.scss'],
+  // styleUrls: ['./add-order.component.scss'],
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AddSalesComponent implements OnInit, OnDestroy {
+export class AddOrderComponent implements OnInit, OnDestroy {
   // Public properties
-  sale: Sale;
-  saleForm: FormGroup;
+  order: Order;
+  orderForm: FormGroup;
   hasFormErrors: boolean = false;
-  salesActiveScheme: any;
-  salesActiveSchemebooster: any;
+  orderActiveScheme: any;
+  orderActiveSchemebooster: any;
   userData: any;
   componentRef: any;
   loading = false;
-  OptionalSetting:dynamicProductTemplateSetting;
-  pageAction: string;
+  OptionalSetting: dynamicProductTemplateSetting;
+  viewLoading$: Observable<boolean>;
+  distributor$: Observable<Distributor[]>;
   // Private properties
   private subscriptions: Subscription[] = [];
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
@@ -65,7 +67,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
 	 *
 	 * @param activatedRoute: ActivatedRoute
 	 * @param router: Router
-	 * @param saleFB: FormBuilder
+	 * @param orderFB: FormBuilder
 	 * @param subheaderService: SubheaderService
 	 * @param layoutUtilsService: LayoutUtilsService
 	 * @param store: Store<AppState>
@@ -73,13 +75,13 @@ export class AddSalesComponent implements OnInit, OnDestroy {
    * @param EncrDecr: EncrDecrServiceService
    * @param dialog: MatDialog
    * @param datePipe: DatePipe
-   * @param salesService: SalesService,
+   * @param orderService: OrderService,
    * @param cdr
 	 */
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private saleFB: FormBuilder,
+    private orderFB: FormBuilder,
     private subheaderService: SubheaderService,
     private layoutUtilsService: LayoutUtilsService,
     private store: Store<AppState>,
@@ -87,7 +89,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
     private EncrDecr: EncrDecrServiceService,
     public dialog: MatDialog,
     private datePipe: DatePipe,
-    private salesService: SalesService,
+    private orderService: OrderService,
     private cdr: ChangeDetectorRef,
     private resolver: ComponentFactoryResolver
   ) {
@@ -95,7 +97,6 @@ export class AddSalesComponent implements OnInit, OnDestroy {
     const OptionalSetting = new dynamicProductTemplateSetting();
     OptionalSetting.clear();
     this.OptionalSetting = OptionalSetting;
-    this.pageAction = 'addSale'
   }
 
 	/**
@@ -110,12 +111,25 @@ export class AddSalesComponent implements OnInit, OnDestroy {
       let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
       this.userData = JSON.parse(sessionStorage)
 
-      this.salesActiveScheme = this.userData.salesActiveScheme[0];
-      this.salesActiveSchemebooster = this.userData.salesActiveSchemeBooster[0];
+      this.orderActiveScheme = this.userData.orderActiveScheme[0];
+      this.orderActiveSchemebooster = this.userData.orderActiveSchemeBooster[0];
 
-      this.sale = new Sale();
-      this.sale.clear();
-      this.initSale();
+      this.order = new Order();
+      this.order.clear();
+      this.initOrder();
+
+      //Load distribiutor
+      this.store.select(fromDistributor.selectDistributorLoaded).pipe().subscribe(data => {
+        if (data) {
+          this.distributor$ = this.store.pipe(select(fromDistributor.selectAllDistributor));
+        } else {
+          let httpParams = new HttpParams();
+          this.store.dispatch(new fromDistributor.LoadDistributor(httpParams))
+          this.distributor$ = this.store.pipe(select(fromDistributor.selectAllDistributor));
+        }
+      });
+      this.viewLoading$ = this.store.pipe(select(fromDistributor.selectDistributorLoading));
+
     });
     this.subscriptions.push(routeSubscription);
 
@@ -131,12 +145,12 @@ export class AddSalesComponent implements OnInit, OnDestroy {
 	/**
 	 * Init user
 	 */
-  initSale() {
+  initOrder() {
     this.createForm();
-    this.subheaderService.setTitle('Add Sale');
+    this.subheaderService.setTitle('Add Order');
     this.subheaderService.setBreadcrumbs([
-      { title: 'Sale', page: `sale` },
-      { title: 'Add Sale', page: `add-sale` }
+      { title: 'Order', page: `order` },
+      { title: 'Add Order', page: `add-order` }
     ]);
   }
 
@@ -144,17 +158,10 @@ export class AddSalesComponent implements OnInit, OnDestroy {
 	 * Create form
 	 */
   createForm() {
-    this.saleForm = this.saleFB.group({
-      scheme_id: [this.salesActiveScheme.scheme_id, Validators.required],
-      name: ['Kaushik', Validators.required],
-      mobile_no: ['9687453313', Validators.required],
-      address_line1: ['A301', Validators.required],
-      address_line2: ['Anand nagar', Validators.required],
-      landline_no: ['6985745632', Validators.required],
-      city: ['Ahmedabad', Validators.required],
-      pincode: ['380054', Validators.required],
-      state: ['gujrat', Validators.required],
-      products: this.saleFB.array([], Validators.required)
+    this.orderForm = this.orderFB.group({
+      scheme_id: [this.orderActiveScheme.scheme_id, Validators.required],
+      distributor_id: ['', Validators.required],
+      products: this.orderFB.array([], Validators.required)
     });
   }
 
@@ -165,9 +172,9 @@ export class AddSalesComponent implements OnInit, OnDestroy {
 	 */
   submit() {
     this.hasFormErrors = false;
-    const controls = this.saleForm.controls;
+    const controls = this.orderForm.controls;
     /** check form */
-    if (this.saleForm.invalid) {
+    if (this.orderForm.invalid) {
       Object.keys(controls).forEach(controlName => {
         return controls[controlName].markAsTouched()
       }
@@ -177,46 +184,36 @@ export class AddSalesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const addEditSale = this.prepareSale();
-
-    this.addEditSale(addEditSale);
+    const addEditOrder = this.prepareOrder();
+    this.addEditOrder(addEditOrder);
   }
 
 
 	/**
 	 * Returns prepared data for save
 	 */
-  prepareSale(): Sale {
-    const controls = this.saleForm.controls;
-    const _sale = new Sale();
-    _sale.clear();
-    _sale.loyalty_id = this.salesActiveScheme.id;
-    _sale.scheme_id = controls['scheme_id'].value;
-    _sale.distributor_id = this.userData.Distributor_ID;
-
-    //End Customer Detail
-    _sale.name = controls['name'].value;
-    _sale.mobile_no = controls['mobile_no'].value;
-    _sale.landline_no = controls['landline_no'].value;
-    _sale.address_line1 = controls['address_line1'].value;
-    _sale.address_line2 = controls['address_line2'].value;
-    _sale.city = controls['city'].value;
-    _sale.pincode = controls['pincode'].value;
-    _sale.state = controls['state'].value;
-    _sale.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
-    _sale.products_json = JSON.stringify(this.prepareProduct())
-    return _sale;
+  prepareOrder(): Order {
+    const controls = this.orderForm.controls;
+    const _order = new Order();
+    _order.clear();
+    _order.loyalty_id = this.orderActiveScheme.id;
+    _order.scheme_id = controls['scheme_id'].value;
+    _order.distributor_id = controls['distributor_id'].value;
+    _order.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
+    _order.products_json = JSON.stringify(this.prepareProduct())
+    return _order;
   }
 
   /**
 	 * Returns prepared data for product
 	 */
   prepareProduct(): Product[] {
-    const controls = this.saleForm.controls['products'].value;;
+    const controls = this.orderForm.controls['products'].value;;
     const _products = [];
+
     let boost_point = 0;
-    if (this.salesActiveSchemebooster != undefined)
-      boost_point = this.salesActiveSchemebooster.boost_point;
+    if (this.orderActiveSchemebooster != undefined)
+      boost_point = this.orderActiveSchemebooster.boost_point;
     controls.forEach(data => {
       //Clear Product and set default value
       const product = new Product();
@@ -227,7 +224,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
       product.ProductAmount = data.productPriceCtrl * data.productQuantityCtrl;//Product Amount:: Product prive * Quantity
       product.Price = data.productPriceCtrl;//Product original price
       product.points = data.productLoyaltyPointCtrl;//Product original point
-      product.Quantity = data.productQuantityCtrl;//product original sale quantity
+      product.Quantity = data.productQuantityCtrl;//product original order quantity
       product.Discount = data.productDiscountCtrl;//product original discount(%)
       product.SGSTTax = data.productTaxSGSTCtrl;//Product original SGST Tax(%)
       product.SGSTSurcharges = data.productTaxSGSTSurchargesCtrl;//Product original SGST Surcharges Tax(%)
@@ -248,23 +245,23 @@ export class AddSalesComponent implements OnInit, OnDestroy {
 	/**
 	 * Add User
 	 *
-	 * @param _sale: User
+	 * @param _order: User
 	 */
-  addEditSale(_sale: Sale) {
+  addEditOrder(_order: Order) {
     this.loading = true;
     let httpParams = new HttpParams();
-    Object.keys(_sale).forEach(function (key) {
-      httpParams = httpParams.append(key, _sale[key]);
+    Object.keys(_order).forEach(function (key) {
+      httpParams = httpParams.append(key, _order[key]);
     });
 
-    this.salesService
-      .createSale(httpParams)
+    this.orderService
+      .createOrder(httpParams)
       .pipe(
         tap(response => {
           if (response.status == APP_CONSTANTS.response.SUCCESS) {
-            const message = `Sales successfully has been added.`;
+            const message = `Order successfully has been added.`;
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
-            this.router.navigateByUrl('sales'); // sales listing page
+            this.router.navigateByUrl('order'); // order listing page
           } else if (response.status == APP_CONSTANTS.response.ERROR) {
             const message = response.message;
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
@@ -287,7 +284,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
 	 * Returns component title
 	 */
   getComponentTitle() {
-    let result = 'Create Sale';
+    let result = 'Create Order';
     return result;
   }
 
@@ -309,7 +306,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
     const _messageType = MessageType.Read;
 
     const dialogRef = this.dialog.open(PopupProductComponent, {
-      data: { addedProductsIds: this.addedProductsIds, isDiscount:false },
+      data: { addedProductsIds: this.addedProductsIds, isDiscount: false },
       // data: { addedProductsIds: [] },
       width: '600px',
     });
@@ -330,9 +327,9 @@ export class AddSalesComponent implements OnInit, OnDestroy {
   * try to add dynamic product
   */
   createProduct(res) {
-    const currentProductArray = <FormArray>this.saleForm.controls['products'];
+    const currentProductArray = <FormArray>this.orderForm.controls['products'];
     currentProductArray.push(
-      this.saleFB.group(res)
+      this.orderFB.group(res)
     )
     this.commonCalculation()
   }
@@ -346,8 +343,8 @@ export class AddSalesComponent implements OnInit, OnDestroy {
     const viewContainerRef = this.entry;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
-    // componentRef.instance.saleForm = this.saleForm;
-    componentRef.instance.mainForm = this.saleForm;
+    // componentRef.instance.orderForm = this.orderForm;
+    componentRef.instance.mainForm = this.orderForm;
     const sub: Subscription = componentRef.instance.newAddedProductsIds.subscribe(
       event => {
         // console.log(event)

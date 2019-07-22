@@ -1,13 +1,13 @@
 <kt-portlet>
-    <kt-portlet-header title="View Sale" [class]="'kt-portlet__head--lg'">
+    <kt-portlet-header title="{{ getTitle() }}" [class]="'kt-portlet__head--lg'">
     </kt-portlet-header>
+    <!--begin::Form-->
+    <form [formGroup]="saleForm" class="kt-form kt-form--group-seperator-dashed">
+        <kt-portlet-body>
 
-    <kt-portlet-body>
-        <!--begin::Form-->
-        <form [formGroup]="saleForm" class="kt-form kt-form--group-seperator-dashed">
             <!-- <div class="row">
-                    <div class="col-lg-2"></div>
-                    <div class="col-lg-8 kt-ribbon--border-dash-hor"> -->
+                        <div class="col-lg-2"></div>
+                        <div class="col-lg-8 kt-ribbon--border-dash-hor"> -->
             <kt-alert *ngIf="hasFormErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
                 Oh snap! Change a few things up and try submitting again.
             </kt-alert>
@@ -31,7 +31,7 @@
                                 <div [formGroupName]="i">
                                     <!-- <input formControlName="productBarCodeCtrl" placeholder="Item name"> -->
                                     <!-- index: {{productBarCodeCtrl}} -->
-                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="saleForm.controls.products.controls[i]" [parantGroup]="saleForm" [index]="i" [OptionalSetting]="OptionalSetting"></kt-popup-add-product>
+                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="saleForm.controls.products.controls[i]" [parantGroup]="saleForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction"></kt-popup-add-product>
                                 </div>
                             </div>
                         </div>
@@ -100,13 +100,24 @@
                     </div>
                 </div>
             </div>
-            <button type="button" mat-raised-button (click)="close()" cdkFocusInitial matTooltip="Close">
-                    Close
-                </button>
-            <!-- </div>
-                    <div class="col-lg-2"></div>
-                </div> -->
-        </form>
+
+        </kt-portlet-body>
+        <div class="kt-portlet__foot kt-portlet__foot--fit kt-portlet__no-border">
+            <div class="kt-form__actions kt-form__actions--solid">
+                <div class="row text-right">
+                    <div class="col-lg-12">
+                        <button type="button" (click)="close()" mat-raised-button matTooltip="Close">
+                            Cancel
+                        </button>&nbsp;
+                        <ng-container *ngIf="pageAction == 'saleReturn'">
+                            <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!saleForm.valid" mat-raised-button color="primary" (click)="ReuturnSale()" matTooltip="Return Sale">
+                            Return
+                        </button>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!--end::Form-->
-    </kt-portlet-body>
+    </form>
 </kt-portlet>

@@ -22,6 +22,14 @@ export class PageConfig {
 				page: { 'title': 'Add Purchase', 'desc': 'SuperTRADE Add Purchase' },
 			}
 		},
+		orders: {
+			'order': {
+				page: { 'title': 'Order', 'desc': 'SuperTRADE Order' },
+			},
+			'add-order': {
+				page: { 'title': 'Add Order', 'desc': 'SuperTRADE Add Order' },
+			}
+		},
 		ngbootstrap: {
 			accordion: {
 				page: { title: 'Accordion', desc: '' }

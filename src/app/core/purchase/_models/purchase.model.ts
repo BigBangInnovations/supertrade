@@ -2,6 +2,8 @@ import { Product } from '../../product/_models/product.model';
 
 export class Purchase {
     id: number;
+    sl_purchase_id: number; //retrurn time purchase id
+    sl_distributor_sales_id:number; //Distributor sales id against this purchase order
     // invoice_id: string;
     // transaction_id: string;
     date: string;
@@ -28,6 +30,8 @@ export class Purchase {
 
     clear(): void {
         this.id = undefined;
+        this.sl_purchase_id = undefined;
+        this.sl_distributor_sales_id = undefined;
         // this.invoice_id = '';
         // this.transaction_id = '';
         this.date = '';
