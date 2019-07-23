@@ -44,7 +44,7 @@ const routes: Routes = [
 		EffectsModule.forFeature([DashboardEffects]),
 		MatIconModule,
 		MatListModule,
-		MatProgressSpinnerModule,
+		MatProgressSpinnerModule, 
 		MatCardModule,
 		NgbModule.forRoot()
 	],

@@ -1,1 +1,33 @@
-<p>notification works!</p>
+<mat-tab-group mat-stretch-tabs>
+    <mat-tab md-stretch-tabs="yes" label="Notifications">
+        <div class="kt-section">
+            <div class="kt-section__content">
+                <span *ngIf="error$ | async as error">{{error}}</span>
+                <mat-list *ngIf="!(notificationLoading$ | async); else loading">
+                    <ng-container *ngIf="(notifications$ | async)?.length; else noNotification">
+                        <mat-list-item *ngFor=" let notification of (notifications$ |async)">
+                            <mat-icon mat-list-icon>notifications_active</mat-icon>
+                            <h4 mat-line>{{notification.Message}}</h4>
+                            <p mat-line> {{notification.Last_Modified | date}} </p>
+                            <mat-divider></mat-divider>
+                        </mat-list-item>
+                    </ng-container>
+                    <ng-template #noNotification>
+                        <mat-card>No Notification Yet!</mat-card>
+                    </ng-template>
+                </mat-list>
+
+                <ng-template #loading>
+                    <div style="margin-left: 50%;">
+                        <mat-spinner color="warn" diameter="30" strokeWidth="2"></mat-spinner>
+                        <div style="position:relative;">
+                            Loading...
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab md-stretch-tabs="yes" label="Approvals">Approvals</mat-tab>
+    <mat-tab md-stretch-tabs="yes" label="My Pending Approval">My Pending Approval</mat-tab>
+</mat-tab-group>

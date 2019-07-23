@@ -66,6 +66,10 @@ import { PurchaseService } from './core/purchase'
 import { OrderModule } from './views/pages/order/order.module'
 import { OrderService } from './core/order'
 
+//Order
+import { NotificationModule } from './views/pages/notification/notification.module'
+import { NotificationService } from './core/notification'
+
 // CRUD
 import { HttpUtilsService, LayoutUtilsService, TypesUtilsService } from './core/_base/crud';
 // Config
@@ -130,6 +134,7 @@ export function hljsLanguages(): HighlightLanguage[] {
 		SalesModule.forRoot(),
 		PurchaseModule.forRoot(),
 		OrderModule.forRoot(),
+		NotificationModule.forRoot(),
 		TranslateModule.forRoot(),
 		MatProgressSpinnerModule,
 		InlineSVGModule.forRoot(),
@@ -141,6 +146,7 @@ export function hljsLanguages(): HighlightLanguage[] {
 		SalesService,
 		PurchaseService,
 		OrderService,
+		NotificationService,
 		LayoutConfigService,
 		LayoutRefService,
 		MenuConfigService,

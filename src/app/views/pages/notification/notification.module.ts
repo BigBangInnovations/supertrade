@@ -7,6 +7,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 // Core Module
 import { CoreModule } from '../../../core/core.module';
 import { PartialsModule } from '../../partials/partials.module';
+import { NotificationEffects, NotificationService, notificationReducer } from '../../../core/notification'
 // Translate
 import { TranslateModule } from '@ngx-translate/core';
 // NGRX
@@ -15,7 +16,7 @@ import { EffectsModule } from '@ngrx/effects';
 // CRUD
 import { InterceptService } from '../../../core/_base/crud/';
 
-import { 
+import {
 	MatIconModule,
 	MatListModule,
 	MatTabsModule,
@@ -40,18 +41,18 @@ import {
 	MAT_DIALOG_DEFAULT_OPTIONS,
 	MatSnackBarModule,
 	MatTooltipModule
- } from '@angular/material';
+} from '@angular/material';
 
 
 //component
- import { NotificationComponent } from './notification.component';
+import { NotificationComponent } from './notification.component';
 
 const routes: Routes = [
 	{
 		path: '',
 		component: NotificationComponent,
 	},
-	
+
 ];
 
 @NgModule({
@@ -72,7 +73,7 @@ const routes: Routes = [
 		MatButtonModule,
 		MatMenuModule,
 		MatSelectModule,
-    MatInputModule,
+		MatInputModule,
 		MatAutocompleteModule,
 		MatRadioModule,
 		MatNativeDateModule,
@@ -86,8 +87,10 @@ const routes: Routes = [
 		MatDialogModule,
 		FormsModule,
 		ReactiveFormsModule,
+		StoreModule.forFeature('notification', notificationReducer),
+		EffectsModule.forFeature([NotificationEffects]),
 	],
-	exports:[
+	exports: [
 		NotificationComponent,
 	],
 	providers: [
@@ -96,7 +99,8 @@ const routes: Routes = [
 			provide: HTTP_INTERCEPTORS,
 			useClass: InterceptService,
 			multi: true
-		},		
+		},
+		NotificationService
 	],
 	entryComponents: [],
 	declarations: [
@@ -108,6 +112,7 @@ export class NotificationModule {
 		return {
 			ngModule: NotificationModule,
 			providers: [
+				NotificationService
 			]
 		};
 	}

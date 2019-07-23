@@ -20,6 +20,20 @@ export class CommonResponse {
     }
 }
 
+export class CommonResponseDirectData {
+    error: string;
+    message: string;
+    status: string;
+    data: [];
+
+    clear(): void {
+        this.error = '';
+        this.message = '';
+        this.status = '';
+        this.data = [];
+    }
+}
+
 // export class Product {
 //     CGSTSurcharges: number;
 //     CGSTTax: number;
