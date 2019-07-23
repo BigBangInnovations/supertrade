@@ -15,10 +15,10 @@ import { isDistributor, isRetailer } from '../../../../../../app/core/auth/_sele
 })
 export class UserProfileComponent implements OnInit {
 	// Public properties
-	user$: Observable<User>;
-	defaultImage:string = './assets/media/users/default.jpg';
-	retailer:boolean;
-	distributor:boolean;
+	user: User;
+	defaultImage: string = './assets/media/users/default.jpg';
+	retailer: boolean;
+	distributor: boolean;
 
 	@Input() avatar: boolean = true;
 	@Input() greeting: boolean = true;
@@ -42,19 +42,24 @@ export class UserProfileComponent implements OnInit {
 	 */
 	ngOnInit(): void {
 		// this.user$ = JSON.stringify (this.store.pipe(select(currentUser)));
-		this.user$ = this.store.pipe(select(currentUser));
+		// this.user$ = this.store.pipe(select(currentUser));
+		this.store.pipe(select(currentUser)).subscribe(data => {
+			this.user = data;
+			if (data.Logo != '' && data.Logo != null)
+				this.defaultImage = data.Logo;
+		})
 
 		this.store.select(isRetailer).subscribe(data => {
 			if (data === true) {
-			  this.retailer = true;
+				this.retailer = true;
 			}
-		  });
+		});
 
-		  this.store.select(isDistributor).subscribe(data => {
+		this.store.select(isDistributor).subscribe(data => {
 			if (data === true) {
-			  this.distributor = true;
+				this.distributor = true;
 			}
-		  });
+		});
 
 	}
 

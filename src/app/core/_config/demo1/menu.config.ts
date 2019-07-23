@@ -415,7 +415,7 @@ export class MenuConfig {
 				{
 					title: 'Sales',
 					root: true,
-					icon: 'flaticon2-expand',
+					icon: 'flaticon2-bar-chart',
 					page: '/sales',
 					translate: 'MENU.SALES',
 					bullet: 'dot',
@@ -441,7 +441,7 @@ export class MenuConfig {
 				{
 					title: 'Purchase',
 					root: true,
-					icon: 'flaticon2-expand',
+					icon: 'flaticon2-bar-chart',
 					page: '/purchase',
 					translate: 'MENU.PURCHASE',
 					bullet: 'dot',
@@ -467,7 +467,7 @@ export class MenuConfig {
 				{
 					title: 'Order',
 					root: true,
-					icon: 'flaticon2-expand',
+					icon: 'flaticon-truck',
 					page: '/order',
 					translate: 'MENU.ORDER',
 					bullet: 'dot',
@@ -489,6 +489,14 @@ export class MenuConfig {
 						},
 						
 					]
+				},
+				{
+					title: 'Notification & Approval',
+					root: true,
+					icon: 'flaticon-alert',
+					page: '/notification',
+					translate: 'MENU.NOTIFICATION_AND_APPROVAL',
+					bullet: 'dot',
 				},
 				
 				// {

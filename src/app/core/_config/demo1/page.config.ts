@@ -30,6 +30,9 @@ export class PageConfig {
 				page: { 'title': 'Add Order', 'desc': 'SuperTRADE Add Order' },
 			}
 		},
+		notification: {
+			page: { 'title': 'Notification', 'desc': 'SuperTRADE notification and approval' },
+		},
 		ngbootstrap: {
 			accordion: {
 				page: { title: 'Accordion', desc: '' }

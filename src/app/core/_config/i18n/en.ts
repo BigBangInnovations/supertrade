@@ -22,6 +22,7 @@ export const locale = {
 			ORDER: 'Order',
 			ORDER_LIST: 'Order list',
 			ADD_ORDER: 'Add Order',
+			NOTIFICATION_AND_APPROVAL: 'Notification & Approval',
 		},
 		AUTH: {
 			GENERAL: {

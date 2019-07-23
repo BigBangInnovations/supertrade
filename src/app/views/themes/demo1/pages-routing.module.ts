@@ -45,6 +45,10 @@ const routes: Routes = [
 				path: 'add-order',
 				loadChildren: () => import('../../../../app/views/pages/order/add-order/add-order.module').then(m => m.AddOrderModule)
 			},
+			{
+				path: 'notification',
+				loadChildren: () => import('../../../../app/views/pages/notification/notification.module').then(m => m.NotificationModule)
+			},
 			{ path: 'error/:type', component: ErrorPageComponent },
 			{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 			{path: '**', redirectTo: 'dashboard', pathMatch: 'full'}
