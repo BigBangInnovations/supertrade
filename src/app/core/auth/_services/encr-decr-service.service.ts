@@ -24,13 +24,27 @@ export class EncrDecrServiceService {
 
   setLocalStorage(key, value) {
     value = this.set(value);
-    sessionStorage.setItem(key, value);
+    localStorage.setItem(key, value);
+    //Set expire time
+    let now: any = new Date().getTime();
+    localStorage.setItem('setupTime', now)
   }
 
   getLocalStorage(key) {
-    var value = sessionStorage.getItem(key);
+    var value = localStorage.getItem(key);
     if (value != '' && value != null)
       return this.get(value);
     else return value
+  }
+
+  validateStorage() {
+    let hours = 6; // Reset when storage is more than 24hours
+    let now: any = new Date().getTime();
+    let setupTime: any = localStorage.getItem('setupTime');
+
+    if (now - setupTime > hours * 60 * 60 * 1000) {
+      localStorage.removeItem(environment.localStorageKey);
+      localStorage.removeItem('setupTime');
+    }
   }
 }

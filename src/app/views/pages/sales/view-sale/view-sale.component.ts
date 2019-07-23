@@ -86,6 +86,15 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     const OptionalSetting = new dynamicProductTemplateSetting();
     OptionalSetting.clear();
     OptionalSetting.displayDeleteButton = false;
+    if (
+      this.data.action == 'saleReturn' ||
+      this.data.action == 'PurchaseReturn' ||
+      this.data.action == 'addOrder' || 
+      this.data.action == 'viewSale' || 
+      this.data.action == 'viewPurchase'
+    ) {
+      OptionalSetting.displayPointCalculation = false;
+    }
     this.OptionalSetting = OptionalSetting;
     this.pageAction = this.data.action;
     this.unsubscribe = new Subject();

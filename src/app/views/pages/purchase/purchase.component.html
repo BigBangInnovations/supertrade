@@ -159,22 +159,22 @@
 
                 <ng-container matColumnDef="total_quantity">
                     <mat-header-cell *matHeaderCellDef>Total quantiry</mat-header-cell>
-                    <mat-cell *matCellDef="let purchase">{{totalQuantity(purchase.product) | number}}</mat-cell>
+                    <mat-cell *matCellDef="let purchase">{{totalQuantity(purchase.product) | number : '1.2-2' }</mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="total_amount">
                     <mat-header-cell *matHeaderCellDef>Total amount</mat-header-cell>
-                    <mat-cell *matCellDef="let purchase">{{totalAmount(purchase.product) | number}}</mat-cell>
+                    <mat-cell *matCellDef="let purchase">{{totalAmount(purchase.product) | number : '1.2-2' }</mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="total_loyalty_point">
                     <mat-header-cell *matHeaderCellDef>Total loyalty point</mat-header-cell>
-                    <mat-cell *matCellDef="let purchase">{{totalLoyaltyPoints(purchase.product) | number}}</mat-cell>
+                    <mat-cell *matCellDef="let purchase">{{totalLoyaltyPoints(purchase.product) | number : '1.2-2' }</mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="total_loyalty_boost_point">
                     <mat-header-cell *matHeaderCellDef>Total loyalty boost point</mat-header-cell>
-                    <mat-cell *matCellDef="let purchase">{{totalBoostPoints(purchase.product) | number}}</mat-cell>
+                    <mat-cell *matCellDef="let purchase">{{totalBoostPoints(purchase.product) | number : '1.2-2' }</mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="actions">

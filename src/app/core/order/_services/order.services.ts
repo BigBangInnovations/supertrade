@@ -17,7 +17,7 @@ export class OrderService {
 
     // Order
     getAllOrder(data: any): Observable<any> {
-        const url = `get-order`;
+        const url = environment.superSALESApi+`getsalesorderscustomerhistory`;
         return this.http.post<Order[]>(url, data);
     } 
 
@@ -27,7 +27,7 @@ export class OrderService {
 
     // CREATE =>  POST: add a new order to the server
 	createOrder(data: any): Observable<any> {
-		const url = `add-order`;
+		const url = environment.superSALESApi+`addsalesorder`;
         return this.http.post(url, data)
 	}
 
@@ -51,8 +51,8 @@ export class OrderService {
 
     // Order
     findOrder(data: any): Observable<any> {
-        const url = `get-order`;
-        return this.http.post<Order[]>(url, data);
+        const url = environment.superSALESApi+`getsalesorderscustomerhistory`;
+        return this.http.get<Order[]>(url, {params:data});
     }
 
  	/*

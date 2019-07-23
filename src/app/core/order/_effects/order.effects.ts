@@ -66,12 +66,9 @@ export class OrderEffects {
                 const result = response[0];
                 const lastQuery: QueryParamsModel = response[1];
                 this.store.dispatch(this.hidePageLoadingDistpatcher);
-                // console.log('result: '+JSON.stringify(result));
-                
                 return new OrderPageLoaded({
-                    order: result.data[0].order,
-                    userPoints: result.data[0].userPointsStatus,
-                    totalCount: result.data[0].order.length,//result.totalCount,
+                    order: result.data,
+                    totalCount: result.data.length,//result.totalCount,
                     page: lastQuery
                 });
             }),

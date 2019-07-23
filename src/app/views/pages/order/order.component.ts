@@ -16,7 +16,7 @@ import { Store, select } from '@ngrx/store';
 import { LayoutUtilsService, MessageType } from '../../../core/_base/crud';
 import { EncrDecrServiceService } from '../../../core/auth/_services/encr-decr-service.service'
 // Models
-import { Order, OrderDataSource, OrderDeleted, OrderPageRequested, UserPointsStatus } from '../../../core/order';
+import { Order, OrderDataSource, OrderDeleted, OrderPageRequested, AddEditOrder } from '../../../core/order';
 import { AppState } from '../../../core/reducers';
 import { QueryParamsModel } from '../../../core/_base/crud';
 //
@@ -44,10 +44,10 @@ export class OrderListComponent implements OnInit, OnDestroy {
 
 	// Public params
 	filterForm: FormGroup;
-
+	hasDateError: boolean = false;
 	// Table fields
 	dataSource: OrderDataSource;
-	displayedColumns = ["date", "invoice_id", "scheme_id", "total_quantity", "total_amount", "total_loyalty_point", "total_loyalty_boost_point", 'actions'];
+	displayedColumns = ['SeriesPrefix', 'SOMadeBy', 'SOMadeFrom', 'totalNetAmount', 'totalDiscount', 'totalGrossAmount', 'totalTaxAmount', 'finalSalesAmount'];
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 	@ViewChild('sort1', { static: true }) sort: MatSort;
 	// Filter fields
@@ -58,7 +58,6 @@ export class OrderListComponent implements OnInit, OnDestroy {
 	// Selection
 	selection = new SelectionModel<Order>(true, []);
 	orderResult: Order[] = [];
-	userPointsResult: UserPointsStatus[] = [];
 	orderActiveScheme: string;
 	orderActiveSchemeDetail: any[] = [];
 	// Subscriptions
@@ -149,32 +148,6 @@ export class OrderListComponent implements OnInit, OnDestroy {
 		});
 		this.subscriptions.push(entitiesSubscription);
 
-		//user points START
-		const userPointsSubscription = this.dataSource.userPointsSubject.pipe(
-			skip(1),
-			distinctUntilChanged()
-		).subscribe(res => {
-
-			if (res.accumulated_points !== undefined) {
-				this.userPointsResult = res;
-				let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
-				sessionStorage = JSON.parse(sessionStorage)
-				let orderActiveScheme = sessionStorage.orderActiveScheme.filter((item: any) => {
-					return item.from <= res.accumulated_points && item.to >= res.accumulated_points;
-				});
-				if (orderActiveScheme.length <= 0) {
-					orderActiveScheme = sessionStorage.orderActiveScheme[0];
-				} else {
-					orderActiveScheme = orderActiveScheme[0];
-				}
-				this.accumulated_points = res.accumulated_points;
-				this.progressBarValue = (res.accumulated_points * 100) / orderActiveScheme.to
-				this.orderActiveSchemeDetail = orderActiveScheme
-			}
-		});
-		this.subscriptions.push(userPointsSubscription);
-		//user points END
-
 		// First load
 		// of(undefined).pipe(take(1), delay(1000)).subscribe(() => { // Remove this line, just loading imitation
 		this.loadOrderList();
@@ -222,6 +195,7 @@ export class OrderListComponent implements OnInit, OnDestroy {
 	 * Load Order List
 	 */
 	loadOrderList() {
+		const userSession = this.EncrDecr.getLocalStorage(environment.localStorageKey)
 		this.selection.clear();
 		const queryParams = new QueryParamsModel(
 			this.filterConfiguration(),
@@ -232,22 +206,41 @@ export class OrderListComponent implements OnInit, OnDestroy {
 		);
 
 		// this.store.select(getOrderActiveScheme).pipe(take(1)).subscribe(data => {
-			let startDate = this.startDateInput.nativeElement.value
-			let endDate = this.endDateInput.nativeElement.value
-
-			// this.orderActiveScheme = data;
-			let httpParams = new HttpParams();
-			//filter
+		this.hasDateError = false;
+		let startDate = this.startDateInput.nativeElement.value
+		let endDate = this.endDateInput.nativeElement.value
+		let getsalesordersArray = {};
+		// this.orderActiveScheme = data;
+		let httpParams = new HttpParams();
+		//filter
+		if (startDate != '' || endDate != '') {
 			if (startDate != '' && endDate != '' && new Date(startDate) <= new Date(endDate)) {
-				let myFormattedStartDate = this.datePipe.transform(new Date(startDate), 'yyyy-MM-dd');
-				let myFormattedEndDate = this.datePipe.transform(new Date(endDate), 'yyyy-MM-dd');
-				httpParams = httpParams.append('start_date', myFormattedStartDate);
-				httpParams = httpParams.append('end_date', myFormattedEndDate);
+				let myFormattedStartDate = this.datePipe.transform(new Date(startDate), 'yyyy/MM/dd 00:00:00');
+				let myFormattedEndDate = this.datePipe.transform(new Date(endDate), 'yyyy/MM/dd 23:59:59');
+				// httpParams = httpParams.append('StartDate', myFormattedStartDate);
+				// httpParams = httpParams.append('EndDate', myFormattedEndDate);
+				getsalesordersArray['StartDate'] = myFormattedStartDate;
+				getsalesordersArray['EndDate'] = myFormattedEndDate;
+			} else {
+				this.hasDateError = true;
+				return;
 			}
-			httpParams = httpParams.append('scheme_id', this.orderActiveScheme);
-			// Call request from server
-			this.store.dispatch(new OrderPageRequested({ page: queryParams, body: httpParams }));
-			this.selection.clear();
+		}
+		if (userSession != null) {
+			getsalesordersArray['CompanyID'] = JSON.parse(userSession).Company_ID;
+			getsalesordersArray['CustomerID'] = JSON.parse(userSession).ID;
+			// getsalesordersArray = {
+			// 	'CompanyID': JSON.parse(userSession).Company_ID,
+			// 	'CustomerID': JSON.parse(userSession).ID
+			// }
+			httpParams = httpParams.append('TokenID', JSON.parse(userSession).Security_Token);
+			httpParams = httpParams.append('CompanyID', JSON.parse(userSession).Company_ID);
+			httpParams = httpParams.append('UserID', JSON.parse(userSession).Tagged_To);
+			httpParams = httpParams.append('getsalesordersjson', JSON.stringify(getsalesordersArray));
+		}
+		// Call request from server
+		this.store.dispatch(new OrderPageRequested({ page: queryParams, body: httpParams }));
+		this.selection.clear();
 		// });
 
 	}
@@ -260,74 +253,6 @@ export class OrderListComponent implements OnInit, OnDestroy {
 		// const searchText: string = this.searchInput.nativeElement.value;
 		// filter.title = searchText;
 		return filter;
-	}
-
-	/** ACTIONS */
-	/**
-	 * Delete order
-	 *
-	 * @param _item: Order
-	 */
-	deleteOrder(_item: Order) {
-		const _title: string = 'User Order';
-		const _description: string = 'Are you sure to permanently delete this order?';
-		const _waitDesciption: string = 'Order is deleting...';
-		const _deleteMessage = `Order has been deleted`;
-
-		const dialogRef = this.layoutUtilsService.deleteElement(_title, _description, _waitDesciption);
-		dialogRef.afterClosed().subscribe(res => {
-			if (!res) {
-				return;
-			}
-
-			this.store.dispatch(new OrderDeleted({ id: _item.id }));
-			this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete);
-			this.loadOrderList();
-		});
-	}
-
-	/** Fetch */
-	/**
-	 * Fetch selected rows
-	 */
-	// fetchOrder() {
-	// 	const messages = [];
-	// 	this.selection.selected.forEach(elem => {
-	// 		messages.push({
-	// 			text: `${elem.title}`,
-	// 			id: elem.id.toString(),
-	// 			// status: elem.username
-	// 		});
-	// 	});
-	// 	this.layoutUtilsService.fetchElements(messages);
-	// }
-
-	/**
-	 * Add order
-	 */
-	addOrder() {
-		const newOrder = new Order();
-		newOrder.clear(); // Set all defaults fields
-		this.editOrder(newOrder);
-	}
-
-	/**
-	 * Edit order
-	 *
-	 * @param order: Order
-	 */
-	editOrder(order: Order) {
-		const _saveMessage = `Order successfully has been saved.`;
-		const _messageType = order.id ? MessageType.Update : MessageType.Create;
-		// const dialogRef = this.dialog.open(OrderEditDialogComponent, { data: { orderId: order.id } });
-		// dialogRef.afterClosed().subscribe(res => {
-		// 	if (!res) {
-		// 		return;
-		// 	}
-
-		// 	this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 10000, true, true);
-		// 	this.loadOrderList();
-		// });
 	}
 
 	/**
@@ -389,11 +314,11 @@ export class OrderListComponent implements OnInit, OnDestroy {
 	/** 
 	 * View order in popup
 	 */
-	viewOrder(orderId){
+	viewOrder(orderId) {
 		const dialogRef = this.dialog.open(ViewOrderComponent, {
 			data: { orderId: orderId },
 			width: '600px',
 			height: '550px'
-		  });
+		});
 	}
 }

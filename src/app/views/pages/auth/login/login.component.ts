@@ -162,8 +162,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 			.pipe(
 				tap(response => {
 					if (response.status == APP_CONSTANTS.response.SUCCESS) {
-						console.log(response.data);
-						
 						/*
 						* Filter data
 						* Get active loyalty scheme
@@ -195,35 +193,35 @@ export class LoginComponent implements OnInit, OnDestroy {
 							response.data[0].user['purchaseActiveScheme'] = purchaseActiveScheme;
 							response.data[0].user['purchaseActiveSchemeBooster'] = purchaseActiveSchemeBooster;
 
-							const message = `login successfully!`;
-							this.layoutUtilsService.showActionNotification(message, MessageType.Read, 5000, false, false);
-							this.store.dispatch(new LoginSuccess(response.data[0].user));
-							this.router.navigateByUrl(this.returnUrl);
+							// const message = `login successfully!`;
+							// this.layoutUtilsService.showActionNotification(message, MessageType.Read, 5000, false, false);
+							// this.store.dispatch(new LoginSuccess(response.data[0].user));
+							// this.router.navigateByUrl(this.returnUrl);
 
 							/** 
 							 * get company setting
 							 */
-							// let getSettingUrl = environment.superSALESApi+'getSettings';
-							// let paramString = {}
-							// paramString['CompanyID'] = 105;
-							// let param = { get_Settings:JSON.stringify(paramString)}
-							// this.auth
-							// 	.getCompanySettings(getSettingUrl, param)
-							// 	.pipe(
-							// 		tap((setResponse:CommonResponse) => {
-							// 			if (setResponse.status == APP_CONSTANTS.response.SUCCESS) {
-							// 				const message = `login successfully!`;
-							// 				this.layoutUtilsService.showActionNotification(message, MessageType.Read, 5000, false, false);
-							// 				// this.store.dispatch(new LoginSuccess(response.data[0].user));
-							// 				// this.router.navigateByUrl(this.returnUrl);
-							// 			} else {
-							// 				const message = `Error in getting company setting!`;
-							// 				this.layoutUtilsService.showActionNotification(message, MessageType.Read, 5000, false, false);
-							// 			}
-							// 		}),
-							// 		takeUntil(this.unsubscribe)
-							// 	)
-							// 	.subscribe();
+							let paramString = {}
+							paramString['CompanyID'] = 105;
+							let param = { get_Settings:JSON.stringify(paramString)}
+							this.auth
+								.getCompanySettings(param)
+								.pipe(
+									tap((setResponse:CommonResponse) => {
+										if (setResponse.status == APP_CONSTANTS.response.SUCCESS) {
+											const message = `login successfully!`;
+											this.layoutUtilsService.showActionNotification(message, MessageType.Read, 5000, false, false);
+											response.data[0].user['companySettings'] = setResponse.data;
+											this.store.dispatch(new LoginSuccess(response.data[0].user));
+											this.router.navigateByUrl(this.returnUrl);
+										} else {
+											const message = `Error in getting company setting!`;
+											this.layoutUtilsService.showActionNotification(message, MessageType.Read, 5000, false, false);
+										}
+									}),
+									takeUntil(this.unsubscribe)
+								)
+								.subscribe();
 						}
 					} else {
 						this.authNoticeService.setNotice(this.translate.instant('AUTH.VALIDATION.INVALID_LOGIN'), 'danger');

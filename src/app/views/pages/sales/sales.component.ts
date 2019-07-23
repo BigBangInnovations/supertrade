@@ -11,7 +11,7 @@ import { debounceTime, distinctUntilChanged, tap, skip, take, delay } from 'rxjs
 import { fromEvent, merge, Observable, of, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 // NGRX
-import { Store, select } from '@ngrx/store';
+import { Store, select } from '@ngrx/store'; 
 // Services
 import { LayoutUtilsService, MessageType } from '../../../core/_base/crud';
 import { EncrDecrServiceService } from '../../../core/auth/_services/encr-decr-service.service'
@@ -164,7 +164,7 @@ export class SalesListComponent implements OnInit, OnDestroy {
 				});
 				if (salesActiveScheme.length <= 0) {
 					salesActiveScheme = sessionStorage.salesActiveScheme[0];
-				} else {
+				} else { 
 					salesActiveScheme = salesActiveScheme[0];
 				}
 				this.accumulated_points = res.accumulated_points;

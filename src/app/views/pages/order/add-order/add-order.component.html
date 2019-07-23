@@ -13,11 +13,6 @@
             </kt-alert>
             <div class="kt-form__section kt-form__section--first">
                 <div class="form-group kt-form__group row">
-                    <div class="col-lg-12 kt-margin-bottom-20-mobile">
-                        <h6 class="kt-portlet__head-title ng-star-inserted"> Scheme name: <strong>{{ orderActiveScheme.scheme_name }}</strong></h6>
-                        <!-- <h6 class="kt-portlet__head-title ng-star-inserted"> Scheme name: <strong>{{ orderActiveScheme | json }}</strong></h6> -->
-                        <input [hidden]="true" [value]="orderActiveScheme.scheme_id" formControlName="scheme_id">
-                    </div>
 
                     <div class="col-lg-12 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
@@ -56,12 +51,17 @@
                                 <div [formGroupName]="i">
                                     <!-- <input formControlName="productBarCodeCtrl" placeholder="Item name"> -->
                                     <!-- index: {{productBarCodeCtrl}} -->
-                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="orderForm.controls.products.controls[i]" [parantGroup]="orderForm" [index]="i" [OptionalSetting]="OptionalSetting"></kt-popup-add-product>
+                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="orderForm.controls.products.controls[i]" [parantGroup]="orderForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction"></kt-popup-add-product>
                                 </div>
                             </div>
                         </div>
                         <ng-template #popupProductCalculation></ng-template>
                         <!-- <ng-template (newAddedProductsIds)="newAddedProductsIdsUpdate($event)"></ng-template> -->
+                    </div>
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile kt-margin-t-10">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input matInput placeholder="Remarks" formControlName="Description" maxlength="200" />
+                        </mat-form-field>
                     </div>
                 </div>
             </div>

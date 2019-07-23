@@ -16,8 +16,7 @@ import { AppState } from '../../../../core/reducers';
 import { SubheaderService, LayoutConfigService } from '../../../../core/_base/layout';
 import { LayoutUtilsService, MessageType } from '../../../../core/_base/crud';
 // Services and Models
-import { Order } from '../../../../core/order/_models/order.model';
-// import { getOrderActiveScheme } from '../../../../core/auth/_selectors/auth.selectors';
+import { Order, AddEditOrder } from '../../../../core/order/_models/order.model';
 import { EncrDecrServiceService } from '../../../../core/auth/_services/encr-decr-service.service'
 import { environment } from '../../../../../environments/environment';
 // Components
@@ -51,6 +50,7 @@ export class AddOrderComponent implements OnInit, OnDestroy {
   componentRef: any;
   loading = false;
   OptionalSetting: dynamicProductTemplateSetting;
+  pageAction: string;
   viewLoading$: Observable<boolean>;
   distributor$: Observable<Distributor[]>;
   // Private properties
@@ -58,8 +58,6 @@ export class AddOrderComponent implements OnInit, OnDestroy {
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
   today = new Date();
   private addedProductsIds: any[] = [];
-
-
   private unsubscribe: Subject<any>;
 
 	/**
@@ -96,7 +94,10 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     this.unsubscribe = new Subject();
     const OptionalSetting = new dynamicProductTemplateSetting();
     OptionalSetting.clear();
+    OptionalSetting.displayPointCalculation = false;
     this.OptionalSetting = OptionalSetting;
+    
+    this.pageAction = 'addOrder'
   }
 
 	/**
@@ -110,12 +111,6 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     const routeSubscription = this.activatedRoute.params.subscribe(params => {
       let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
       this.userData = JSON.parse(sessionStorage)
-
-      this.orderActiveScheme = this.userData.orderActiveScheme[0];
-      this.orderActiveSchemebooster = this.userData.orderActiveSchemeBooster[0];
-
-      this.order = new Order();
-      this.order.clear();
       this.initOrder();
 
       //Load distribiutor
@@ -159,8 +154,8 @@ export class AddOrderComponent implements OnInit, OnDestroy {
 	 */
   createForm() {
     this.orderForm = this.orderFB.group({
-      scheme_id: [this.orderActiveScheme.scheme_id, Validators.required],
       distributor_id: ['', Validators.required],
+      Description: [''],
       products: this.orderFB.array([], Validators.required)
     });
   }
@@ -184,23 +179,41 @@ export class AddOrderComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const addEditOrder = this.prepareOrder();
+    const addEditOrder = this.prepareAddEditOrder();
     this.addEditOrder(addEditOrder);
   }
 
-
 	/**
+	 * Returns prepared data for save
+	 */
+  prepareAddEditOrder(): AddEditOrder {
+    const _addEditOrder = new AddEditOrder();
+    _addEditOrder.clear();
+    _addEditOrder.addsalesorderjson = JSON.stringify(this.prepareOrder())
+    _addEditOrder.addsalesorderproductjson = JSON.stringify(this.prepareProduct())
+    _addEditOrder.CompanyID = this.userData.Company_ID;
+    _addEditOrder.UserID = this.userData.ID;
+    _addEditOrder.TokenID = this.userData.Security_Token;
+    return _addEditOrder;
+  }
+
+  /**
 	 * Returns prepared data for save
 	 */
   prepareOrder(): Order {
     const controls = this.orderForm.controls;
     const _order = new Order();
     _order.clear();
-    _order.loyalty_id = this.orderActiveScheme.id;
-    _order.scheme_id = controls['scheme_id'].value;
-    _order.distributor_id = controls['distributor_id'].value;
-    _order.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
-    _order.products_json = JSON.stringify(this.prepareProduct())
+    _order.SOMadeBy = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE)?'Retailer':'Distributor'
+    _order.AssignedTo = this.userData.Tagged_To;
+    _order.CreatedBy = this.userData.Tagged_To;
+    _order.CompanyID = this.userData.Company_ID;
+    _order.CustomerID = this.userData.ID;
+    _order.FulfilledByID = this.userData.Distributor_ID;
+    _order.Description = controls['Description'].value;
+    _order.NetAmount = 0;
+    _order.GrossAmount = 0;
+    _order.LocalTaxValue = 0;
     return _order;
   }
 
@@ -211,9 +224,6 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     const controls = this.orderForm.controls['products'].value;;
     const _products = [];
 
-    let boost_point = 0;
-    if (this.orderActiveSchemebooster != undefined)
-      boost_point = this.orderActiveSchemebooster.boost_point;
     controls.forEach(data => {
       //Clear Product and set default value
       const product = new Product();
@@ -223,7 +233,6 @@ export class AddOrderComponent implements OnInit, OnDestroy {
       product.serial_no = '';//Serial number
       product.ProductAmount = data.productPriceCtrl * data.productQuantityCtrl;//Product Amount:: Product prive * Quantity
       product.Price = data.productPriceCtrl;//Product original price
-      product.points = data.productLoyaltyPointCtrl;//Product original point
       product.Quantity = data.productQuantityCtrl;//product original order quantity
       product.Discount = data.productDiscountCtrl;//product original discount(%)
       product.SGSTTax = data.productTaxSGSTCtrl;//Product original SGST Tax(%)
@@ -235,8 +244,6 @@ export class AddOrderComponent implements OnInit, OnDestroy {
       product.VATPercentage = data.productVATPercentage;//Product original Vat perchantage(%)
       product.InclusiveExclusive = data.InclusiveExclusiveTax;//Product TAX inclusive or exclusive:: no any effect of this field
       product.VATFrom = data.productVATFrom;//Product vat from customer OR Other side
-      product.tot_points = data.productLoyaltyPointCtrl * data.productQuantityCtrl;//Total Point:: Product Org.Point * Quantity
-      product.tot_points_boost = (product.tot_points * boost_point) / 100;//Total Point boost:: Product Org.boostPoint * Quantity
       _products.push(product);
     });
     return _products;
@@ -247,7 +254,7 @@ export class AddOrderComponent implements OnInit, OnDestroy {
 	 *
 	 * @param _order: User
 	 */
-  addEditOrder(_order: Order) {
+  addEditOrder(_order: AddEditOrder) {
     this.loading = true;
     let httpParams = new HttpParams();
     Object.keys(_order).forEach(function (key) {
@@ -306,7 +313,7 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     const _messageType = MessageType.Read;
 
     const dialogRef = this.dialog.open(PopupProductComponent, {
-      data: { addedProductsIds: this.addedProductsIds, isDiscount: false },
+      data: { addedProductsIds: this.addedProductsIds, isDiscount: true },
       // data: { addedProductsIds: [] },
       width: '600px',
     });

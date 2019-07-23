@@ -27,7 +27,6 @@ export class OrderDataSource extends BaseDataSource {
 		).subscribe((response: QueryResultsModel) => {
 			this.paginatorTotalSubject.next(response.totalCount);
 			this.entitySubject.next(response.items);
-			this.userPointsSubject.next(response.userPoints);
 		});
 
 	}

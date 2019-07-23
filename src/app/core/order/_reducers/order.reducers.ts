@@ -10,7 +10,6 @@ export interface OrderState extends EntityState<Order> {
     isAllOrderLoaded: boolean;
     queryRowsCount: number;
     queryResult: Order[];
-    userPoints:any
     lastCreatedOrderId: number;
     listLoading: boolean;
     actionsloading: boolean;
@@ -18,13 +17,14 @@ export interface OrderState extends EntityState<Order> {
     showInitWaitingMessage: boolean;
 }
 
-export const adapter: EntityAdapter<Order> = createEntityAdapter<Order>();
+export const adapter: EntityAdapter<Order> = createEntityAdapter<Order>({
+    selectId:(Order:Order) => Order.ID,
+});
 
 export const initialOrderState: OrderState = adapter.getInitialState({
     isAllOrderLoaded: false,
     queryRowsCount: 0,
     queryResult: [],
-    userPoints:[],
     lastCreatedOrderId: undefined,
     listLoading: false,
     actionsloading: false,
@@ -44,7 +44,7 @@ export function orderReducer(state = initialOrderState, action: OrderActions): O
             ...state
         };
         case OrderActionTypes.OrderCreated: return adapter.addOne(action.payload.order, {
-            ...state, lastCreatedOrderId: action.payload.order.id
+            ...state, lastCreatedOrderId: action.payload.order.ID
         });
         case OrderActionTypes.OrderUpdated: return adapter.updateOne(action.payload.partialorder, state);
         case OrderActionTypes.OrderDeleted: return adapter.removeOne(action.payload.id, state);
@@ -59,7 +59,6 @@ export function orderReducer(state = initialOrderState, action: OrderActions): O
             listLoading: false,
             queryRowsCount: action.payload.totalCount,
             queryResult: action.payload.order,
-            userPoints:action.payload.userPoints,
             lastQuery: action.payload.page,
             showInitWaitingMessage: false
         });

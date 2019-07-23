@@ -1,65 +1,81 @@
 import { Product } from '../../product/_models/product.model';
 
 export class Order {
-    id: number;
-    // invoice_id: string;
-    // transaction_id: string;
-    date: string;
-    // sl_user_id: number;
-    // company_id: number;
-    // is_active: boolean;
-    scheme_id: string;
-    loyalty_id: number;
-    distributor_id: number;
+    SOMadeBy: string;
+    SOMadeFrom: string;
+    ApprovedBy: number;
+    AssignedTo: number;
+    CompanyID: number;
+    CreatedBy: number;
+    CustomerID: number;
+    CustomerName: string;
+    DealerCity: string;
+    DealerCode: string;
+    DeliveryDays: number;
+    Description: string;
+    EditStatusID: number;
+    FlatPromotionPercentage: number;
+    FulfilledByID: number;
     GrossAmount: number;
-    //Customr Detail
-    name: string;
-    mobile_no: string;
-    landline_no: string;
-    country: string;
-    state: string;
-    city: string;
-    address_line1: string;
-    address_line2: string;
-    pincode: string;
-    // NetAmount: number;
-    // product: Product[];
-    products_json: string
+    ID: number;
+    LocalTaxID: number;
+    LocalTaxSurcharge: number;
+    LocalTaxValue: number;
+    NetAmount: number;
+    IsPromotionApplied: number;
+    PromotionID: number;
+    SeriesPostfix: number;
+    SeriesPrefix: string;
+    StatusID: number;
+    TNC: string;
+    Warranty: string;
 
     clear(): void {
-        this.id = undefined;
-        // this.invoice_id = '';
-        // this.transaction_id = '';
-        this.date = '';
-        // this.sl_user_id = undefined;;
-        // this.company_id = undefined;;
-        // this.is_active = false;
-        this.scheme_id = '';
-        this.loyalty_id = undefined;
-        this.distributor_id = undefined;
-        this.GrossAmount = undefined;;
-        this.name = '';
-        this.mobile_no = '';
-        this.landline_no = '';
-        this.country = '';
-        this.state = '';
-        this.city = '';
-        this.address_line1 = '';
-        this.address_line2 = '';
-        this.pincode = '';
-        // this.NetAmount = undefined;;
-        this.products_json = '';
-	}
+        this.SOMadeBy = '';
+        this.SOMadeFrom = 'SuperTrade';
+        this.ApprovedBy = 0;
+        this.AssignedTo = 0;
+        this.CompanyID = 0;
+        this.CreatedBy = 0;
+        this.CustomerID = 0;
+        this.CustomerName = '';
+        this.DealerCity = '';
+        this.DealerCode = '';
+        this.DeliveryDays = 0;
+        this.Description = '';
+        this.EditStatusID = 0;
+        this.FlatPromotionPercentage = 0;
+        this.FulfilledByID = 0;
+        this.GrossAmount = 0;
+        this.ID = 0;
+        this.LocalTaxID = 0;
+        this.LocalTaxSurcharge = 0;
+        this.LocalTaxValue = 0;
+        this.NetAmount = 0;
+        this.IsPromotionApplied = 0;
+        this.PromotionID = 0;
+        this.SeriesPostfix = 0;
+        this.SeriesPrefix = 'ST';
+        this.StatusID = 1;
+        this.TNC = '';
+        this.Warranty = '';
+    }
 }
 
-export class UserPointsStatus {
-    accumulated_points: number;
-    loyalty_id: number;
-    scheme_id: string;
-
+export class AddEditOrder {
+    CompanyID: number;
+    UserID: number;
+    TokenID: string;
+    addsalesorderjson: string;
+    addsalesorderproductjson: string;
+    Application: string;
+    
     clear(): void {
-        this.accumulated_points = undefined;
-        this.loyalty_id = undefined;
-        this.scheme_id = '';
+        this.CompanyID = 0;
+        this.UserID = 0;
+        this.TokenID = '';
+        this.addsalesorderjson = '';
+        this.addsalesorderproductjson = '';
+        this.Application = 'SuperLoyal';//Hardcoded from bacckend Please don't chnage this
     }
 }

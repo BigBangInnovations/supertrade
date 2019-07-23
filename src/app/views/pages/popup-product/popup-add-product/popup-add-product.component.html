@@ -16,6 +16,7 @@
                 </mat-list-item>
                 <ng-container *ngIf="
 pageAction != 'addSale' &&
+pageAction != 'addOrder' &&
 pageAction != 'addPurchase'
 ">
 
@@ -34,7 +35,8 @@ pageAction != 'addPurchase'
                 pageAction == 'saleReturn' ||
                 pageAction == 'purchaseReturn' || 
                 pageAction == 'addSale' || 
-                pageAction == 'addPurchase' 
+                pageAction == 'addPurchase' || 
+                pageAction == 'addOrder' 
                 ">
                     <mat-form-field>
                         <input maxlength="5" matInput formControlName="productQuantityCtrl" placeholder="Quantity" (input)="getProductAmount($event.target.value);">

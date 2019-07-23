@@ -8,7 +8,6 @@ import { QueryResultsModel, HttpExtenstionsModel } from '../../_base/crud';
 import { OrderState } from '../_reducers/order.reducers';
 import * as fromOrder from '../_reducers/order.reducers';
 import { each } from 'lodash';
-import { UserPointsStatus } from '../../order/_models/order.model';
 
 export const selectOrderState = createFeatureSelector<OrderState>('order');
 
@@ -61,9 +60,8 @@ export const selectQueryResult = createSelector(
         each(orderState.entities, element => {
             items.push(element);
         });
-        let userPoints = orderState.userPoints;
         const httpExtension = new HttpExtenstionsModel();
         const result: Order[] = httpExtension.sortArray(items, orderState.lastQuery.sortField, orderState.lastQuery.sortOrder);
-        return new QueryResultsModel(orderState.queryResult, orderState.queryRowsCount, '', userPoints);
+        return new QueryResultsModel(orderState.queryResult, orderState.queryRowsCount);
     }
 );

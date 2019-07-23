@@ -28,7 +28,8 @@ export class AuthService {
         return this.http.post(url, data)
     }
 
-    getCompanySettings(url, data) {
+    getCompanySettings(data) {
+        let url = environment.superSALESApi+'getSettings';
         let headers = new HttpHeaders();
         headers.append('Content-Type', 'application/json');
         return this.http.get(url, { headers:headers, params: data} )

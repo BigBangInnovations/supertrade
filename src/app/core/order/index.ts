@@ -40,4 +40,4 @@ export {
 } from './_selectors/order.selectors';
 
 // MODELS
-export { Order, UserPointsStatus } from './_models/order.model';
+export { Order, AddEditOrder } from './_models/order.model';

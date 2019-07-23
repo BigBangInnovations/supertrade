@@ -4,7 +4,7 @@ import { Update } from '@ngrx/entity';
 // CRUD
 import { QueryParamsModel } from '../../_base/crud';
 // Models
-import { Order, UserPointsStatus } from '../_models/order.model';
+import { Order, AddEditOrder } from '../_models/order.model';
 
 export enum OrderActionTypes {
     AllOrderRequested = '[Order Home Page] All Order Requested',
@@ -50,7 +50,7 @@ export class OrderPageRequested implements Action {
 
 export class OrderPageLoaded implements Action {
     readonly type = OrderActionTypes.OrderPageLoaded;
-    constructor(public payload: { order: Order[], userPoints:UserPointsStatus, totalCount: number, page: QueryParamsModel }) { }
+    constructor(public payload: { order: Order[], totalCount: number, page: QueryParamsModel }) { }
 }
 
 export class OrderPageCancelled implements Action {

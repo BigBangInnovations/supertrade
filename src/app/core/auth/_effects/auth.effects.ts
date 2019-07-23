@@ -40,7 +40,8 @@ export class AuthEffects {
     logout$ = this.actions$.pipe(
         ofType<Logout>(AuthActionTypes.Logout),
         tap((action) => {
-            sessionStorage.removeItem(environment.localStorageKey);
+            localStorage.removeItem(environment.localStorageKey);
+            localStorage.removeItem('setupTime');
 			this.router.navigate(['/auth/login'], {queryParams: {returnUrl: this.returnUrl}});
         })
     );
@@ -72,6 +73,7 @@ export class AuthEffects {
 
     @Effect()
     init$: Observable<Action> = defer(() => {
+        this.EncrDecr.validateStorage();
         const userSession = this.EncrDecr.getLocalStorage(environment.localStorageKey)
         let observableResult = of({type: 'NO_ACTION'});
         if (userSession) {

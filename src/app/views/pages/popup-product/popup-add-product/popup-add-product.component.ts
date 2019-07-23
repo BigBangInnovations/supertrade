@@ -35,7 +35,6 @@ export class PopupAddProductComponent {
   productNetAmount: number;
   productLoyaltyPoint: number;
   productLoyaltyBoostPoint: number;
-  displayPointCalculation: boolean;
   salesActiveSchemebooster: any;
   userData: any;
   boost_point: number;
@@ -48,7 +47,6 @@ export class PopupAddProductComponent {
   constructor(
     private EncrDecr: EncrDecrServiceService,
   ) {
-    this.displayPointCalculation = true;
     let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
     this.userData = JSON.parse(sessionStorage)
     this.salesActiveSchemebooster = this.userData.salesActiveSchemeBooster[0];
