@@ -40,4 +40,4 @@ export {
 } from './_selectors/order.selectors';
 
 // MODELS
-export { Order, AddEditOrder } from './_models/order.model';
+export { Order, AddEditOrder, orderProduct } from './_models/order.model';

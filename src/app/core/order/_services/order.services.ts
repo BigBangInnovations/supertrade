@@ -19,7 +19,13 @@ export class OrderService {
     getAllOrder(data: any): Observable<any> {
         const url = environment.superSALESApi+`getsalesorderscustomerhistory`;
         return this.http.post<Order[]>(url, data);
-    } 
+    }
+    
+    // Order
+    getAllorderselect(data: any): Observable<any> {
+        const url = environment.superSALESApi+`getsyncsalesorders`;
+        return this.http.get<Order[]>(url, {params:data});
+    }
 
     getOrderById(orderId: number): Observable<Order> {
 		return this.http.get<Order>(API_ROLES_URL + `/${orderId}`);

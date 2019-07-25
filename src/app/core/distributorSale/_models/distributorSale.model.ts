@@ -12,7 +12,7 @@ export class DistributorSale {
     // is_active: boolean;
     scheme_id: string;
     loyalty_id: number;
-    distributor_id: number;
+    retailer_id: number;
     GrossAmount: number;
     //Customr Detail
     name: string;
@@ -40,7 +40,7 @@ export class DistributorSale {
         // this.is_active = false;
         this.scheme_id = '';
         this.loyalty_id = undefined;
-        this.distributor_id = undefined;
+        this.retailer_id = undefined;
         this.GrossAmount = undefined;;
         this.name = '';
         this.mobile_no = '';

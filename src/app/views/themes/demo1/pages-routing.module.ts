@@ -49,6 +49,14 @@ const routes: Routes = [
 				path: 'notification',
 				loadChildren: () => import('../../../../app/views/pages/notification/notification.module').then(m => m.NotificationModule)
 			},
+			{
+				path: 'distributor-sales',
+				loadChildren: () => import('../../../../app/views/pages/distributorSale/distributorSale.module').then(m => m.DistributorSaleModule)
+			},
+			{
+				path: 'add-distributor-sale',
+				loadChildren: () => import('../../../../app/views/pages/distributorSale/add-distributorSale/add-distributorSale.module').then(m => m.AddDistributorSaleModule)
+			},
 			{ path: 'error/:type', component: ErrorPageComponent },
 			{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 			{path: '**', redirectTo: 'dashboard', pathMatch: 'full'}

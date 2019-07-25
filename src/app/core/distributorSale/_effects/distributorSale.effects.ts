@@ -15,6 +15,11 @@ import { DistributorSaleService } from '../_services';
 import { AppState } from '../../../core/reducers';
 // Selectors
 import { allDistributorSaleLoaded } from '../_selectors/distributorSale.selectors';
+import { APP_CONSTANTS } from '../../../../config/default/constants'
+import { AuthNoticeService, Logout } from '../../../core/auth';
+// Translate
+import { TranslateService } from '@ngx-translate/core';
+import { CommonResponse } from '../../common/common.model'
 // Actions
 import {
     AllDistributorSaleLoaded,
@@ -61,19 +66,23 @@ export class DistributorSaleEffects {
                 const lastQuery = of(payload.page);
                 return forkJoin(requestToServer, lastQuery);
             }),
-            map(response => {
-                // console.log('response: '+JSON.stringify(response));
+            map((response: any) => {
                 const result = response[0];
-                const lastQuery: QueryParamsModel = response[1];
-                this.store.dispatch(this.hidePageLoadingDistpatcher);
-                // console.log('result: '+JSON.stringify(result));
-                
-                return new DistributorSalePageLoaded({
-                    distributorSale: result.data[0].distributorSale,
-                    userPoints: result.data[0].userPointsStatus,
-                    totalCount: result.data[0].distributorSale.length,//result.totalCount,
-                    page: lastQuery
-                });
+                if (result.status == APP_CONSTANTS.response.SUCCESS) {
+                    const lastQuery: QueryParamsModel = response[1];
+                    this.store.dispatch(this.hidePageLoadingDistpatcher);
+                    return new DistributorSalePageLoaded({
+                        distributorSale: result.data[0].distributorSales,
+                        userPoints: result.data[0].userPointsStatus,
+                        totalCount: result.data[0].distributorSales.length,//result.totalCount,
+                        page: lastQuery
+                    });
+                } else {
+                    this.authNoticeService.setNotice(this.translate.instant('AUTH.REPONSE.INVALID_TOKEN'), 'danger');
+                    return new Logout()
+                }
+
+
             }),
         );
 
@@ -125,9 +134,11 @@ export class DistributorSaleEffects {
     // @Effect()
     // init$: Observable<Action> = defer(() => {
     //     let httpParams = new HttpParams();
-	// 	httpParams = httpParams.append('scheme_id', 'PUR003');
+    // 	httpParams = httpParams.append('scheme_id', 'PUR003');
     //     return of(new AllDistributorSaleRequested(httpParams));
     // });
 
-    constructor(private actions$: Actions, private distributorSaleService: DistributorSaleService, private store: Store<AppState>) { }
+    constructor(private actions$: Actions, private distributorSaleService: DistributorSaleService, private store: Store<AppState>,
+        private authNoticeService: AuthNoticeService,
+        private translate: TranslateService, ) { }
 }

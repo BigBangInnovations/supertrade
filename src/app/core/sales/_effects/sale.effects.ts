@@ -15,6 +15,10 @@ import { SalesService } from '../_services';
 import { AppState } from '../../../core/reducers';
 // Selectors
 import { allSalesLoaded } from '../_selectors/sale.selectors';
+import { APP_CONSTANTS } from '../../../../config/default/constants'
+import { AuthNoticeService, Logout } from '../../../core/auth';
+// Translate
+import { TranslateService } from '@ngx-translate/core';
 // Actions
 import {
     AllSalesLoaded,
@@ -62,18 +66,20 @@ export class SaleEffects {
                 return forkJoin(requestToServer, lastQuery);
             }),
             map(response => {
-                // console.log('response: '+JSON.stringify(response));
                 const result = response[0];
+                if (result.status == APP_CONSTANTS.response.SUCCESS) {
                 const lastQuery: QueryParamsModel = response[1];
                 this.store.dispatch(this.hidePageLoadingDistpatcher);
-                // console.log('result: '+JSON.stringify(result));
-                
                 return new SalesPageLoaded({
                     sales: result.data[0].sales,
                     userPoints: result.data[0].userPointsStatus,
                     totalCount: result.data[0].sales.length,//result.totalCount,
                     page: lastQuery
                 });
+            } else {
+                this.authNoticeService.setNotice(this.translate.instant('AUTH.REPONSE.INVALID_TOKEN'), 'danger');
+                return new Logout()
+            }
             }),
         );
 
@@ -129,5 +135,7 @@ export class SaleEffects {
     //     return of(new AllSalesRequested(httpParams));
     // });
 
-    constructor(private actions$: Actions, private salesService: SalesService, private store: Store<AppState>) { }
+    constructor(private actions$: Actions, private salesService: SalesService, private store: Store<AppState>,
+        private authNoticeService: AuthNoticeService,
+        private translate: TranslateService,) { }
 }

@@ -30,6 +30,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 	// Public params
 	loginForm: FormGroup;
 	loading = false;
+	settingLoading = false;
 
 	// isLoggedIn$: Observable<boolean>;
 	errors: any = [];
@@ -99,6 +100,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 		this.unsubscribe.next();
 		this.unsubscribe.complete();
 		this.loading = false;
+		this.settingLoading = false;
 	}
 
 	/**
@@ -115,14 +117,14 @@ export class LoginComponent implements OnInit, OnDestroy {
 		// }
 
 		this.loginForm = this.fb.group({
-			mobile_no: ['8866228982', Validators.compose([
+			mobile_no: ['968741236', Validators.compose([
 				Validators.required,
 				// Validators.pattern(/^[6-9]\d{9}$/),
-				Validators.minLength(10),
+				Validators.minLength(6),
 				Validators.maxLength(15) // https://stackoverflow.com/questions/386294/what-is-the-maximum-length-of-a-valid-email-address
 			])
 			],
-			password: ['45298', Validators.compose([
+			password: ['97280', Validators.compose([
 				Validators.required,
 			])
 			]
@@ -201,6 +203,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 							/** 
 							 * get company setting
 							 */
+							this.settingLoading = true;
 							let paramString = {}
 							paramString['CompanyID'] = 105;
 							let param = { get_Settings:JSON.stringify(paramString)}
@@ -219,7 +222,11 @@ export class LoginComponent implements OnInit, OnDestroy {
 											this.layoutUtilsService.showActionNotification(message, MessageType.Read, 5000, false, false);
 										}
 									}),
-									takeUntil(this.unsubscribe)
+									takeUntil(this.unsubscribe),
+									finalize(() => {
+										this.settingLoading = false;
+										this.cdr.markForCheck();
+									})
 								)
 								.subscribe();
 						}

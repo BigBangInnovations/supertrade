@@ -9,7 +9,9 @@ import { CoreModule } from '../../../core/core.module';
 import { PartialsModule } from '../../partials/partials.module';
 import { DistributorSaleEffects, DistributorSaleService, distributorSaleReducer  } from '../../../core/distributorSale'
 import { ProductEffects, productReducer, ProductService } from '../../../core/product'
-import { DistributorEffects, distributorReducer, DistributorService } from '../../../core/distributor'
+import { RetailerEffects, retailerReducer, RetailerService } from '../../../core/retailer'
+import { OrderselectEffects, orderselectReducer } from '../../../core/orderselect'
+import { OrderService } from '../../../core/order'
 // Translate
 import { TranslateModule } from '@ngx-translate/core';
 // NGRX
@@ -42,7 +44,7 @@ import {
 	MatAutocompleteModule,
 	MAT_DIALOG_DEFAULT_OPTIONS,
 	MatSnackBarModule,
-	MatTooltipModule
+	MatTooltipModule,
  } from '@angular/material';
 
  import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -80,8 +82,11 @@ const routes: Routes = [
 		EffectsModule.forFeature([ProductEffects]),
 		StoreModule.forFeature('product', productReducer),
 		//distributor
-		EffectsModule.forFeature([DistributorEffects]),
-		StoreModule.forFeature('distributor', distributorReducer),
+		EffectsModule.forFeature([RetailerEffects]),
+		StoreModule.forFeature('retailer', retailerReducer),
+		//orderSelect
+		EffectsModule.forFeature([OrderselectEffects]),
+		StoreModule.forFeature('orderselect', orderselectReducer),
 
 		MatIconModule,
 		MatListModule,
@@ -123,7 +128,8 @@ const routes: Routes = [
 		},		
 		// DistributorSaleService,
 		ProductService,
-		DistributorService
+		RetailerService,
+		OrderService,
 	],
 	entryComponents: [
 		ActionNotificationComponent,
@@ -143,8 +149,8 @@ export class DistributorSaleModule {
 			providers: [
 				// DistributorSaleService,
 				ProductService,
-				DistributorService
-
+				RetailerService,
+				OrderService,
 			]
 		};
 	}

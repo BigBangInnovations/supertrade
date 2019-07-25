@@ -20,6 +20,37 @@
                     </div>
 
                     <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                        <mat-slide-toggle color="warn" (change)="is_direct_sale_toggle($event)" formControlName="is_direct_sale" aria-label="Check IN">Do you want to do direct sale?</mat-slide-toggle>
+                    </div>
+
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile kt-margin-top-20" *ngIf="viewOrderSelect">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <mat-select formControlName="order_id" placeholder="Sales Order" (selectionChange)="salesOrderChange($event)">
+                                <ng-template #so_loading>
+                                    <mat-option value=''>
+                                        Loading...
+                                    </mat-option>
+                                </ng-template>
+
+                                <ng-template #noSalesOrder>
+                                    <mat-option value=''>
+                                        No Sales order available
+                                    </mat-option>
+                                </ng-template>
+
+                                <ng-container *ngIf="!(viewOrderSelectLoading$  | async); else so_loading">
+                                    <ng-container *ngIf="(orderSelect$ | async)?.length; else noSalesOrder">
+                                        <mat-option *ngFor="let salesOrderArray of ((orderSelect$ | async) | keyvalue)" [value]="salesOrderArray.value.ID">
+                                            {{salesOrderArray.value.CustomerName}} | {{salesOrderArray.value.SeriesPrefix}} {{salesOrderArray.value.SeriesPostfix}} {{salesOrderArray.value.CreatedTime | date}}
+                                        </mat-option>
+                                    </ng-container>
+                                </ng-container>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
                             <mat-select formControlName="retailer_id" placeholder="Retailer">
                                 <ng-template #loading1>
@@ -30,7 +61,7 @@
 
                                 <ng-template #noRetailer>
                                     <mat-option value=''>
-                                        No distributor
+                                        No retailer
                                     </mat-option>
                                 </ng-template>
 

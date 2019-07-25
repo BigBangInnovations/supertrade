@@ -17,7 +17,7 @@ export class DistributorSaleService {
 
     // DistributorSale
     getAllDistributorSale(data: any): Observable<any> {
-        const url = `get-distributorSale`;
+        const url = `get-distributor-sales`;
         return this.http.post<DistributorSale[]>(url, data);
     } 
 
@@ -56,7 +56,7 @@ export class DistributorSaleService {
 
     // DistributorSale
     findDistributorSale(data: any): Observable<any> {
-        const url = `get-distributorSale`;
+        const url = `get-distributor-sales`;
         return this.http.post<DistributorSale[]>(url, data);
     }
 

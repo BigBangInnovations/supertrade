@@ -18,7 +18,7 @@ export interface OrderState extends EntityState<Order> {
 }
 
 export const adapter: EntityAdapter<Order> = createEntityAdapter<Order>({
-    selectId:(Order:Order) => Order.ID,
+    selectId: (Order: Order) => Order.ID,
 });
 
 export const initialOrderState: OrderState = adapter.getInitialState({
@@ -33,9 +33,9 @@ export const initialOrderState: OrderState = adapter.getInitialState({
 });
 
 export function orderReducer(state = initialOrderState, action: OrderActions): OrderState {
-    switch  (action.type) {
+    switch (action.type) {
         case OrderActionTypes.OrderPageToggleLoading: return {
-                ...state, listLoading: action.payload.isLoading, lastCreatedOrderId: undefined
+            ...state, listLoading: action.payload.isLoading, lastCreatedOrderId: undefined
         };
         case OrderActionTypes.OrderActionToggleLoading: return {
             ...state, actionsloading: action.payload.isLoading

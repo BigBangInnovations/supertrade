@@ -17,7 +17,8 @@
                 <ng-container *ngIf="
 pageAction != 'addSale' &&
 pageAction != 'addOrder' &&
-pageAction != 'addPurchase'
+pageAction != 'addPurchase' &&
+pageAction != 'addDistributorSale'
 ">
 
                     <mat-list-item role="listitem">
@@ -36,6 +37,7 @@ pageAction != 'addPurchase'
                 pageAction == 'purchaseReturn' || 
                 pageAction == 'addSale' || 
                 pageAction == 'addPurchase' || 
+                pageAction == 'addDistributorSale' || 
                 pageAction == 'addOrder' 
                 ">
                     <mat-form-field>

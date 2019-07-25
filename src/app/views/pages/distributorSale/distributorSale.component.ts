@@ -154,7 +154,6 @@ export class DistributorSaleListComponent implements OnInit, OnDestroy {
 			skip(1),
 			distinctUntilChanged()
 		).subscribe(res => {
-
 			if (res.accumulated_points !== undefined) {
 				this.userPointsResult = res;
 				let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);

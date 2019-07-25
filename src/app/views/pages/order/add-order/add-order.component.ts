@@ -208,8 +208,8 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     _order.AssignedTo = this.userData.Tagged_To;
     _order.CreatedBy = this.userData.Tagged_To;
     _order.CompanyID = this.userData.Company_ID;
-    _order.CustomerID = this.userData.ID;
-    _order.FulfilledByID = this.userData.Distributor_ID;
+    _order.CustomerID = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE)?this.userData.ID:controls['retailer_id'].value;
+    _order.FulfilledByID = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE)?this.userData.Distributor_ID:controls['distributor_id'].value;
     _order.Description = controls['Description'].value;
     _order.NetAmount = 0;
     _order.GrossAmount = 0;

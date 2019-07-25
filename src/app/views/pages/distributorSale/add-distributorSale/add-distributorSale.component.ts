@@ -32,6 +32,9 @@ import { PopupProductTotalCalculationComponent } from '../../popup-product/popup
 import { dynamicProductTemplateSetting } from '../../../../core/common/common.model'
 // import * as fromDistributor from '../../../../core/distributor'
 import * as fromRetailer from '../../../../core/retailer'
+import * as fromOrderselect from '../../../../core/orderselect'
+import { selectOrderById } from '../../../../core/orderselect'
+import { Order, orderProduct } from '../../../../core/order/_models/order.model';
 
 @Component({
   selector: 'kt-add-distributorSale',
@@ -54,14 +57,18 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
   OptionalSetting: dynamicProductTemplateSetting;
   pageAction: string;
   viewLoading$: Observable<boolean>;
+  viewOrderSelectLoading$: Observable<boolean>;
+  viewOrderSelect: boolean = false;
   retailers$: Observable<Retailer[]>;
+  orderSelect$: Observable<Order[]>;
+  userSession: string;
   // Private properties
   private subscriptions: Subscription[] = [];
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
   today = new Date();
   private addedProductsIds: any[] = [];
   private unsubscribe: Subject<any>;
-
+  // checked = true;
 	/**
 	 * Component constructor
 	 *
@@ -96,6 +103,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     this.unsubscribe = new Subject();
     const OptionalSetting = new dynamicProductTemplateSetting();
     OptionalSetting.clear();
+    OptionalSetting.displayPointCalculation = false;
     this.OptionalSetting = OptionalSetting;
     this.pageAction = 'addDistributorSale'
   }
@@ -130,7 +138,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
         }
       });
       this.viewLoading$ = this.store.pipe(select(fromRetailer.selectRetailerLoading));
-
+      this.userSession = this.EncrDecr.getLocalStorage(environment.localStorageKey)
     });
     this.subscriptions.push(routeSubscription);
 
@@ -161,7 +169,9 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
   createForm() {
     this.distributorSaleForm = this.distributorSaleFB.group({
       scheme_id: [this.salesActiveScheme.scheme_id, Validators.required],
-      distributor_id: ['', Validators.required],
+      retailer_id: ['', Validators.required],
+      order_id: [''],
+      is_direct_sale: [true],
       products: this.distributorSaleFB.array([], Validators.required)
     });
   }
@@ -199,7 +209,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     _distributorSale.clear();
     _distributorSale.loyalty_id = this.salesActiveScheme.id;
     _distributorSale.scheme_id = controls['scheme_id'].value;
-    _distributorSale.distributor_id = controls['distributor_id'].value;
+    _distributorSale.retailer_id = controls['retailer_id'].value;
     _distributorSale.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
     _distributorSale.products_json = JSON.stringify(this.prepareProduct())
     return _distributorSale;
@@ -340,15 +350,12 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
 
     //Total Calculate
     const componentFactory = this.resolver.resolveComponentFactory(PopupProductTotalCalculationComponent);
-    // const viewContainerRef = this.entry.viewContainerRef;
     const viewContainerRef = this.entry;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
-    // componentRef.instance.distributorSaleForm = this.distributorSaleForm;
     componentRef.instance.mainForm = this.distributorSaleForm;
     const sub: Subscription = componentRef.instance.newAddedProductsIds.subscribe(
       event => {
-        // console.log(event)
         this.newAddedProductsIdsUpdate(event)
       }
     );
@@ -357,6 +364,85 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
 
   newAddedProductsIdsUpdate(ids) {
     this.addedProductsIds = ids.addedProductsIds;
-    // console.log(this.addedProductsIds);
+  }
+
+  is_direct_sale_toggle(event) {
+    this.distributorSaleForm.controls['order_id'].setValue('');
+    const currentProductArray = <FormArray>this.distributorSaleForm.controls['products'];
+    //Clear
+    currentProductArray.reset();
+    while (currentProductArray.length !== 0) {
+      currentProductArray.removeAt(0)
+    }
+    this.commonCalculation()
+
+    if (!event.checked) {
+
+      this.viewOrderSelect = true;
+      //Load distribiutor
+      this.store.select(fromOrderselect.selectOrderselectLoaded).pipe().subscribe(data => {
+        if (data) {
+          this.orderSelect$ = this.store.pipe(select(fromOrderselect.selectAllOrderselect));
+        } else {
+          let httpParams = new HttpParams();
+          let getsalesordersArray = {};
+          getsalesordersArray['CompanyID'] = JSON.parse(this.userSession).Company_ID;
+          getsalesordersArray['CreatedBy'] = JSON.parse(this.userSession).Tagged_To;
+          httpParams = httpParams.append('TokenID', JSON.parse(this.userSession).Security_Token);
+          httpParams = httpParams.append('CompanyID', JSON.parse(this.userSession).Company_ID);
+          httpParams = httpParams.append('UserID', JSON.parse(this.userSession).Tagged_To);
+          httpParams = httpParams.append('getsyncsalesordersjson', JSON.stringify(getsalesordersArray));
+
+          this.store.dispatch(new fromOrderselect.LoadOrderselect(httpParams))
+          this.orderSelect$ = this.store.pipe(select(fromOrderselect.selectAllOrderselect));
+        }
+      });
+      this.viewOrderSelectLoading$ = this.store.pipe(select(fromOrderselect.selectOrderselectLoading));
+    } else {
+      this.viewOrderSelect = false;
+    }
+
+  }
+
+  salesOrderChange(event) {
+    const numberPatern = '^[0-9.,]+$';
+    this.store.pipe(select(selectOrderById(event.value))).subscribe((data: any) => {
+      const productObject = data.Products;
+      productObject.forEach((orderProduct: orderProduct) => {
+        let productFormArray = {
+          productCategoryCtrl: [orderProduct.ProductCatId],
+          productSubCategoryCtrl: [orderProduct.ProductSubCatId],
+          productCtrl: [orderProduct.ProductID],
+          productNameCtrl: [orderProduct.Name],
+          productPriceCtrl: [orderProduct.Price],
+          productTaxSGSTCtrl: [orderProduct.SGSTTax],
+          productTaxSGSTSurchargesCtrl: [orderProduct.SGSTSurcharges],
+          productTaxCGSTCtrl: [orderProduct.CGSTTax],
+          productTaxCGSTSurchargesCtrl: [orderProduct.CSTSurcharge],
+          productTaxIGSTCtrl: [orderProduct.IGSTTax],
+          productTaxIGSTSurchargesCtrl: [orderProduct.IGSTSurcharges],
+          productOriginalQuantityCtrl: [orderProduct.Quantity],
+          productReturnedQuantityCtrl: [0],
+          productQuantityCtrl: [orderProduct.Quantity,
+          Validators.compose([
+            Validators.required,
+            Validators.pattern(numberPatern),
+            Validators.minLength(1),
+            Validators.maxLength(5)
+          ])
+
+          ],
+          productDiscountCtrl: [orderProduct.Discount],
+          productLoyaltyPointCtrl: [0],
+          productBarCodeCtrl: [''],
+          productProductCodeCtrl: [''],
+          VATPercentageCtrl: [orderProduct.VATPercentage],
+          InclusiveExclusiveCtrl: [orderProduct.InclusiveExclusive],
+          VATFromCtrl: [orderProduct.VATFrom],
+          VATCodeCtrl: [''],
+        }
+        this.createProduct(productFormArray);
+      });
+    })
   }
 }

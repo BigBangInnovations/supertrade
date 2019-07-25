@@ -23,6 +23,9 @@ export const locale = {
 			ORDER_LIST: 'Order list',
 			ADD_ORDER: 'Add Order',
 			NOTIFICATION_AND_APPROVAL: 'Notification & Approval',
+			DISTRIBUTOR_SALES: 'Distributor Sales',
+			DISTRIBUTOR_SALES_LIST: 'Distributor Sales List',
+			ADD_DISTRIBUTOR_SALES: 'Distributor Sales',
 		},
 		AUTH: {
 			GENERAL: {

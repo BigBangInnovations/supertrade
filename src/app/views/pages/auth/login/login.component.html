@@ -52,7 +52,7 @@
                 <a href="javascript:;" routerLink="/auth/resrt-password" class="kt-link kt-login__link-reset">
 					{{ 'AUTH.GENERAL.RESET_BUTTON' | translate }}
 				</a>
-                <button (click)="submit()" [disabled]="loading" [disabled]="!loginForm.valid" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" id="kt_login_signin_submit" class="btn btn-primary btn-elevate kt-login__btn-primary">{{ 'AUTH.LOGIN.BUTTON' | translate }}</button>
+                <button (click)="submit()" [disabled]="loading" [disabled]="settingLoading" [disabled]="!loginForm.valid" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading || settingLoading}" id="kt_login_signin_submit" class="btn btn-primary btn-elevate kt-login__btn-primary">{{ 'AUTH.LOGIN.BUTTON' | translate }}</button>
             </div>
             <!--end::Action-->
         </form>

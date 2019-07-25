@@ -15,6 +15,10 @@ import { AppState } from '../../../core/reducers';
 import * as fromProductAction from '../_actions/product.actions';
 import { Product } from '../_models/product.model'
 import { APP_CONSTANTS } from '../../../../config/default/constants'
+import { AuthNoticeService, Logout } from '../../../core/auth';
+// Translate
+import { TranslateService } from '@ngx-translate/core';
+import { CommonResponse } from '../../common/common.model'
 
 @Injectable()
 export class ProductEffects {
@@ -32,9 +36,13 @@ export class ProductEffects {
                 if (response.status == APP_CONSTANTS.response.SUCCESS) {
                     let categoryArray = (response.data[0].category) ? response.data[0].category : [];
                     return new fromProductAction.LoadProductsSuccess(categoryArray);
+                }else {
+                    this.authNoticeService.setNotice(this.translate.instant('AUTH.REPONSE.INVALID_TOKEN'), 'danger');
+                    return new Logout()
                 }
             })
         );
 
-    constructor(private actions$: Actions, private productService: ProductService, private store: Store<AppState>) { }
+    constructor(private actions$: Actions, private productService: ProductService, private store: Store<AppState>,private authNoticeService: AuthNoticeService,
+        private translate: TranslateService,) { }
 }

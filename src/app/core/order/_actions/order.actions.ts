@@ -17,9 +17,8 @@ export enum OrderActionTypes {
     OrderPageLoaded = '[Order API] Order Page Loaded',
     OrderPageCancelled = '[Order API] Order Page Cancelled',
     OrderPageToggleLoading = '[Order page] Order Page Toggle Loading',
-    OrderActionToggleLoading = '[Order] Order Action Toggle Loading'
+    OrderActionToggleLoading = '[Order] Order Action Toggle Loading',
 }
-
 export class OrderOnServerCreated implements Action {
     readonly type = OrderActionTypes.OrderOnServerCreated;
     constructor(public payload: { order: Order }) { }

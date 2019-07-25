@@ -15,6 +15,10 @@ import { PurchaseService } from '../_services';
 import { AppState } from '../../../core/reducers';
 // Selectors
 import { allPurchaseLoaded } from '../_selectors/purchase.selectors';
+import { APP_CONSTANTS } from '../../../../config/default/constants'
+import { AuthNoticeService, Logout } from '../../../core/auth';
+// Translate
+import { TranslateService } from '@ngx-translate/core';
 // Actions
 import {
     AllPurchaseLoaded,
@@ -62,18 +66,22 @@ export class PurchaseEffects {
                 return forkJoin(requestToServer, lastQuery);
             }),
             map(response => {
-                // console.log('response: '+JSON.stringify(response));
                 const result = response[0];
-                const lastQuery: QueryParamsModel = response[1];
-                this.store.dispatch(this.hidePageLoadingDistpatcher);
-                // console.log('result: '+JSON.stringify(result));
-                
-                return new PurchasePageLoaded({
-                    purchase: result.data[0].purchase,
-                    userPoints: result.data[0].userPointsStatus,
-                    totalCount: result.data[0].purchase.length,//result.totalCount,
-                    page: lastQuery
-                });
+                if (result.status == APP_CONSTANTS.response.SUCCESS) {
+                    const lastQuery: QueryParamsModel = response[1];
+                    this.store.dispatch(this.hidePageLoadingDistpatcher);
+                    // console.log('result: '+JSON.stringify(result));
+
+                    return new PurchasePageLoaded({
+                        purchase: result.data[0].purchase,
+                        userPoints: result.data[0].userPointsStatus,
+                        totalCount: result.data[0].purchase.length,//result.totalCount,
+                        page: lastQuery
+                    });
+                } else {
+                    this.authNoticeService.setNotice(this.translate.instant('AUTH.REPONSE.INVALID_TOKEN'), 'danger');
+                    return new Logout()
+                }
             }),
         );
 
@@ -125,9 +133,11 @@ export class PurchaseEffects {
     // @Effect()
     // init$: Observable<Action> = defer(() => {
     //     let httpParams = new HttpParams();
-	// 	httpParams = httpParams.append('scheme_id', 'PUR003');
+    // 	httpParams = httpParams.append('scheme_id', 'PUR003');
     //     return of(new AllPurchaseRequested(httpParams));
     // });
 
-    constructor(private actions$: Actions, private purchaseService: PurchaseService, private store: Store<AppState>) { }
+    constructor(private actions$: Actions, private purchaseService: PurchaseService, private store: Store<AppState>,
+        private authNoticeService: AuthNoticeService,
+        private translate: TranslateService,) { }
 }

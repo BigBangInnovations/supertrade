@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpParams } from "@angular/common/http";
 // RxJS
 import { of, Observable, defer, forkJoin } from 'rxjs';
-import { mergeMap, map, withLatestFrom, filter, tap } from 'rxjs/operators';
+import { mergeMap, map, catchError, withLatestFrom, filter, tap } from 'rxjs/operators';
 // NGRX
 import { Effect, Actions, ofType } from '@ngrx/effects';
 import { Store, select, Action } from '@ngrx/store';
@@ -15,6 +15,10 @@ import { OrderService } from '../_services';
 import { AppState } from '../../../core/reducers';
 // Selectors
 import { allOrderLoaded } from '../_selectors/order.selectors';
+import { APP_CONSTANTS } from '../../../../config/default/constants'
+import { AuthNoticeService, Logout } from '../../../core/auth';
+// Translate
+import { TranslateService } from '@ngx-translate/core';
 // Actions
 import {
     AllOrderLoaded,
@@ -28,7 +32,7 @@ import {
     OrderOnServerCreated,
     OrderCreated,
     OrderActionToggleLoading,
-    OrderActions
+    OrderActions,
 } from '../_actions/order.actions';
 
 @Injectable()
@@ -62,15 +66,19 @@ export class OrderEffects {
                 return forkJoin(requestToServer, lastQuery);
             }),
             map(response => {
-                // console.log('response: '+JSON.stringify(response));
                 const result = response[0];
-                const lastQuery: QueryParamsModel = response[1];
-                this.store.dispatch(this.hidePageLoadingDistpatcher);
-                return new OrderPageLoaded({
-                    order: result.data,
-                    totalCount: result.data.length,//result.totalCount,
-                    page: lastQuery
-                });
+                if (result.status == APP_CONSTANTS.response.SUCCESS) {
+                    const lastQuery: QueryParamsModel = response[1];
+                    this.store.dispatch(this.hidePageLoadingDistpatcher);
+                    return new OrderPageLoaded({
+                        order: result.data,
+                        totalCount: result.data.length,//result.totalCount,
+                        page: lastQuery
+                    });
+                } else {
+                    this.authNoticeService.setNotice(this.translate.instant('AUTH.REPONSE.INVALID_TOKEN'), 'danger');
+                    return new Logout()
+                }
             }),
         );
 
@@ -122,9 +130,11 @@ export class OrderEffects {
     // @Effect()
     // init$: Observable<Action> = defer(() => {
     //     let httpParams = new HttpParams();
-	// 	httpParams = httpParams.append('scheme_id', 'PUR003');
+    // 	httpParams = httpParams.append('scheme_id', 'PUR003');
     //     return of(new AllOrderRequested(httpParams));
     // });
 
-    constructor(private actions$: Actions, private orderService: OrderService, private store: Store<AppState>) { }
+    constructor(private actions$: Actions, private orderService: OrderService, private store: Store<AppState>,
+        private authNoticeService: AuthNoticeService,
+        private translate: TranslateService, ) { }
 }

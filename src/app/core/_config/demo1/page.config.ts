@@ -14,6 +14,14 @@ export class PageConfig {
 				page: { 'title': 'Add Sales', 'desc': 'SuperTRADE Add Sales' },
 			},
 		},
+		distributorSale: {
+			distributorSale: {
+				page: { title: 'Distributor Sales', desc: 'SuperTRADE Distributor Sales' }
+			},
+			'add-distributorSale': {
+				page: { 'title': 'Add Distributor Sales', 'desc': 'SuperTRADE Add Distributor Sales' },
+			},
+		},
 		purchase: {
 			'purchase': {
 				page: { 'title': 'Purchase', 'desc': 'SuperTRADE Purchase' },

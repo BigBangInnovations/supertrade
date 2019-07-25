@@ -439,6 +439,32 @@ export class MenuConfig {
 					]
 				},
 				{
+					title: 'Distributor Sales',
+					root: true,
+					icon: 'flaticon2-bar-chart',
+					page: '/distributor-sales',
+					translate: 'MENU.DISTRIBUTOR_SALES',
+					bullet: 'dot',
+					submenu: [
+						{
+							title: 'Distributor Sales',
+							root: true,
+							page: '/distributor-sales',
+							translate: 'MENU.DISTRIBUTOR_SALES_LIST',
+							bullet: 'dot',
+						},
+						{
+							bullet: 'dot',
+							title: 'Add Sales',
+							root: true,
+							alignment: 'left',
+							page: '/add-distributor-sale',
+							translate: 'MENU.ADD_DISTRIBUTOR_SALES',
+						},
+						
+					]
+				},
+				{
 					title: 'Purchase',
 					root: true,
 					icon: 'flaticon2-bar-chart',

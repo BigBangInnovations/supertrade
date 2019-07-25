@@ -69,7 +69,7 @@ export class AddEditOrder {
     addsalesorderjson: string;
     addsalesorderproductjson: string;
     Application: string;
-    
+
     clear(): void {
         this.CompanyID = 0;
         this.UserID = 0;
@@ -77,5 +77,87 @@ export class AddEditOrder {
         this.addsalesorderjson = '';
         this.addsalesorderproductjson = '';
         this.Application = 'SuperLoyal';//Hardcoded from bacckend Please don't chnage this
+    }
+}
+
+export class orderProduct {
+    CGSTSurcharges = undefined;
+    CGSTTax = undefined;
+    CST = undefined;
+    CSTSurcharge = undefined;
+    CategoryType = undefined;
+    CustomerClass = undefined;
+    Discount = undefined;
+    DiscountA = undefined;
+    DiscountB = undefined;
+    DiscountC = undefined;
+    DiscountType = undefined;
+    DispatchQuantity = undefined;
+    ExciseDuty = undefined;
+    ExciseSurcharge = undefined;
+    FOCQuantity = undefined;
+    GSTEnabled = undefined;
+    IGSTSurcharges = undefined;
+    IGSTTax = undefined;
+    InclusiveExclusive: '';
+    IsPromotional = undefined;
+    Maxdiscount = undefined;
+    Name: '';
+    Price = undefined;
+    ProductAmount = undefined;
+    ProductCatId = undefined;
+    ProductID = undefined;
+    ProductSubCatId = undefined;
+    Quantity = undefined;
+    SGSTSurcharges = undefined;
+    SGSTTax = undefined;
+    SalesOrderID = undefined;
+    ServiceTax = undefined;
+    ServiceTaxSurcharge = undefined;
+    VAT = undefined;
+    VATAdditionalTax = undefined;
+    VATFrom: '';
+    VATPercentage = undefined;
+    VATSurcharge = undefined;
+
+    clear(): void {
+        this.CGSTSurcharges = undefined;
+        this.CGSTTax = undefined;
+        this.CST = undefined;
+        this.CSTSurcharge = undefined;
+        this.CategoryType = undefined;
+        this.CustomerClass = undefined;
+        this.Discount = undefined;
+        this.DiscountA = undefined;
+        this.DiscountB = undefined;
+        this.DiscountC = undefined;
+        this.DiscountType = undefined;
+        this.DispatchQuantity = undefined;
+        this.ExciseDuty = undefined;
+        this.ExciseSurcharge = undefined;
+        this.FOCQuantity = undefined;
+        this.GSTEnabled = undefined;
+        this.IGSTSurcharges = undefined;
+        this.IGSTTax = undefined;
+        this.InclusiveExclusive = '';
+        this.IsPromotional = undefined;
+        this.Maxdiscount = undefined;
+        this.Name = '';
+        this.Price = undefined;
+        this.ProductAmount = undefined;
+        this.ProductCatId = undefined;
+        this.ProductID = undefined;
+        this.ProductSubCatId = undefined;
+        this.Quantity = undefined;
+        this.SGSTSurcharges = undefined;
+        this.SGSTTax = undefined;
+        this.SalesOrderID = undefined;
+        this.ServiceTax = undefined;
+        this.ServiceTaxSurcharge = undefined;
+        this.VAT = undefined;
+        this.VATAdditionalTax = undefined;
+        this.VATFrom = '';
+        this.VATPercentage = undefined;
+        this.VATSurcharge = undefined;
     }
 }
