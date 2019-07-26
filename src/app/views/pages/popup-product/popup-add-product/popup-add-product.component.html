@@ -70,8 +70,8 @@ pageAction != 'addDistributorSale'
                     <div class="kt-align-right">{{ productSGST | number:'1.2-2' }}</div>
                 </mat-list-item>
                 <mat-divider></mat-divider>
-                <mat-list-item role="listitem">
-                    <span matLine>Product Net Amount </span>
+                <mat-list-item role="listitem" class="font-weight-bold">
+                    <span matLine class="font-weight-bold">Product Net Amount </span>
                     <div class="kt-align-right">{{ productNetAmount | number:'1.2-2' }}</div>
                 </mat-list-item>
                 <ng-template [ngIf]="OptionalSetting.displayPointCalculation">

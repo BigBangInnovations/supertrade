@@ -6,7 +6,7 @@ import { OrderActions, OrderActionTypes } from '../_actions/order.actions';
 import { Order } from '../_models/order.model';
 import { QueryParamsModel } from '../../_base/crud';
 
-export interface OrderState extends EntityState<Order> {
+export interface OrderState extends EntityState<Order> { 
     isAllOrderLoaded: boolean;
     queryRowsCount: number;
     queryResult: Order[];

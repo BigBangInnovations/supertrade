@@ -11,7 +11,8 @@ export {
     selectAllRetailer,
     selectRetailerLoaded,
     selectRetailerState,
-    selectRetailerLoading
+    selectRetailerLoading,
+    selectRetailerById
  } from './_selectors/retailer.selectors'
  //ACTION
  export { 

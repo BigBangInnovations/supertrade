@@ -11,7 +11,8 @@ import { DistributorSaleEffects, DistributorSaleService, distributorSaleReducer 
 import { ProductEffects, productReducer, ProductService } from '../../../core/product'
 import { RetailerEffects, retailerReducer, RetailerService } from '../../../core/retailer'
 import { OrderselectEffects, orderselectReducer } from '../../../core/orderselect'
-import { OrderService } from '../../../core/order'
+import { OrderService } from '../../../core/order';
+import { MetadataEffects, MetadataService, metadataReducer } from '../../../core/metadata'
 // Translate
 import { TranslateModule } from '@ngx-translate/core';
 // NGRX
@@ -88,6 +89,10 @@ const routes: Routes = [
 		EffectsModule.forFeature([OrderselectEffects]),
 		StoreModule.forFeature('orderselect', orderselectReducer),
 
+		//metadata
+		EffectsModule.forFeature([MetadataEffects]),
+		StoreModule.forFeature('metadata', metadataReducer),
+
 		MatIconModule,
 		MatListModule,
 		MatProgressSpinnerModule,
@@ -130,6 +135,7 @@ const routes: Routes = [
 		ProductService,
 		RetailerService,
 		OrderService,
+		MetadataService,
 	],
 	entryComponents: [
 		ActionNotificationComponent,
@@ -151,6 +157,7 @@ export class DistributorSaleModule {
 				ProductService,
 				RetailerService,
 				OrderService,
+				MetadataService,
 			]
 		};
 	}

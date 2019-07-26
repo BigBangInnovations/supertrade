@@ -27,7 +27,7 @@ export class DistributorSaleService {
 
     // CREATE =>  POST: add a new distributorSale to the server
 	createDistributorSale(data: any): Observable<any> {
-		const url = `add-distributorSale`;
+		const url = `add-distributor-sales`;
         return this.http.post(url, data)
     }
     

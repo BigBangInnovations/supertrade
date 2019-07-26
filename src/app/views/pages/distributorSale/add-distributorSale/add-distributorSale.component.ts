@@ -6,7 +6,7 @@ import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { HttpParams } from "@angular/common/http";
 // RxJS
-import { BehaviorSubject, Observable, of, Subscription, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscription, Subject, from } from 'rxjs';
 import { finalize, takeUntil, tap } from 'rxjs/operators';
 // NGRX
 import { Store, select } from '@ngrx/store';
@@ -33,8 +33,11 @@ import { dynamicProductTemplateSetting } from '../../../../core/common/common.mo
 // import * as fromDistributor from '../../../../core/distributor'
 import * as fromRetailer from '../../../../core/retailer'
 import * as fromOrderselect from '../../../../core/orderselect'
+import * as fromMetadata from '../../../../core/metadata'
 import { selectOrderById } from '../../../../core/orderselect'
+import { selectRetailerById } from '../../../../core/retailer'
 import { Order, orderProduct } from '../../../../core/order/_models/order.model';
+import { FrightTerm, Godown, PaymentMode } from '../../../../core/metadata';
 
 @Component({
   selector: 'kt-add-distributorSale',
@@ -58,10 +61,18 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
   pageAction: string;
   viewLoading$: Observable<boolean>;
   viewOrderSelectLoading$: Observable<boolean>;
+  viewMetadataLoading$: Observable<boolean>;
   viewOrderSelect: boolean = false;
+  viewShippingAddress: boolean = false;
   retailers$: Observable<Retailer[]>;
+
+  frightTerm$: Observable<FrightTerm[]>;
+  godown$: Observable<Godown[]>;
+  paymentMode$: Observable<PaymentMode[]>;
+
   orderSelect$: Observable<Order[]>;
   userSession: string;
+  retailerAddressString: string = '';
   // Private properties
   private subscriptions: Subscription[] = [];
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
@@ -103,7 +114,6 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     this.unsubscribe = new Subject();
     const OptionalSetting = new dynamicProductTemplateSetting();
     OptionalSetting.clear();
-    OptionalSetting.displayPointCalculation = false;
     this.OptionalSetting = OptionalSetting;
     this.pageAction = 'addDistributorSale'
   }
@@ -138,6 +148,22 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
         }
       });
       this.viewLoading$ = this.store.pipe(select(fromRetailer.selectRetailerLoading));
+
+      //Metadata
+      this.store.select(fromMetadata.selectMetadataLoaded).pipe().subscribe(data => {
+        if (data) {
+          this.frightTerm$ = this.store.pipe(select(fromMetadata.selectAllMetadataFreightTerms));
+          this.godown$ = this.store.pipe(select(fromMetadata.selectAllMetadataGodowns));
+          this.paymentMode$ = this.store.pipe(select(fromMetadata.selectAllMetadataPaymentModes));
+        } else {
+          let httpParams = new HttpParams();
+          this.store.dispatch(new fromMetadata.LoadMetadata(httpParams))
+          this.frightTerm$ = this.store.pipe(select(fromMetadata.selectAllMetadataFreightTerms));
+          this.godown$ = this.store.pipe(select(fromMetadata.selectAllMetadataGodowns));
+          this.paymentMode$ = this.store.pipe(select(fromMetadata.selectAllMetadataPaymentModes));
+        }
+      });
+      this.viewMetadataLoading$ = this.store.pipe(select(fromMetadata.selectMetadataLoading));
       this.userSession = this.EncrDecr.getLocalStorage(environment.localStorageKey)
     });
     this.subscriptions.push(routeSubscription);
@@ -156,10 +182,10 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
 	 */
   initDistributorSale() {
     this.createForm();
-    this.subheaderService.setTitle('Add DistributorSale');
+    this.subheaderService.setTitle('Add Distributor Sale');
     this.subheaderService.setBreadcrumbs([
-      { title: 'DistributorSale', page: `distributorSale` },
-      { title: 'Add DistributorSale', page: `add-distributorSale` }
+      { title: 'Distributor Sale', page: `distributorSale` },
+      { title: 'Add Distributor Sale', page: `add-distributorSale` }
     ]);
   }
 
@@ -170,9 +196,31 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     this.distributorSaleForm = this.distributorSaleFB.group({
       scheme_id: [this.salesActiveScheme.scheme_id, Validators.required],
       retailer_id: ['', Validators.required],
-      order_id: [''],
+      retailer_name: [''],
+      soID: [''],
       is_direct_sale: [true],
-      products: this.distributorSaleFB.array([], Validators.required)
+      isShippingAddressSameAsDispatch: [true],
+      godownID: ['', Validators.required],
+      Address_Master_ID: [''],
+      AddressLine1: ['A301', Validators.required],
+      AddressLine2: ['Anand nagar', Validators.required],
+      landline_no: ['6985745632', Validators.required],
+      City: ['Ahmedabad', Validators.required],
+      Pincode: ['380054', Validators.required],
+      State: ['gujrat', Validators.required],
+      Country: ['India', Validators.required],
+      products: this.distributorSaleFB.array([], Validators.required),
+      paymentMode: ['', Validators.required],
+      bankName: [''],
+      cheqNo: [''],
+      cheqDate: [''],
+      frightTerm: [''],
+      dcNo: [''],
+      grNo: [''],
+      transporter: [''],
+      deliveryDays: [''],
+      remarks: [''],
+      erpInvoiceNo: [''],
     });
   }
 
@@ -210,6 +258,30 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     _distributorSale.loyalty_id = this.salesActiveScheme.id;
     _distributorSale.scheme_id = controls['scheme_id'].value;
     _distributorSale.retailer_id = controls['retailer_id'].value;
+    _distributorSale.retailer_name = controls['retailer_name'].value;
+    _distributorSale.distributor_id = this.userData.ID;
+    _distributorSale.soID = controls['soID'].value;
+    _distributorSale.godownID = controls['godownID'].value;
+    _distributorSale.isShippingAddressSameAsDispatch = controls['isShippingAddressSameAsDispatch'].value;
+    _distributorSale.Address_Master_ID = controls['Address_Master_ID'].value;
+    _distributorSale.AddressLine1 = controls['AddressLine1'].value;
+    _distributorSale.AddressLine2 = controls['AddressLine2'].value;
+    _distributorSale.City = controls['City'].value;
+    _distributorSale.State = controls['State'].value;
+    _distributorSale.Country = controls['Country'].value;
+    _distributorSale.Pincode = controls['Pincode'].value;
+    _distributorSale.paymentMode = controls['paymentMode'].value;
+    _distributorSale.bankName = controls['bankName'].value;
+    _distributorSale.cheqNo = controls['cheqNo'].value;
+    _distributorSale.cheqDate = controls['cheqDate'].value;
+    _distributorSale.frightTerm = controls['frightTerm'].value;
+    _distributorSale.dcNo = controls['dcNo'].value;
+    _distributorSale.grNo = controls['grNo'].value;
+    _distributorSale.transporter = controls['transporter'].value;
+    _distributorSale.deliveryDays = controls['deliveryDays'].value;
+    _distributorSale.remarks = controls['remarks'].value;
+    _distributorSale.erpInvoiceNo = controls['erpInvoiceNo'].value;
+    _distributorSale.erpInvoiceNo = controls['erpInvoiceNo'].value;
     _distributorSale.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
     _distributorSale.products_json = JSON.stringify(this.prepareProduct())
     return _distributorSale;
@@ -272,7 +344,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
           if (response.status == APP_CONSTANTS.response.SUCCESS) {
             const message = `DistributorSale successfully has been added.`;
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
-            this.router.navigateByUrl('distributorSale'); // distributorSale listing page
+            this.router.navigateByUrl('distributor-sales'); // distributorSale listing page
           } else if (response.status == APP_CONSTANTS.response.ERROR) {
             const message = response.message;
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
@@ -367,17 +439,9 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
   }
 
   is_direct_sale_toggle(event) {
-    this.distributorSaleForm.controls['order_id'].setValue('');
-    const currentProductArray = <FormArray>this.distributorSaleForm.controls['products'];
-    //Clear
-    currentProductArray.reset();
-    while (currentProductArray.length !== 0) {
-      currentProductArray.removeAt(0)
-    }
-    this.commonCalculation()
-
+    this.distributorSaleForm.controls['soID'].setValue('');
+    this.resetProductData();
     if (!event.checked) {
-
       this.viewOrderSelect = true;
       //Load distribiutor
       this.store.select(fromOrderselect.selectOrderselectLoaded).pipe().subscribe(data => {
@@ -405,6 +469,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
   }
 
   salesOrderChange(event) {
+    this.resetProductData();
     const numberPatern = '^[0-9.,]+$';
     this.store.pipe(select(selectOrderById(event.value))).subscribe((data: any) => {
       const productObject = data.Products;
@@ -443,6 +508,40 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
         }
         this.createProduct(productFormArray);
       });
+    })
+  }
+
+  resetProductData() {
+    const currentProductArray = <FormArray>this.distributorSaleForm.controls['products'];
+    //Clear
+    currentProductArray.reset();
+    while (currentProductArray.length !== 0) {
+      currentProductArray.removeAt(0)
+    }
+    this.commonCalculation()
+  }
+
+  isShippingAddressSameAsDispatch_toggle(event) {
+    if (event.checked) {
+      this.viewShippingAddress = false;
+    } else {
+      this.viewShippingAddress = true;
+    }
+  }
+
+  retailerChange(event) {
+    this.distributorSaleForm.controls['Address_Master_ID'].setValue('');
+    this.distributorSaleForm.controls['retailer_name'].setValue('');
+    this.retailerAddressString = '';
+    this.store.pipe(select(selectRetailerById(event.value))).subscribe((data: any) => {
+      this.distributorSaleForm.controls['Address_Master_ID'].setValue(data.Address_Master_ID);
+      this.distributorSaleForm.controls['retailer_name'].setValue(data.Name);
+      this.retailerAddressString = data.Address_Line1;
+      this.retailerAddressString += ', ' + data.Address_Line2;
+      this.retailerAddressString += ', ' + data.City;
+      this.retailerAddressString += ', ' + data.State;
+      this.retailerAddressString += ', (' + data.Pincode + ')';
+      this.retailerAddressString += ', ' + data.Country;
     })
   }
 }

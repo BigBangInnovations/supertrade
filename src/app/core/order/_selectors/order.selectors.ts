@@ -17,7 +17,7 @@ export const selectOrderById = (orderId: number) => createSelector(
 );
 
 export const selectAllOrder = createSelector(
-    selectOrderState,
+    selectOrderState, 
     fromOrder.selectAll
 );
 

@@ -6,9 +6,14 @@ import * as fromRetailer from '../_reducers/retailer.reducers';
 
 export const selectRetailerState = createFeatureSelector<RetailerState>('retailer');
 
-export const selectAllRetailer = createSelector(
+export const selectRetailerById = (retailerId: number) => createSelector(
     selectRetailerState,
-    (state: RetailerState) => state.retailer
+    RetailerState => RetailerState.entities[retailerId]
+);
+
+export const selectAllRetailer = createSelector(
+    selectRetailerState, 
+    fromRetailer.selectAll
 );
 
 export const selectRetailerLoading = createSelector(
