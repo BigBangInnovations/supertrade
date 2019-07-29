@@ -5,12 +5,21 @@
                 <span *ngIf="error$ | async as error">{{error}}</span>
                 <mat-list *ngIf="!(notificationLoading$ | async); else loading">
                     <ng-container *ngIf="(notifications$ | async)?.length; else noNotification">
-                        <mat-list-item *ngFor=" let notification of (notifications$ |async)">
-                            <mat-icon mat-list-icon>notifications_active</mat-icon>
-                            <h4 mat-line>{{notification.Message}}</h4>
-                            <p mat-line> {{notification.Last_Modified | date}} </p>
-                            <mat-divider></mat-divider>
-                        </mat-list-item>
+                        <ng-container *ngFor=" let notification of (notifications$ |async)">
+                            <mat-list-item [ngClass]="{
+                                'background-status-1': notification.Status == 1,
+                                'background-status-2': notification.Status == 2,
+                                'background-status-3': notification.Status == 3,
+                                'background-status-4': notification.Status == 4,
+                                'background-status-5': notification.Status == 5
+                            }">
+                                <mat-icon mat-list-icon>notifications_active</mat-icon>
+                                <h4 mat-line>{{notification.Message}}</h4>
+                                <p mat-line> {{notification.Last_Modified | date: 'dd-MMM-yyyy, h:mm:ss a':'+1100'}} </p>
+                                <!-- </span> -->
+                                <mat-divider></mat-divider>
+                            </mat-list-item>
+                        </ng-container>
                     </ng-container>
                     <ng-template #noNotification>
                         <mat-card>No Notification Yet!</mat-card>
@@ -28,6 +37,80 @@
             </div>
         </div>
     </mat-tab>
-    <mat-tab md-stretch-tabs="yes" label="Approvals">Approvals</mat-tab>
-    <mat-tab md-stretch-tabs="yes" label="My Pending Approval">My Pending Approval</mat-tab>
+    <mat-tab md-stretch-tabs="yes" label="Approvals">
+
+        <div class="kt-section">
+            <div class="kt-section__content">
+                <span *ngIf="approvalError$ | async as approvalError">{{approvalError}}</span>
+                <mat-list *ngIf="!(approvalLoading$ | async); else loadingApproval">
+                    <ng-container *ngIf="(approvals$ | async)?.length; else noApproval">
+                        <ng-container *ngFor=" let approval of (approvals$ |async)">
+                            <mat-list-item [ngClass]="{
+                                    'background-status-1': approval.Status == 1,
+                                    'background-status-2': approval.Status == 2,
+                                    'background-status-3': approval.Status == 3,
+                                    'background-status-4': approval.Status == 4,
+                                    'background-status-5': approval.Status == 5
+                                }">
+                                <mat-icon mat-list-icon>notifications_active</mat-icon>
+                                <h4 mat-line>{{approval.Message}}</h4>
+                                <p mat-line> {{approval.Last_Modified | date: 'dd-MMM-yyyy, h:mm:ss a':'+1100'}} </p>
+                                <mat-divider></mat-divider>
+                            </mat-list-item>
+                        </ng-container>
+                    </ng-container>
+                    <ng-template #noApproval>
+                        <mat-card>No Approval Yet!</mat-card>
+                    </ng-template>
+                </mat-list>
+
+                <ng-template #loadingApproval>
+                    <div style="margin-left: 50%;">
+                        <mat-spinner color="warn" diameter="30" strokeWidth="2"></mat-spinner>
+                        <div style="position:relative;">
+                            Loading...
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+
+    </mat-tab>
+    <mat-tab md-stretch-tabs="yes" label="My Pending Approval">
+        <div class="kt-section">
+            <div class="kt-section__content">
+                <span *ngIf="myPendingApprovalError$ | async as myPendingApprovalError">{{myPendingApprovalError}}</span>
+                <mat-list *ngIf="!(myPendingApprovalLoading$ | async); else myPendingApprovalLoading">
+                    <ng-container *ngIf="(myPendingApprovals$ | async)?.length; else noMyPendingApproval">
+                        <ng-container *ngFor=" let myPendingApprovals of (myPendingApprovals$ |async)">
+                            <mat-list-item [ngClass]="{
+                                    'background-status-1': myPendingApprovals.Status == 1,
+                                    'background-status-2': myPendingApprovals.Status == 2,
+                                    'background-status-3': myPendingApprovals.Status == 3,
+                                    'background-status-4': myPendingApprovals.Status == 4,
+                                    'background-status-5': myPendingApprovals.Status == 5
+                                }">
+                                <mat-icon mat-list-icon>notifications_active</mat-icon>
+                                <h4 mat-line>{{myPendingApprovals.Message}}</h4>
+                                <p mat-line> {{myPendingApprovals.Last_Modified | date: 'dd-MMM-yyyy, h:mm:ss a':'+1100'}} </p>
+                                <mat-divider></mat-divider>
+                            </mat-list-item>
+                        </ng-container>
+                    </ng-container>
+                    <ng-template #noMyPendingApproval>
+                        <mat-card>No Any My Pending Approval Yet!</mat-card>
+                    </ng-template>
+                </mat-list>
+
+                <ng-template #myPendingApprovalLoading>
+                    <div style="margin-left: 50%;">
+                        <mat-spinner color="warn" diameter="30" strokeWidth="2"></mat-spinner>
+                        <div style="position:relative;">
+                            Loading...
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </mat-tab>
 </mat-tab-group>

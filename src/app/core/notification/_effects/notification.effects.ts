@@ -25,18 +25,19 @@ import { TranslateService } from '@ngx-translate/core';
 @Injectable()
 export class NotificationEffects {
 
+    //Load notification effect 
     @Effect()
-    loadPurchases$ = this.actions$.pipe(
+    loadNotifications$ = this.actions$.pipe(
         ofType(notificationAction.NotificationActionType.LOAD_NOTIFICATION),
         mergeMap((action: notificationAction.LoadNotification) =>
             this.notificationServices.getNotification(action.payload).pipe(
                 map(
-                    (response: CommonResponseDirectData) =>{
-                        if(response.status == APP_CONSTANTS.response.SUCCESS){
+                    (response: CommonResponseDirectData) => {
+                        if (response.status == APP_CONSTANTS.response.SUCCESS) {
                             return new notificationAction.LoadNotificationSuccess(response)
-                        }else if(response.status == APP_CONSTANTS.response.ERROR){
+                        } else if (response.status == APP_CONSTANTS.response.ERROR) {
                             return new notificationAction.LoadNotificationFail(response.message)
-                        }else {
+                        } else {
                             this.authNoticeService.setNotice(this.translate.instant('AUTH.REPONSE.INVALID_TOKEN'), 'danger');
                             return new Logout()
                         }
@@ -47,11 +48,57 @@ export class NotificationEffects {
         )
     );
 
+    //Load approval effect 
+    @Effect()
+    loadApprovals$ = this.actions$.pipe(
+        ofType(notificationAction.NotificationActionType.LOAD_APPROVAL),
+        mergeMap((action: notificationAction.LoadApproval) =>
+            this.notificationServices.getNotification(action.payload).pipe(
+                map(
+                    (response: CommonResponseDirectData) => {
+                        if (response.status == APP_CONSTANTS.response.SUCCESS) {
+                            return new notificationAction.LoadApprovalSuccess(response)
+                        } else if (response.status == APP_CONSTANTS.response.ERROR) {
+                            return new notificationAction.LoadApprovalFail(response.message)
+                        } else {
+                            this.authNoticeService.setNotice(this.translate.instant('AUTH.REPONSE.INVALID_TOKEN'), 'danger');
+                            return new Logout()
+                        }
+                    }
+                ),
+                catchError(err => of(new notificationAction.LoadApprovalFail(err)))
+            )
+        )
+    );
+
+    //Load My pending approval effect 
+    @Effect()
+    loadMyPendingApprovals$ = this.actions$.pipe(
+        ofType(notificationAction.NotificationActionType.LOAD_MYPENDINGAPPROVAL),
+        mergeMap((action: notificationAction.LoadMyPendingApproval) =>
+            this.notificationServices.getNotification(action.payload).pipe(
+                map(
+                    (response: CommonResponseDirectData) => {
+                        if (response.status == APP_CONSTANTS.response.SUCCESS) {
+                            return new notificationAction.LoadMyPendingApprovalSuccess(response)
+                        } else if (response.status == APP_CONSTANTS.response.ERROR) {
+                            return new notificationAction.LoadMyPendingApprovalFail(response.message)
+                        } else {
+                            this.authNoticeService.setNotice(this.translate.instant('AUTH.REPONSE.INVALID_TOKEN'), 'danger');
+                            return new Logout()
+                        }
+                    }
+                ),
+                catchError(err => of(new notificationAction.LoadMyPendingApprovalFail(err)))
+            )
+        )
+    );
+
     constructor(
-        private actions$: Actions, 
-        private notificationServices: NotificationService, 
+        private actions$: Actions,
+        private notificationServices: NotificationService,
         private store: Store<AppState>,
-		private authNoticeService: AuthNoticeService,
-		private translate: TranslateService,
-        ) { }
+        private authNoticeService: AuthNoticeService,
+        private translate: TranslateService,
+    ) { }
 }

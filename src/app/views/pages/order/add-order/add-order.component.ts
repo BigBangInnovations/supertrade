@@ -2,7 +2,7 @@
 import { ViewContainerRef, ViewChild, ComponentFactoryResolver, ComponentRef, ComponentFactory, Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { HttpParams } from "@angular/common/http";
 // RxJS
@@ -30,6 +30,8 @@ import { Logout } from '../../../../core/auth';
 import { PopupProductTotalCalculationComponent } from '../../popup-product/popup-add-product/popup-product-total-calculation/popup-product-total-calculation.component'
 import { dynamicProductTemplateSetting } from '../../../../core/common/common.model'
 import * as fromDistributor from '../../../../core/distributor'
+import * as fromRetailer from '../../../../core/retailer'
+import { Retailer } from '../../../../core/retailer/_models/retailer.model';
 
 @Component({
   selector: 'kt-add-order',
@@ -49,10 +51,12 @@ export class AddOrderComponent implements OnInit, OnDestroy {
   userData: any;
   componentRef: any;
   loading = false;
+  isDistributor = false;
   OptionalSetting: dynamicProductTemplateSetting;
   pageAction: string;
   viewLoading$: Observable<boolean>;
   distributor$: Observable<Distributor[]>;
+  retailers$: Observable<Retailer[]>;
   // Private properties
   private subscriptions: Subscription[] = [];
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
@@ -96,8 +100,9 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     OptionalSetting.clear();
     OptionalSetting.displayPointCalculation = false;
     this.OptionalSetting = OptionalSetting;
-    
+
     this.pageAction = 'addOrder'
+
   }
 
 	/**
@@ -111,20 +116,34 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     const routeSubscription = this.activatedRoute.params.subscribe(params => {
       let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
       this.userData = JSON.parse(sessionStorage)
+      this.isDistributor = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.DISTRIBUTOR_TYPE) ? true : false;
       this.initOrder();
 
-      //Load distribiutor
-      this.store.select(fromDistributor.selectDistributorLoaded).pipe().subscribe(data => {
-        if (data) {
-          this.distributor$ = this.store.pipe(select(fromDistributor.selectAllDistributor));
-        } else {
-          let httpParams = new HttpParams();
-          this.store.dispatch(new fromDistributor.LoadDistributor(httpParams))
-          this.distributor$ = this.store.pipe(select(fromDistributor.selectAllDistributor));
-        }
-      });
-      this.viewLoading$ = this.store.pipe(select(fromDistributor.selectDistributorLoading));
-
+      if (this.isDistributor) {
+        //Load retailer
+        this.store.select(fromRetailer.selectRetailerLoaded).pipe().subscribe(data => {
+          if (data) {
+            this.retailers$ = this.store.pipe(select(fromRetailer.selectAllRetailer));
+          } else {
+            let httpParams = new HttpParams();
+            this.store.dispatch(new fromRetailer.LoadRetailer(httpParams))
+            this.retailers$ = this.store.pipe(select(fromRetailer.selectAllRetailer));
+          }
+        });
+        this.viewLoading$ = this.store.pipe(select(fromRetailer.selectRetailerLoading));
+      } else {
+        //Load distribiutor
+        this.store.select(fromDistributor.selectDistributorLoaded).pipe().subscribe(data => {
+          if (data) {
+            this.distributor$ = this.store.pipe(select(fromDistributor.selectAllDistributor));
+          } else {
+            let httpParams = new HttpParams();
+            this.store.dispatch(new fromDistributor.LoadDistributor(httpParams))
+            this.distributor$ = this.store.pipe(select(fromDistributor.selectAllDistributor));
+          }
+        });
+        this.viewLoading$ = this.store.pipe(select(fromDistributor.selectDistributorLoading));
+      }
     });
     this.subscriptions.push(routeSubscription);
 
@@ -154,10 +173,16 @@ export class AddOrderComponent implements OnInit, OnDestroy {
 	 */
   createForm() {
     this.orderForm = this.orderFB.group({
-      distributor_id: ['', Validators.required],
       Description: [''],
       products: this.orderFB.array([], Validators.required)
     });
+    if (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.DISTRIBUTOR_TYPE) {
+      this.orderForm.addControl('retailer_id', new FormControl('', Validators.required));
+    } else {
+      this.orderForm.addControl('distributor_id', new FormControl('', Validators.required));
+    }
+
+
   }
 
 	/**
@@ -204,12 +229,12 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     const controls = this.orderForm.controls;
     const _order = new Order();
     _order.clear();
-    _order.SOMadeBy = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE)?'Retailer':'Distributor'
+    _order.SOMadeBy = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE) ? 'Retailer' : 'Distributor'
     _order.AssignedTo = this.userData.Tagged_To;
     _order.CreatedBy = this.userData.Tagged_To;
     _order.CompanyID = this.userData.Company_ID;
-    _order.CustomerID = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE)?this.userData.ID:controls['retailer_id'].value;
-    _order.FulfilledByID = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE)?this.userData.Distributor_ID:controls['distributor_id'].value;
+    _order.CustomerID = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE) ? this.userData.ID : controls['retailer_id'].value;
+    _order.FulfilledByID = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE) ? this.userData.Distributor_ID : controls['distributor_id'].value;
     _order.Description = controls['Description'].value;
     _order.NetAmount = 0;
     _order.GrossAmount = 0;

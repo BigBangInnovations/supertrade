@@ -7,7 +7,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 // Core Module
 import { CoreModule } from '../../../core/core.module';
 import { PartialsModule } from '../../partials/partials.module';
-import { NotificationEffects, NotificationService, notificationReducer } from '../../../core/notification'
+import { NotificationEffects, NotificationService, notificationReducer, approvalReducer, myPendingApprovalReducer } from '../../../core/notification'
 // Translate
 import { TranslateModule } from '@ngx-translate/core';
 // NGRX
@@ -88,6 +88,8 @@ const routes: Routes = [
 		FormsModule,
 		ReactiveFormsModule,
 		StoreModule.forFeature('notification', notificationReducer),
+		StoreModule.forFeature('approval', approvalReducer),
+		StoreModule.forFeature('myPendingApproval', myPendingApprovalReducer),
 		EffectsModule.forFeature([NotificationEffects]),
 	],
 	exports: [

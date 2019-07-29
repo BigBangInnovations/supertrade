@@ -7,6 +7,12 @@ export {
     LoadNotificationFail,
     LoadNotificationSuccess,
     NotificationActionType,
+    LoadApproval,
+    LoadApprovalSuccess,
+    LoadApprovalFail,
+    LoadMyPendingApproval,
+    LoadMyPendingApprovalSuccess,
+    LoadMyPendingApprovalFail,
     Action,
 } from './_actions/notification.actions';
 
@@ -14,7 +20,7 @@ export {
 export { NotificationEffects } from './_effects/notification.effects';
 
 // REDUCERS
-export { notificationReducer } from './_reducers/notification.reducers';
+export { notificationReducer, approvalReducer, myPendingApprovalReducer } from './_reducers/notification.reducers';
 
 // SELECTORS
 export {
@@ -23,6 +29,19 @@ export {
     getNotificationLoading,
     selectNotificationState,
     getNotificationError,
+
+    getApproval,
+    getApprovalError,
+    getApprovalLoaded,
+    getApprovalLoading,
+    selectApprovalState,
+
+    getMyPendingApproval,
+    getMyPendingApprovalError,
+    getMyPendingApprovalLoaded,
+    getMyPendingApprovalLoading,
+    selectMyPendingApprovalState
+
 } from './_selectors/notification.selectors';
 
 // MODELS

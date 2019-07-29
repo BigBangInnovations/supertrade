@@ -167,6 +167,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
       this.userSession = this.EncrDecr.getLocalStorage(environment.localStorageKey)
     });
     this.subscriptions.push(routeSubscription);
+    this.formControlValueChanged();
 
   }
 
@@ -202,13 +203,13 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
       isShippingAddressSameAsDispatch: [true],
       godownID: ['', Validators.required],
       Address_Master_ID: [''],
-      AddressLine1: ['A301', Validators.required],
-      AddressLine2: ['Anand nagar', Validators.required],
-      landline_no: ['6985745632', Validators.required],
-      City: ['Ahmedabad', Validators.required],
-      Pincode: ['380054', Validators.required],
-      State: ['gujrat', Validators.required],
-      Country: ['India', Validators.required],
+      AddressLine1: ['A301'],
+      AddressLine2: ['Anand nagar'],
+      landline_no: ['6985745632'],
+      City: ['Ahmedabad'],
+      Pincode: ['380054'],
+      State: ['gujrat'],
+      Country: ['India'],
       products: this.distributorSaleFB.array([], Validators.required),
       paymentMode: ['', Validators.required],
       bankName: [''],
@@ -543,5 +544,33 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
       this.retailerAddressString += ', (' + data.Pincode + ')';
       this.retailerAddressString += ', ' + data.Country;
     })
+  }
+
+  formControlValueChanged() {
+    this.distributorSaleForm.get('isShippingAddressSameAsDispatch').valueChanges.subscribe(data => {
+      if (data) {
+        this.distributorSaleForm.get('AddressLine1').clearValidators()
+        this.distributorSaleForm.get('AddressLine2').clearValidators()
+        this.distributorSaleForm.get('landline_no').clearValidators()
+        this.distributorSaleForm.get('City').clearValidators()
+        this.distributorSaleForm.get('State').clearValidators()
+        this.distributorSaleForm.get('Country').clearValidators()
+      } else {
+        this.distributorSaleForm.get('AddressLine1').setValidators([Validators.required])
+        this.distributorSaleForm.get('AddressLine2').setValidators([Validators.required])
+        this.distributorSaleForm.get('landline_no').setValidators([Validators.required])
+        this.distributorSaleForm.get('City').setValidators([Validators.required])
+        this.distributorSaleForm.get('State').setValidators([Validators.required])
+        this.distributorSaleForm.get('Country').setValidators([Validators.required])
+      }
+
+      this.distributorSaleForm.get('AddressLine1').updateValueAndValidity();
+      this.distributorSaleForm.get('AddressLine2').updateValueAndValidity();
+      this.distributorSaleForm.get('landline_no').updateValueAndValidity();
+      this.distributorSaleForm.get('City').updateValueAndValidity();
+      this.distributorSaleForm.get('State').updateValueAndValidity();
+      this.distributorSaleForm.get('Country').updateValueAndValidity();
+
+    });
   }
 }
