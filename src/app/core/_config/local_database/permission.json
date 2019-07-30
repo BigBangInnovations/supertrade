@@ -1,0 +1,28 @@
+[{
+        "id": 1,
+        "title": "sales",
+        "level": 1,
+        "parentId": 0,
+        "isSelected": false,
+        "name": "AccessSaleModule",
+        "_children": []
+    },
+    {
+        "id": 2,
+        "title": "purchase",
+        "level": 1,
+        "parentId": 0,
+        "isSelected": false,
+        "name": "AccessPurchaseModule",
+        "_children": []
+    },
+    {
+        "id": 3,
+        "title": "distributorSale",
+        "level": 1,
+        "parentId": 0,
+        "isSelected": false,
+        "name": "AccessDistributorSaleModule",
+        "_children": []
+    }
+]

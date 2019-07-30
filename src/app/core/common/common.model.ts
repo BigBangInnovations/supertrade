@@ -83,9 +83,13 @@ export class dynamicProductTemplateSetting {
     //To display loyalty point or not
     displayPointCalculation: boolean;
 
+    //To display accept reject button
+    displayApproveRejectButton: boolean;
+
     clear(): void {
         this.displayDeleteButton = true;
         this.displayPointCalculation = true;
+        this.displayApproveRejectButton = false;
     }
 }
 

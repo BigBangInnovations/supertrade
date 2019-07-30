@@ -60,6 +60,14 @@ export class PurchaseService {
         return this.http.post<Purchase[]>(url, data);
     }
 
+    /**
+     * From Retailer notification scren
+     * Get distributor sale for approval 
+     */
+    findDistributorSaleAsPurchase(data: any): Observable<any> {
+        const url = `get-distributor-sales`;
+        return this.http.post<Purchase[]>(url, data);
+    }
  	/*
  	 * Handle Http operation that failed.
  	 * Let the app continue.

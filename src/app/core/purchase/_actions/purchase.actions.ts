@@ -2,7 +2,7 @@
 import { Action } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
 // CRUD
-import { QueryParamsModel } from '../../_base/crud';
+import { QueryParamsModel } from '../../_base/crud'; 
 // Models
 import { Purchase, UserPointsStatus } from '../_models/purchase.model';
 
@@ -17,7 +17,10 @@ export enum PurchaseActionTypes {
     PurchasePageLoaded = '[Purchase API] Purchase Page Loaded',
     PurchasePageCancelled = '[Purchase API] Purchase Page Cancelled',
     PurchasePageToggleLoading = '[Purchase page] Purchase Page Toggle Loading',
-    PurchaseActionToggleLoading = '[Purchase] Purchase Action Toggle Loading'
+    PurchaseActionToggleLoading = '[Purchase] Purchase Action Toggle Loading',
+    LOAD_PURCHASE = '[Purchase] load Purchase',
+    LOAD_PURCHASE_SUCCESS = '[Purchase] load Purchase success',
+    LOAD_PURCHASE_FAIL = '[Purchase] load Purchase fail',
 }
 
 export class PurchaseOnServerCreated implements Action {
@@ -40,17 +43,17 @@ export class PurchaseUpdated implements Action {
 
 export class PurchaseDeleted implements Action {
     readonly type = PurchaseActionTypes.PurchaseDeleted;
-    constructor(public payload: { id: number }) {}
+    constructor(public payload: { id: number }) { }
 }
 
 export class PurchasePageRequested implements Action {
     readonly type = PurchaseActionTypes.PurchasePageRequested;
-    constructor(public payload: { page: QueryParamsModel, body:any }) { }
+    constructor(public payload: { page: QueryParamsModel, body: any }) { }
 }
 
 export class PurchasePageLoaded implements Action {
     readonly type = PurchaseActionTypes.PurchasePageLoaded;
-    constructor(public payload: { purchase: Purchase[], userPoints:UserPointsStatus, totalCount: number, page: QueryParamsModel }) { }
+    constructor(public payload: { purchase: Purchase[], userPoints: UserPointsStatus, totalCount: number, page: QueryParamsModel }) { }
 }
 
 export class PurchasePageCancelled implements Action {
@@ -77,14 +80,32 @@ export class PurchaseActionToggleLoading implements Action {
     constructor(public payload: { isLoading: boolean }) { }
 }
 
+export class LOAD_PURCHASE implements Action {
+    readonly type = PurchaseActionTypes.LOAD_PURCHASE;
+    constructor(public payload) { }
+}
+
+export class LOAD_PURCHASE_SUCCESS implements Action {
+    readonly type = PurchaseActionTypes.LOAD_PURCHASE_SUCCESS
+    constructor(public payload: { purchase: Purchase[] }) { }
+}
+
+export class LOAD_PURCHASE_FAIL implements Action {
+    readonly type = PurchaseActionTypes.LOAD_PURCHASE_FAIL
+    constructor(public payload: string) {}
+}
+
 export type PurchaseActions = PurchaseCreated
-| PurchaseUpdated
-| PurchaseDeleted
-| PurchasePageRequested
-| PurchasePageLoaded
-| PurchasePageCancelled
-| AllPurchaseLoaded
-| AllPurchaseRequested
-| PurchaseOnServerCreated
-| PurchasePageToggleLoading
-| PurchaseActionToggleLoading;
+    | PurchaseUpdated
+    | PurchaseDeleted
+    | PurchasePageRequested
+    | PurchasePageLoaded
+    | PurchasePageCancelled
+    | AllPurchaseLoaded
+    | AllPurchaseRequested
+    | PurchaseOnServerCreated
+    | PurchasePageToggleLoading
+    | PurchaseActionToggleLoading
+    | LOAD_PURCHASE
+    | LOAD_PURCHASE_SUCCESS
+    | LOAD_PURCHASE_FAIL;

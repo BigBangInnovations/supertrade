@@ -399,7 +399,6 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 		const dialogRef = this.dialog.open(ViewPurchaseComponent, {
 			data: { purchaseId: purchaseId, action: action },
 			width: '600px',
-			height: '550px'
 		});
 		dialogRef.afterClosed().subscribe(res => {
 			if (action == 'purchaseReturn' && res == 'reload')

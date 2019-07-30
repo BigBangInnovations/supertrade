@@ -9,7 +9,10 @@ import { Store, select } from '@ngrx/store';
 import { AppState } from '../../../core/reducers';
 import { dashCaseToCamelCase } from '@angular/compiler/src/util';
 import { HttpParams } from "@angular/common/http";
-
+import { APP_CONSTANTS } from '../../../../config/default/constants'
+import { MatPaginator, MatSort, MatSnackBar, MatDialog } from '@angular/material';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ViewDistributorSaleComponent } from '../distributorSale/view-distributorSale/view-distributorSale.component';
 import {
   Notification,
   getNotificationError,
@@ -32,10 +35,14 @@ import {
 
 } from '../../../core/notification';
 
+// Services
+import { LayoutUtilsService, MessageType } from '../../../core/_base/crud';
+import { EncrDecrServiceService } from '../../../core/auth/_services/encr-decr-service.service'
+
 @Component({
   selector: 'kt-notification',
   templateUrl: './notification.component.html',
-  styleUrls: ['./notification.component.scss']
+  styleUrls: ['./notification.component.scss'],
 })
 export class NotificationComponent implements OnInit, OnDestroy {
   notifications$: Observable<Notification[]>;
@@ -50,21 +57,30 @@ export class NotificationComponent implements OnInit, OnDestroy {
   approvalLoading$: Observable<boolean>;
   myPendingApprovalLoading$: Observable<boolean>;
 
+  readonly app_constants = APP_CONSTANTS;
   /**
     * Component constructor 
     *
     * @param translate: TranslateService
     * @param store: Store<AppState>
+	 * @param dialog: MatDialog
+	 * @param snackBar: MatSnackBar
+	 * @param layoutUtilsService: LayoutUtilsService
+	 * @param EncrDecr: EncrDecrServiceService
+	 * @param fb: FormBuilder
     */
   constructor(
     private translate: TranslateService,
     private store: Store<AppState>,
+    public dialog: MatDialog,
+    public snackBar: MatSnackBar,
+    private layoutUtilsService: LayoutUtilsService,
+    private EncrDecr: EncrDecrServiceService,
+    private fb: FormBuilder,
   ) { }
 
   ngOnInit() {
     this.loadNotificationTab();
-    this.loadMyPendingApprovalTab();
-    this.loadApprovalTab();
   }
 
   loadNotificationTab() {
@@ -78,9 +94,21 @@ export class NotificationComponent implements OnInit, OnDestroy {
         7	close 
      */
     let httpParams = new HttpParams();
-    httpParams = httpParams.append('type', '109,165,166,169,170');
-    httpParams = httpParams.append('status', '2,3,4,5,7');
-    httpParams = httpParams.append('is_self', '0');
+    httpParams = httpParams.append('type',
+      `${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERSALES_ORDER},
+    ${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_ADD_SALES},
+    ${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_RETAILER_PURCHASE_RETURN},
+    ${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_RETAILER_PARTIAL_PURCHASE_REQUEST},
+    ${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_PARTIAL_PURCHASERETUN_REQUEST},
+    `);
+    httpParams = httpParams.append('status',
+      `${APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_APPROVED},
+    ${APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_REJECTED},
+    ${APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_CANCELLED},
+    ${APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_ALERT},
+    ${APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_CLOSE}
+    `);
+    httpParams = httpParams.append('is_self', `${APP_CONSTANTS.NOTIFICATION_SELF.IS_SELF_FALSE}`);
     this.store.dispatch(new LoadNotification(httpParams));
     this.notifications$ = this.store.pipe(select(getNotification));
     this.error$ = this.store.pipe(select(getNotificationError));
@@ -89,9 +117,16 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   loadApprovalTab() {
     let httpParams = new HttpParams();
-    httpParams = httpParams.append('type', '109,165,166,169,170');
-    httpParams = httpParams.append('status', '1');
-    httpParams = httpParams.append('is_self', '0');
+    httpParams = httpParams.append('type',
+      `${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERSALES_ORDER},
+    ${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_ADD_SALES},
+    ${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_RETAILER_PURCHASE_RETURN},
+    ${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_RETAILER_PARTIAL_PURCHASE_REQUEST},
+    ${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_PARTIAL_PURCHASERETUN_REQUEST},
+    `);
+    httpParams = httpParams.append('status',
+      `${APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING}`);
+    httpParams = httpParams.append('is_self', `${APP_CONSTANTS.NOTIFICATION_SELF.IS_SELF_FALSE}`);
     this.store.dispatch(new LoadApproval(httpParams));
     this.approvals$ = this.store.pipe(select(getApproval));
     this.approvalError$ = this.store.pipe(select(getApprovalError));
@@ -100,9 +135,19 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   loadMyPendingApprovalTab() {
     let httpParams = new HttpParams();
-    httpParams = httpParams.append('type', '109,165,166,169,170');
-    httpParams = httpParams.append('status', '1,5');
-    httpParams = httpParams.append('is_self', '1');
+    httpParams = httpParams.append('type',
+      `${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERSALES_ORDER},
+    ${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_ADD_SALES},
+    ${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_RETAILER_PURCHASE_RETURN},
+    ${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_RETAILER_PARTIAL_PURCHASE_REQUEST},
+    ${APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_PARTIAL_PURCHASERETUN_REQUEST},
+    `);
+
+    httpParams = httpParams.append('status',
+      `${APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING},
+    ${APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_ALERT}
+    `);
+    httpParams = httpParams.append('is_self', `${APP_CONSTANTS.NOTIFICATION_SELF.IS_SELF_TRUE}`);
     this.store.dispatch(new LoadMyPendingApproval(httpParams));
     this.myPendingApprovals$ = this.store.pipe(select(getMyPendingApproval));
     this.myPendingApprovalError$ = this.store.pipe(select(getMyPendingApprovalError));
@@ -115,4 +160,43 @@ export class NotificationComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
   }
 
+  tabChangeEvent(event) {
+    if (event.index == 0) {
+      this.loadNotificationTab();
+    } else if (event.index == 1) {
+      this.loadApprovalTab();
+    } else if (event.index == 2) {
+      this.loadMyPendingApprovalTab();
+    }
+  }
+
+  viewApproval(data) {
+    // console.log(data);    
+    // console.log(data.Type);
+    // console.log(APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_ADD_SALES);
+    // console.log(data.Status);
+    // console.log(APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING);
+
+    if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_ADD_SALES && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
+      let notificationData = [];
+      notificationData.push(data);
+      const dialogRef = this.dialog.open(ViewDistributorSaleComponent, {
+        
+        data: { transactionID: data.Transaction_ID, action: 'retailerPurchaseApproval', notificationData:notificationData },
+        width: '600px',
+      });
+
+      dialogRef.afterClosed().subscribe(res => {
+        if (res == 'reload')
+          this.loadApprovalTab();
+      });
+
+    } else if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_RETAILER_PURCHASE_RETURN && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
+      console.log('Second else IF');
+    } else if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_RETAILER_PARTIAL_PURCHASE_REQUEST && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
+      console.log('third else IF');
+    } else if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_PARTIAL_PURCHASERETUN_REQUEST && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
+      console.log('Fourth else IF');
+    }
+  }
 }

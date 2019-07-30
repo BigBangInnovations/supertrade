@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpParams } from "@angular/common/http";
 // RxJS
 import { of, Observable, defer, forkJoin } from 'rxjs';
-import { mergeMap, map, withLatestFrom, filter, tap } from 'rxjs/operators';
+import { mergeMap, map, withLatestFrom, filter, tap, catchError } from 'rxjs/operators';
 // NGRX
 import { Effect, Actions, ofType } from '@ngrx/effects';
 import { Store, select, Action } from '@ngrx/store';
@@ -32,7 +32,10 @@ import {
     PurchaseOnServerCreated,
     PurchaseCreated,
     PurchaseActionToggleLoading,
-    PurchaseActions
+    PurchaseActions,
+    LOAD_PURCHASE,
+    LOAD_PURCHASE_FAIL,
+    LOAD_PURCHASE_SUCCESS
 } from '../_actions/purchase.actions';
 
 @Injectable()
@@ -47,12 +50,30 @@ export class PurchaseEffects {
     loadAllPurchase$ = this.actions$
         .pipe(
             ofType<AllPurchaseRequested>(PurchaseActionTypes.AllPurchaseRequested),
-            // withLatestFrom(this.store.pipe(select(allPurchaseLoaded))),
-            // filter(([action, isAllPurchaseLoaded]) => !isAllPurchaseLoaded),
             mergeMap((action: AllPurchaseRequested) => this.purchaseService.getAllPurchase(action.payload)),
             map(purchase => {
                 return new AllPurchaseLoaded({ purchase });
             })
+        );
+
+    @Effect()
+    loadPurchase$ = this.actions$
+        .pipe(
+            ofType<LOAD_PURCHASE>(PurchaseActionTypes.LOAD_PURCHASE), 
+            mergeMap(({ payload }) =>
+                this.purchaseService.findDistributorSaleAsPurchase(payload).pipe(
+                    map(response => {
+                        if (response.status == APP_CONSTANTS.response.SUCCESS) {
+                            return new LOAD_PURCHASE_SUCCESS(response.data[0].distributorSales);
+                        } else {
+                            this.authNoticeService.setNotice(this.translate.instant('AUTH.REPONSE.INVALID_TOKEN'), 'danger');
+                            return new Logout()
+                        }
+                    }
+                    ),
+                    catchError(err => of(new LOAD_PURCHASE_FAIL(err)))
+                )
+            )
         );
 
     @Effect()
@@ -139,5 +160,5 @@ export class PurchaseEffects {
 
     constructor(private actions$: Actions, private purchaseService: PurchaseService, private store: Store<AppState>,
         private authNoticeService: AuthNoticeService,
-        private translate: TranslateService,) { }
+        private translate: TranslateService, ) { }
 }

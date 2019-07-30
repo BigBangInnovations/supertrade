@@ -45,7 +45,9 @@ import {
 	MatAutocompleteModule,
 	MAT_DIALOG_DEFAULT_OPTIONS,
 	MatSnackBarModule,
-	MatTooltipModule,
+	MatTooltipModule,	
+	MatButtonToggleModule,
+	MatSlideToggleModule
  } from '@angular/material';
 
  import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -118,7 +120,9 @@ const routes: Routes = [
 		MatDialogModule,
 		FormsModule,
 		ReactiveFormsModule,
-		NgxMatSelectSearchModule
+		NgxMatSelectSearchModule,
+		MatButtonToggleModule,
+		MatSlideToggleModule
 	],
 	exports:[
 		DistributorSaleListComponent,

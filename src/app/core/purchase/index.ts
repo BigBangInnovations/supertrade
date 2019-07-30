@@ -17,7 +17,10 @@ export {
     AllPurchaseLoaded,
     AllPurchaseRequested,
     PurchaseActionTypes,
-    PurchaseActions
+    PurchaseActions,
+    LOAD_PURCHASE,
+    LOAD_PURCHASE_FAIL,
+    LOAD_PURCHASE_SUCCESS
 } from './_actions/purchase.actions';
 
 // EFFECTS
@@ -36,7 +39,10 @@ export {
     selectPurchasePageLoading,
     selectQueryResult,
     selectPurchaseActionLoading,
-    selectPurchaseShowInitWaitingMessage
+    selectPurchaseShowInitWaitingMessage,
+    selectPurchase,
+    selectPurchaseError,
+    selectLoading    
 } from './_selectors/purchase.selectors';
 
 // MODELS

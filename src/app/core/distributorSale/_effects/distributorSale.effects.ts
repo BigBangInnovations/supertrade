@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpParams } from "@angular/common/http";
 // RxJS
 import { of, Observable, defer, forkJoin } from 'rxjs';
-import { mergeMap, map, withLatestFrom, filter, tap } from 'rxjs/operators';
+import { mergeMap, map, withLatestFrom, filter, tap, catchError } from 'rxjs/operators';
 // NGRX
 import { Effect, Actions, ofType } from '@ngrx/effects';
 import { Store, select, Action } from '@ngrx/store';
@@ -12,7 +12,7 @@ import { QueryResultsModel, QueryParamsModel } from '../../_base/crud';
 // Services
 import { DistributorSaleService } from '../_services';
 // State
-import { AppState } from '../../../core/reducers';
+import { AppState } from '../../../core/reducers'; 
 // Selectors
 import { allDistributorSaleLoaded } from '../_selectors/distributorSale.selectors';
 import { APP_CONSTANTS } from '../../../../config/default/constants'
@@ -33,7 +33,10 @@ import {
     DistributorSaleOnServerCreated,
     DistributorSaleCreated,
     DistributorSaleActionToggleLoading,
-    DistributorSaleActions
+    DistributorSaleActions,
+    LOAD_DISTRIBUTOR_SALE,
+    LOAD_DISTRIBUTOR_SALE_FAIL,
+    LOAD_DISTRIBUTOR_SALE_SUCCESS
 } from '../_actions/distributorSale.actions';
 
 @Injectable()
@@ -48,12 +51,30 @@ export class DistributorSaleEffects {
     loadAllDistributorSale$ = this.actions$
         .pipe(
             ofType<AllDistributorSaleRequested>(DistributorSaleActionTypes.AllDistributorSaleRequested),
-            // withLatestFrom(this.store.pipe(select(allDistributorSaleLoaded))),
-            // filter(([action, isAllDistributorSaleLoaded]) => !isAllDistributorSaleLoaded),
             mergeMap((action: AllDistributorSaleRequested) => this.distributorSaleService.getAllDistributorSale(action.payload)),
             map(distributorSale => {
                 return new AllDistributorSaleLoaded({ distributorSale });
             })
+        );
+
+        @Effect()
+    loadDistributorSale$ = this.actions$
+        .pipe(
+            ofType<LOAD_DISTRIBUTOR_SALE>(DistributorSaleActionTypes.LOAD_DISTRIBUTOR_SALE), 
+            mergeMap(({ payload }) =>
+                this.distributorSaleService.findDistributorSaleAsPurchase(payload).pipe(
+                    map(response => {
+                        if (response.status == APP_CONSTANTS.response.SUCCESS) {
+                            return new LOAD_DISTRIBUTOR_SALE_SUCCESS(response.data[0].distributorSales);
+                        } else {
+                            this.authNoticeService.setNotice(this.translate.instant('AUTH.REPONSE.INVALID_TOKEN'), 'danger');
+                            return new Logout()
+                        }
+                    }
+                    ),
+                    catchError(err => of(new LOAD_DISTRIBUTOR_SALE_FAIL(err)))
+                )
+            )
         );
 
     @Effect()

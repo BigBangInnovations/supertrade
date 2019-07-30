@@ -34,6 +34,11 @@ export class DistributorSaleService {
     returnDistributorSale(data: any): Observable<any> {
 		const url = `add-distributorSale-return`;
         return this.http.post(url, data)
+    }
+    
+    acceptRejectPurchase(data: any): Observable<any> {
+		const url = `retailer-purchase-approve`;
+        return this.http.post(url, data)
 	}
 
     // UPDATE => PUT: update the distributorSale on the server
@@ -56,6 +61,15 @@ export class DistributorSaleService {
 
     // DistributorSale
     findDistributorSale(data: any): Observable<any> {
+        const url = `get-distributor-sales`;
+        return this.http.post<DistributorSale[]>(url, data);
+    }
+
+        /**
+     * From Retailer notification scren
+     * Get distributor sale for approval 
+     */
+    findDistributorSaleAsPurchase(data: any): Observable<any> {
         const url = `get-distributor-sales`;
         return this.http.post<DistributorSale[]>(url, data);
     }

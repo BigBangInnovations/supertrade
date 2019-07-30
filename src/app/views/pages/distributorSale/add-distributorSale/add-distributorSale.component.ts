@@ -137,7 +137,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
       this.distributorSale.clear();
       this.initDistributorSale();
 
-      //Load distribiutor
+      //Load retailer
       this.store.select(fromRetailer.selectRetailerLoaded).pipe().subscribe(data => {
         if (data) {
           this.retailers$ = this.store.pipe(select(fromRetailer.selectAllRetailer));

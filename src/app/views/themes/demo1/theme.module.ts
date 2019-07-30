@@ -35,6 +35,7 @@ import { BaseComponent } from './base/base.component';
 import { PagesRoutingModule } from './pages-routing.module';
 import { PagesModule } from '../../pages/pages.module';
 import { HtmlClassService } from './html-class.service';
+import { ModuleGuard } from '../../../core/auth/_guards/module.guard';
 import { HeaderMobileComponent } from './header/header-mobile/header-mobile.component';
 import { ErrorPageComponent } from './content/error-page/error-page.component';
 // import { PermissionEffects, permissionsReducer, RoleEffects, rolesReducer } from '../../../core/auth';
@@ -88,6 +89,7 @@ import { ErrorPageComponent } from './content/error-page/error-page.component';
 	],
 	providers: [
 		HtmlClassService,
+		ModuleGuard
 	],
 	imports: [
 		CommonModule,

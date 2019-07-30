@@ -22,6 +22,21 @@ export const selectAllPurchase = createSelector(
     fromPurchase.selectAll
 );
 
+export const selectPurchase = createSelector(
+    selectPurchaseState,
+    purchaseState => purchaseState.purchase
+);
+
+export const selectLoading = createSelector(
+    selectPurchaseState,
+    purchaseState => purchaseState.loading
+);
+
+export const selectPurchaseError = createSelector(
+    selectPurchaseState,
+    purchaseState => purchaseState.error
+);
+
 export const selectAllPurchaseIds = createSelector(
     selectPurchaseState,
     fromPurchase.selectIds

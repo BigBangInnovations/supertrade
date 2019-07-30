@@ -419,6 +419,7 @@ export class MenuConfig {
 					page: '/sales',
 					translate: 'MENU.SALES',
 					bullet: 'dot',
+					permission:'AccessSaleModule',
 					submenu: [
 						{
 							title: 'Sales',
@@ -426,6 +427,7 @@ export class MenuConfig {
 							page: '/sales',
 							translate: 'MENU.SALES_LIST',
 							bullet: 'dot',
+							permission:'AccessSaleModule',
 						},
 						{
 							bullet: 'dot',
@@ -434,6 +436,7 @@ export class MenuConfig {
 							alignment: 'left',
 							page: '/add-sale',
 							translate: 'MENU.ADD_SALES',
+							permission:'AccessSaleModule',
 						},
 						
 					]
@@ -445,6 +448,7 @@ export class MenuConfig {
 					page: '/distributor-sales',
 					translate: 'MENU.DISTRIBUTOR_SALES',
 					bullet: 'dot',
+					permission:'AccessDistributorSaleModule',
 					submenu: [
 						{
 							title: 'Distributor Sales',
@@ -452,6 +456,7 @@ export class MenuConfig {
 							page: '/distributor-sales',
 							translate: 'MENU.DISTRIBUTOR_SALES_LIST',
 							bullet: 'dot',
+							permission:'AccessDistributorSaleModule',
 						},
 						{
 							bullet: 'dot',
@@ -460,6 +465,7 @@ export class MenuConfig {
 							alignment: 'left',
 							page: '/add-distributor-sale',
 							translate: 'MENU.ADD_DISTRIBUTOR_SALES',
+							permission:'AccessDistributorSaleModule',
 						},
 						
 					]
@@ -471,6 +477,7 @@ export class MenuConfig {
 					page: '/purchase',
 					translate: 'MENU.PURCHASE',
 					bullet: 'dot',
+					permission:'AccessPurchaseModule',
 					submenu: [
 						{
 							title: 'Purchase',
@@ -478,6 +485,7 @@ export class MenuConfig {
 							page: '/purchase',
 							translate: 'MENU.PURCHASE_LIST',
 							bullet: 'dot',
+							permission:'AccessPurchaseModule',
 						},
 						{
 							bullet: 'dot',
@@ -486,6 +494,7 @@ export class MenuConfig {
 							alignment: 'left',
 							page: '/add-purchase',
 							translate: 'MENU.ADD_PURCHASE',
+							permission:'AccessPurchaseModule',
 						},
 						
 					]

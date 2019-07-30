@@ -10,12 +10,16 @@ export interface PurchaseState extends EntityState<Purchase> {
     isAllPurchaseLoaded: boolean;
     queryRowsCount: number;
     queryResult: Purchase[];
-    userPoints:any
+    purchase: any;
+    userPoints: any
     lastCreatedPurchaseId: number;
     listLoading: boolean;
     actionsloading: boolean;
     lastQuery: QueryParamsModel;
     showInitWaitingMessage: boolean;
+    loading: boolean;
+    loaded: boolean;
+    error: string;
 }
 
 export const adapter: EntityAdapter<Purchase> = createEntityAdapter<Purchase>();
@@ -24,18 +28,41 @@ export const initialPurchaseState: PurchaseState = adapter.getInitialState({
     isAllPurchaseLoaded: false,
     queryRowsCount: 0,
     queryResult: [],
-    userPoints:[],
+    userPoints: [],
+    purchase: [],
     lastCreatedPurchaseId: undefined,
     listLoading: false,
     actionsloading: false,
     lastQuery: new QueryParamsModel({}),
-    showInitWaitingMessage: true
+    showInitWaitingMessage: true,
+    loading: false,
+    loaded: false,
+    error: ''
 });
 
 export function purchaseReducer(state = initialPurchaseState, action: PurchaseActions): PurchaseState {
-    switch  (action.type) {
+    switch (action.type) {
+        case PurchaseActionTypes.LOAD_PURCHASE: return {
+            ...state,
+            loading: true,
+            loaded: false,
+            purchase:[]
+        };
+        case PurchaseActionTypes.LOAD_PURCHASE_SUCCESS: return {
+            ...state,
+            loading: false,
+            loaded: true,
+            purchase:action.payload
+        };
+        case PurchaseActionTypes.LOAD_PURCHASE_FAIL: return {
+            ...state,
+            loading: false,
+            loaded: false,
+            purchase:[],
+            error: action.payload
+        };
         case PurchaseActionTypes.PurchasePageToggleLoading: return {
-                ...state, listLoading: action.payload.isLoading, lastCreatedPurchaseId: undefined
+            ...state, listLoading: action.payload.isLoading, lastCreatedPurchaseId: undefined
         };
         case PurchaseActionTypes.PurchaseActionToggleLoading: return {
             ...state, actionsloading: action.payload.isLoading
@@ -59,7 +86,7 @@ export function purchaseReducer(state = initialPurchaseState, action: PurchaseAc
             listLoading: false,
             queryRowsCount: action.payload.totalCount,
             queryResult: action.payload.purchase,
-            userPoints:action.payload.userPoints,
+            userPoints: action.payload.userPoints,
             lastQuery: action.payload.page,
             showInitWaitingMessage: false
         });

@@ -14,7 +14,7 @@ import { Store, select } from '@ngrx/store';
 // State
 import { AppState } from '../../../../core/reducers';
 // Services and Models
-import { Purchase, selectPurchaseById } from '../../../../core/purchase';
+import { Purchase, selectPurchaseById, LOAD_PURCHASE, selectPurchaseError, selectPurchase, selectLoading } from '../../../../core/purchase';
 import { delay } from 'rxjs/operators';
 import { PopupProductComponent } from '../../popup-product/popup-product.component';
 
@@ -44,7 +44,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
   componentRef: any;
   OptionalSetting: dynamicProductTemplateSetting;
   loading = false;
-  sl_distributor_sales_id:number = 0;
+  sl_distributor_sales_id: number = 0;
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
 
   //Product properry
@@ -90,8 +90,8 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
     if (
       this.data.action == 'saleReturn' ||
       this.data.action == 'PurchaseReturn' ||
-      this.data.action == 'addOrder' || 
-      this.data.action == 'viewSale' || 
+      this.data.action == 'addOrder' ||
+      this.data.action == 'viewSale' ||
       this.data.action == 'viewPurchase'
     ) {
       OptionalSetting.displayPointCalculation = false;
@@ -102,11 +102,29 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.purchaseForm = this.purchaseFB.group({
+      scheme_id: [''],
+      distributor_id: [''],
+      products: this.purchaseFB.array([])
+    });
+    
     if (this.data.purchaseId) {
       this.purchase$ = this.store.pipe(select(selectPurchaseById(this.data.purchaseId)));
       this.purchase$.subscribe(res => {
         this.sl_distributor_sales_id = res.sl_distributor_sales_id;
         this.createForm(res);
+      });
+    } else if (this.data.transactionID) {
+      let httpParams = new HttpParams();
+      httpParams = httpParams.append('transaction_id', this.data.transactionID);
+      this.store.dispatch(new LOAD_PURCHASE(httpParams));
+      this.purchase$ = this.store.pipe(select(selectPurchase));
+      this.viewLoading$ = this.store.pipe(select(selectLoading));
+      this.purchase$.subscribe((res: any) => {
+        if (res && res.length > 0) {
+          this.sl_distributor_sales_id = res[0].id;
+          this.createForm(res[0]);
+        }
       });
     }
   }
@@ -224,13 +242,13 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
   */
   ReuturnPurchase() {
     const controls = this.purchaseForm.controls;
-    
+
     /** check form */
     if (this.purchaseForm.invalid) {
-      Object.keys(controls).forEach(controlName =>{
+      Object.keys(controls).forEach(controlName => {
         controls[controlName].markAsTouched()
       }
-        
+
       );
       return;
     }

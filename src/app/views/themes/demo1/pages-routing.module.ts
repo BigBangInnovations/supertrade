@@ -5,7 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { BaseComponent } from './base/base.component';
 import { ErrorPageComponent } from './content/error-page/error-page.component';
 // Auth
-import { AuthGuard } from '../../../core/auth';
+import { AuthGuard, ModuleGuard } from '../../../core/auth';
 
 const routes: Routes = [
 	{
@@ -23,18 +23,26 @@ const routes: Routes = [
 			},
 			{
 				path: 'sales',
+				canActivate: [ModuleGuard],
+				data: { moduleName: 'sales' },
 				loadChildren: () => import('../../../../app/views/pages/sales/sales.module').then(m => m.SalesModule)
 			},
 			{
 				path: 'add-sale',
+				canActivate: [ModuleGuard],
+				data: { moduleName: 'sales' },
 				loadChildren: () => import('../../../../app/views/pages/sales/add-sale/add-sale.module').then(m => m.AddSalesModule)
 			},
 			{
 				path: 'purchase',
+				canActivate: [ModuleGuard],
+				data: { moduleName: 'purchase' },
 				loadChildren: () => import('../../../../app/views/pages/purchase/purchase.module').then(m => m.PurchaseModule)
 			},
 			{
 				path: 'add-purchase',
+				canActivate: [ModuleGuard],
+				data: { moduleName: 'purchase' },
 				loadChildren: () => import('../../../../app/views/pages/purchase/add-purchase/add-purchase.module').then(m => m.AddPurchaseModule)
 			},
 			{
@@ -51,10 +59,14 @@ const routes: Routes = [
 			},
 			{
 				path: 'distributor-sales',
+				canActivate: [ModuleGuard],
+				data: { moduleName: 'distributorSale' },
 				loadChildren: () => import('../../../../app/views/pages/distributorSale/distributorSale.module').then(m => m.DistributorSaleModule)
 			},
 			{
 				path: 'add-distributor-sale',
+				canActivate: [ModuleGuard],
+				data: { moduleName: 'distributorSale' },
 				loadChildren: () => import('../../../../app/views/pages/distributorSale/add-distributorSale/add-distributorSale.module').then(m => m.AddDistributorSaleModule)
 			},
 			{ path: 'error/:type', component: ErrorPageComponent },

@@ -6,16 +6,20 @@ import { DistributorSaleActions, DistributorSaleActionTypes } from '../_actions/
 import { DistributorSale } from '../_models/distributorSale.model';
 import { QueryParamsModel } from '../../_base/crud';
 
-export interface DistributorSaleState extends EntityState<DistributorSale> {
+export interface DistributorSaleState extends EntityState<DistributorSale> { 
     isAllDistributorSaleLoaded: boolean;
     queryRowsCount: number;
     queryResult: DistributorSale[];
-    userPoints:any
+    userPoints:any;
+    distributorSale:any;
     lastCreatedDistributorSaleId: number;
     listLoading: boolean;
     actionsloading: boolean;
     lastQuery: QueryParamsModel;
     showInitWaitingMessage: boolean;
+    loading: boolean;
+    loaded: boolean;
+    error: string;
 }
 
 export const adapter: EntityAdapter<DistributorSale> = createEntityAdapter<DistributorSale>();
@@ -25,15 +29,38 @@ export const initialDistributorSaleState: DistributorSaleState = adapter.getInit
     queryRowsCount: 0,
     queryResult: [],
     userPoints:[],
+    distributorSale: [],
     lastCreatedDistributorSaleId: undefined,
     listLoading: false,
     actionsloading: false,
     lastQuery: new QueryParamsModel({}),
-    showInitWaitingMessage: true
+    showInitWaitingMessage: true,
+    loading: false,
+    loaded: false,
+    error: ''
 });
 
 export function distributorSaleReducer(state = initialDistributorSaleState, action: DistributorSaleActions): DistributorSaleState {
     switch  (action.type) {
+        case DistributorSaleActionTypes.LOAD_DISTRIBUTOR_SALE: return {
+            ...state,
+            loading: true,
+            loaded: false,
+            distributorSale:[]
+        };
+        case DistributorSaleActionTypes.LOAD_DISTRIBUTOR_SALE_SUCCESS: return {
+            ...state,
+            loading: false,
+            loaded: true,
+            distributorSale:action.payload
+        };
+        case DistributorSaleActionTypes.LOAD_DISTRIBUTOR_SALE_FAIL: return {
+            ...state,
+            loading: false,
+            loaded: false,
+            distributorSale:[],
+            error: action.payload
+        };
         case DistributorSaleActionTypes.DistributorSalePageToggleLoading: return {
                 ...state, listLoading: action.payload.isLoading, lastCreatedDistributorSaleId: undefined
         };

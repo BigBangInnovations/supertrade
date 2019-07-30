@@ -24,7 +24,7 @@ import { getSalesActiveScheme } from '../../../core/auth/_selectors/auth.selecto
 import { environment } from '../../../../environments/environment';
 // Components
 import { ViewDistributorSaleComponent } from './view-distributorSale/view-distributorSale.component';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms'; 
 
 // Table with EDIT item in MODAL
 // ARTICLE for table with sort/filter/paginator

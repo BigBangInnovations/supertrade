@@ -399,7 +399,7 @@ export class SalesListComponent implements OnInit, OnDestroy {
 		const dialogRef = this.dialog.open(ViewSaleComponent, {
 			data: { saleId: saleId, action: action },
 			width: '600px',
-			height: '550px'
+			// height: '550px'
 		});
 		dialogRef.afterClosed().subscribe(res => {
 			if (action == 'saleReturn' && res == 'reload')

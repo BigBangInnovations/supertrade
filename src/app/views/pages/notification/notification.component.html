@@ -1,4 +1,4 @@
-<mat-tab-group mat-stretch-tabs>
+<mat-tab-group mat-stretch-tabs (selectedTabChange)="tabChangeEvent($event)">
     <mat-tab md-stretch-tabs="yes" label="Notifications">
         <div class="kt-section">
             <div class="kt-section__content">
@@ -7,11 +7,11 @@
                     <ng-container *ngIf="(notifications$ | async)?.length; else noNotification">
                         <ng-container *ngFor=" let notification of (notifications$ |async)">
                             <mat-list-item [ngClass]="{
-                                'background-status-1': notification.Status == 1,
-                                'background-status-2': notification.Status == 2,
-                                'background-status-3': notification.Status == 3,
-                                'background-status-4': notification.Status == 4,
-                                'background-status-5': notification.Status == 5
+                                'background-status-1': notification.Status == app_constants.NOTIFICATION_STATUS.STATUS_PENDING,
+                                    'background-status-2': notification.Status == app_constants.NOTIFICATION_STATUS.STATUS_APPROVED,
+                                    'background-status-3': notification.Status == app_constants.NOTIFICATION_STATUS.STATUS_REJECTED,
+                                    'background-status-4': notification.Status == app_constants.NOTIFICATION_STATUS.STATUS_CANCELLED,
+                                    'background-status-5': notification.Status == app_constants.NOTIFICATION_STATUS.STATUS_ALERT
                             }">
                                 <mat-icon mat-list-icon>notifications_active</mat-icon>
                                 <h4 mat-line>{{notification.Message}}</h4>
@@ -46,15 +46,18 @@
                     <ng-container *ngIf="(approvals$ | async)?.length; else noApproval">
                         <ng-container *ngFor=" let approval of (approvals$ |async)">
                             <mat-list-item [ngClass]="{
-                                    'background-status-1': approval.Status == 1,
-                                    'background-status-2': approval.Status == 2,
-                                    'background-status-3': approval.Status == 3,
-                                    'background-status-4': approval.Status == 4,
-                                    'background-status-5': approval.Status == 5
+                                    'background-status-1': approval.Status == app_constants.NOTIFICATION_STATUS.STATUS_PENDING,
+                                    'background-status-2': approval.Status == app_constants.NOTIFICATION_STATUS.STATUS_APPROVED,
+                                    'background-status-3': approval.Status == app_constants.NOTIFICATION_STATUS.STATUS_REJECTED,
+                                    'background-status-4': approval.Status == app_constants.NOTIFICATION_STATUS.STATUS_CANCELLED,
+                                    'background-status-5': approval.Status == app_constants.NOTIFICATION_STATUS.STATUS_ALERT
                                 }">
                                 <mat-icon mat-list-icon>notifications_active</mat-icon>
                                 <h4 mat-line>{{approval.Message}}</h4>
                                 <p mat-line> {{approval.Last_Modified | date: 'dd-MMM-yyyy, h:mm:ss a':'+1100'}} </p>
+                                <mat-action-list>
+                                    <button mat-list-item color="accent" (click)="viewApproval(approval)"> <mat-icon aria-hidden="false" aria-label="View Notification">remove_red_eye</mat-icon> </button>
+                                </mat-action-list>
                                 <mat-divider></mat-divider>
                             </mat-list-item>
                         </ng-container>
@@ -84,11 +87,11 @@
                     <ng-container *ngIf="(myPendingApprovals$ | async)?.length; else noMyPendingApproval">
                         <ng-container *ngFor=" let myPendingApprovals of (myPendingApprovals$ |async)">
                             <mat-list-item [ngClass]="{
-                                    'background-status-1': myPendingApprovals.Status == 1,
-                                    'background-status-2': myPendingApprovals.Status == 2,
-                                    'background-status-3': myPendingApprovals.Status == 3,
-                                    'background-status-4': myPendingApprovals.Status == 4,
-                                    'background-status-5': myPendingApprovals.Status == 5
+                                'background-status-1': myPendingApprovals.Status == app_constants.NOTIFICATION_STATUS.STATUS_PENDING,
+                                'background-status-2': myPendingApprovals.Status == app_constants.NOTIFICATION_STATUS.STATUS_APPROVED,
+                                'background-status-3': myPendingApprovals.Status == app_constants.NOTIFICATION_STATUS.STATUS_REJECTED,
+                                'background-status-4': myPendingApprovals.Status == app_constants.NOTIFICATION_STATUS.STATUS_CANCELLED,
+                                'background-status-5': myPendingApprovals.Status == app_constants.NOTIFICATION_STATUS.STATUS_ALERT
                                 }">
                                 <mat-icon mat-list-icon>notifications_active</mat-icon>
                                 <h4 mat-line>{{myPendingApprovals.Message}}</h4>

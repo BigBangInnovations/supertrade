@@ -17,7 +17,10 @@ export {
     AllDistributorSaleLoaded,
     AllDistributorSaleRequested,
     DistributorSaleActionTypes,
-    DistributorSaleActions
+    DistributorSaleActions,
+    LOAD_DISTRIBUTOR_SALE,
+    LOAD_DISTRIBUTOR_SALE_FAIL,
+    LOAD_DISTRIBUTOR_SALE_SUCCESS,
 } from './_actions/distributorSale.actions';
 
 // EFFECTS
@@ -36,7 +39,10 @@ export {
     selectDistributorSalePageLoading,
     selectQueryResult,
     selectDistributorSaleActionLoading,
-    selectDistributorSaleShowInitWaitingMessage
+    selectDistributorSaleShowInitWaitingMessage,
+    selectLoading,
+    selectDistributorSale,
+    selectDistributorSaleError
 } from './_selectors/distributorSale.selectors';
 
 // MODELS

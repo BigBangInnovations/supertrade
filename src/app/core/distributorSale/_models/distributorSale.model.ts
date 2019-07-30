@@ -49,6 +49,7 @@ export class DistributorSale {
     loyalty_id = undefined;
     retailer_id = undefined;
     retailer_name = '';
+    Distributor_Name = '';
     distributor_id = undefined;
     soID = undefined;
     godownID = undefined;
@@ -73,6 +74,7 @@ export class DistributorSale {
     erpInvoiceNo = '';
     date = '';
     products_json: string
+    data: string
 
     clear(): void {
         this.id = undefined;
@@ -82,6 +84,7 @@ export class DistributorSale {
         this.loyalty_id = undefined;
         this.retailer_id = undefined;
         this.retailer_name = '';
+        this.Distributor_Name = '';
         this.distributor_id = undefined;
         this.soID = undefined;
         this.godownID = undefined;
@@ -106,6 +109,7 @@ export class DistributorSale {
         this.erpInvoiceNo = '';
         this.date = '';
         this.products_json = '';
+        this.data = '';
     }
 }
 

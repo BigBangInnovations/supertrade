@@ -6,7 +6,7 @@ import { QueryParamsModel } from '../../_base/crud';
 // Models
 import { DistributorSale, UserPointsStatus } from '../_models/distributorSale.model';
 
-export enum DistributorSaleActionTypes {
+export enum DistributorSaleActionTypes { 
     AllDistributorSaleRequested = '[DistributorSale Home Page] All DistributorSale Requested',
     AllDistributorSaleLoaded = '[DistributorSale API] All DistributorSale Loaded',
     DistributorSaleOnServerCreated = '[Edit DistributorSale Dialog] DistributorSale On Server Created',
@@ -17,7 +17,10 @@ export enum DistributorSaleActionTypes {
     DistributorSalePageLoaded = '[DistributorSale API] DistributorSale Page Loaded',
     DistributorSalePageCancelled = '[DistributorSale API] DistributorSale Page Cancelled',
     DistributorSalePageToggleLoading = '[DistributorSale page] DistributorSale Page Toggle Loading',
-    DistributorSaleActionToggleLoading = '[DistributorSale] DistributorSale Action Toggle Loading'
+    DistributorSaleActionToggleLoading = '[DistributorSale] DistributorSale Action Toggle Loading',
+    LOAD_DISTRIBUTOR_SALE = '[DistributorSale] load DistributorSale',
+    LOAD_DISTRIBUTOR_SALE_SUCCESS = '[DistributorSale] load DistributorSale success',
+    LOAD_DISTRIBUTOR_SALE_FAIL = '[DistributorSale] load DistributorSale fail',
 }
 
 export class DistributorSaleOnServerCreated implements Action {
@@ -77,6 +80,21 @@ export class DistributorSaleActionToggleLoading implements Action {
     constructor(public payload: { isLoading: boolean }) { }
 }
 
+export class LOAD_DISTRIBUTOR_SALE implements Action {
+    readonly type = DistributorSaleActionTypes.LOAD_DISTRIBUTOR_SALE;
+    constructor(public payload) { }
+}
+
+export class LOAD_DISTRIBUTOR_SALE_SUCCESS implements Action {
+    readonly type = DistributorSaleActionTypes.LOAD_DISTRIBUTOR_SALE_SUCCESS
+    constructor(public payload: { purchase: DistributorSale[] }) { }
+}
+
+export class LOAD_DISTRIBUTOR_SALE_FAIL implements Action {
+    readonly type = DistributorSaleActionTypes.LOAD_DISTRIBUTOR_SALE_FAIL
+    constructor(public payload: string) {}
+}
+
 export type DistributorSaleActions = DistributorSaleCreated
 | DistributorSaleUpdated
 | DistributorSaleDeleted
@@ -87,4 +105,7 @@ export type DistributorSaleActions = DistributorSaleCreated
 | AllDistributorSaleRequested
 | DistributorSaleOnServerCreated
 | DistributorSalePageToggleLoading
-| DistributorSaleActionToggleLoading;
+| DistributorSaleActionToggleLoading
+| LOAD_DISTRIBUTOR_SALE
+| LOAD_DISTRIBUTOR_SALE_SUCCESS
+| LOAD_DISTRIBUTOR_SALE_FAIL;

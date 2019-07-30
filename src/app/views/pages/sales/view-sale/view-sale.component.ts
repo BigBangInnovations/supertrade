@@ -32,6 +32,7 @@ import { LayoutUtilsService, MessageType } from '../../../../core/_base/crud';
 @Component({
   selector: 'kt-view-sale',
   templateUrl: './view-sale.component.html',
+  styleUrls: ['view-sale.component.scss'],
 })
 export class ViewSaleComponent implements OnInit, OnDestroy {
   sale$: Observable<Sale>;

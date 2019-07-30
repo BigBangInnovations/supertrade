@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 // RxJS
 import { Observable, of, Subscription, Subject } from 'rxjs';
-import { finalize, takeUntil, tap } from 'rxjs/operators';
+import { finalize, takeUntil, tap, distinctUntilChanged, skip } from 'rxjs/operators';
 // Lodash
 import { each, find, some } from 'lodash';
 // NGRX
@@ -14,7 +14,7 @@ import { Store, select } from '@ngrx/store';
 // State
 import { AppState } from '../../../../core/reducers';
 // Services and Models
-import { DistributorSale, selectDistributorSaleById } from '../../../../core/distributorSale';
+import { DistributorSale, selectDistributorSaleById, selectDistributorSale, selectLoading, LOAD_DISTRIBUTOR_SALE } from '../../../../core/distributorSale';
 import { delay } from 'rxjs/operators';
 import { PopupProductComponent } from '../../popup-product/popup-product.component';
 
@@ -28,6 +28,17 @@ import { Logout } from '../../../../core/auth';
 // Layout
 import { SubheaderService, LayoutConfigService } from '../../../../core/_base/layout';
 import { LayoutUtilsService, MessageType } from '../../../../core/_base/crud';
+
+import * as fromRetailer from '../../../../core/retailer'
+import * as fromOrderselect from '../../../../core/orderselect'
+import * as fromMetadata from '../../../../core/metadata'
+import { selectOrderById } from '../../../../core/orderselect'
+import { selectRetailerById } from '../../../../core/retailer'
+import { Order, orderProduct } from '../../../../core/order/_models/order.model';
+import { FrightTerm, Godown, PaymentMode } from '../../../../core/metadata';
+import { Retailer } from '../../../../core/retailer/_models/retailer.model'
+import { EncrDecrServiceService } from '../../../../core/auth/_services/encr-decr-service.service'
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'kt-view-distributorSale',
@@ -44,7 +55,17 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
   componentRef: any;
   OptionalSetting: dynamicProductTemplateSetting;
   loading = false;
-  sl_distributor_sales_id:number = 0;
+  sl_distributor_sales_id: number = 0;
+
+  viewMetadataLoading$: Observable<boolean>;
+  viewOrderSelect: boolean = false;
+  viewShippingAddress: boolean = false;
+  retailers$: Observable<Retailer[]>;
+
+  frightTerm$: Observable<FrightTerm[]>;
+  godown$: Observable<Godown[]>;
+  paymentMode$: Observable<PaymentMode[]>;
+
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
 
   //Product properry
@@ -56,7 +77,9 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
   totalTaxAmount: number;
   totalNetAmount: number;
   pageAction: string;
-  private unsubscribe: Subject<any>;
+  userSession: any;
+  retailerAddressString: string = '';
+  private unsubscribe: Subscription[] = []; // Read more: => https://brianflove.com/2016/12/11/anguar-2-unsubscribe-observables/
 
   /**
  * Component constructor
@@ -70,6 +93,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
  * @param subheaderService: SubheaderService
  * @param layoutUtilsService: LayoutUtilsService
  * @param cdr  
+ * @param EncrDecr: EncrDecrServiceService
  * 
  */
   constructor(public dialogRef: MatDialogRef<ViewDistributorSaleComponent>,
@@ -83,6 +107,8 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     private subheaderService: SubheaderService,
     private layoutUtilsService: LayoutUtilsService,
     private cdr: ChangeDetectorRef,
+    private EncrDecr: EncrDecrServiceService,
+
   ) {
     const OptionalSetting = new dynamicProductTemplateSetting();
     OptionalSetting.clear();
@@ -93,18 +119,120 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     ) {
       OptionalSetting.displayPointCalculation = false;
     }
+
+    if (
+      this.data.action == 'retailerPurchaseApproval'
+    ) {
+      OptionalSetting.displayDeleteButton = true;
+    }
+
     this.OptionalSetting = OptionalSetting;
     this.pageAction = this.data.action;
-    this.unsubscribe = new Subject();
   }
 
   ngOnInit() {
+    //Load retailer
+    const retailerLoadSubscription = this.store.select(fromRetailer.selectRetailerLoaded).pipe(
+    ).subscribe(data => {
+      if (data) {
+        this.retailers$ = this.store.pipe(select(fromRetailer.selectAllRetailer));
+      } else {
+        let httpParams = new HttpParams();
+        this.store.dispatch(new fromRetailer.LoadRetailer(httpParams))
+        this.retailers$ = this.store.pipe(select(fromRetailer.selectAllRetailer));
+      }
+    })
+    this.unsubscribe.push(retailerLoadSubscription);
+
+    //Metadata
+    const metadataloadSubsription = this.store.select(fromMetadata.selectMetadataLoaded).pipe(
+    ).subscribe(data => {
+      if (data) {
+        this.frightTerm$ = this.store.pipe(select(fromMetadata.selectAllMetadataFreightTerms));
+        this.godown$ = this.store.pipe(select(fromMetadata.selectAllMetadataGodowns));
+        this.paymentMode$ = this.store.pipe(select(fromMetadata.selectAllMetadataPaymentModes));
+      } else {
+        let httpParams = new HttpParams();
+        this.store.dispatch(new fromMetadata.LoadMetadata(httpParams))
+
+        this.frightTerm$ = this.store.pipe(select(fromMetadata.selectAllMetadataFreightTerms));
+        this.godown$ = this.store.pipe(select(fromMetadata.selectAllMetadataGodowns));
+        this.paymentMode$ = this.store.pipe(select(fromMetadata.selectAllMetadataPaymentModes));
+      }
+    });
+
+    this.unsubscribe.push(metadataloadSubsription);
+
+    this.viewLoading$ = this.store.pipe(select(fromRetailer.selectRetailerLoading));
+    this.userSession = this.EncrDecr.getLocalStorage(environment.localStorageKey)
+
+    this.distributorSaleForm = this.distributorSaleFB.group({
+      scheme_id: [''],
+      retailer_id: [''],
+      retailer_name: [''],
+      soID: [''],
+      is_direct_sale: [false],
+      isShippingAddressSameAsDispatch: [false],
+      godownID: [''],
+      Address_Master_ID: [''],
+      AddressLine1: [''],
+      AddressLine2: [''],
+      landline_no: [''],
+      City: [''],
+      Pincode: [''],
+      State: [''],
+      Country: [''],
+      products: this.distributorSaleFB.array([]),
+      paymentMode: [''],
+      bankName: [''],
+      cheqNo: [''],
+      cheqDate: [''],
+      frightTerm: [''],
+      dcNo: [''],
+      grNo: [''],
+      transporter: [''],
+      deliveryDays: [''],
+      remarks: [''],
+      erpInvoiceNo: [''],
+    });
+
     if (this.data.distributorSaleId) {
       this.distributorSale$ = this.store.pipe(select(selectDistributorSaleById(this.data.distributorSaleId)));
-      this.distributorSale$.subscribe(res => {
-        this.sl_distributor_sales_id = res.sl_distributor_sales_id;
-        this.createForm(res);
+      const distributorSaleLoadSubscription = this.distributorSale$.pipe(
+      ).subscribe((res: any) => {
+        if (res != '') {
+          this.viewMetadataLoading$ = this.store.pipe(select(fromMetadata.selectMetadataLoading));
+          const viewMetadataLoadingSubscription = this.viewMetadataLoading$.pipe(
+          ).subscribe((metadataRes: any) => {
+            this.sl_distributor_sales_id = res.sl_distributor_sales_id;
+            this.createForm(res);
+          });
+          this.unsubscribe.push(viewMetadataLoadingSubscription);
+        }
+
       });
+      this.unsubscribe.push(distributorSaleLoadSubscription);
+
+    } else if (this.data.transactionID) {
+      this.viewMetadataLoading$ = this.store.pipe(select(fromMetadata.selectMetadataLoading));
+      const viewMetadataLoadingSubscription = this.viewMetadataLoading$.pipe(
+      ).subscribe((metadataRes: any) => {
+
+        let httpParams = new HttpParams();
+        httpParams = httpParams.append('transaction_id', this.data.transactionID);
+        this.store.dispatch(new LOAD_DISTRIBUTOR_SALE(httpParams));
+        this.distributorSale$ = this.store.pipe(select(selectDistributorSale));
+
+        const distributorSaleLoadSubscription = this.distributorSale$.pipe(
+        ).subscribe((res: any) => {
+          if (res && res.length > 0) {
+            this.sl_distributor_sales_id = res[0].id;
+            this.createForm(res[0]);
+          }
+        })
+        this.unsubscribe.push(distributorSaleLoadSubscription);
+      });
+      this.unsubscribe.push(viewMetadataLoadingSubscription);
     }
   }
 
@@ -112,11 +240,39 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
 	 * Create form
 	 */
   createForm(res) {
+    // this.distributorSaleForm.removeControl('distributorSaleForm');
+    // this.distributorSaleForm.updateValueAndValidity();
+
     this.distributorSaleForm = this.distributorSaleFB.group({
       scheme_id: [res.scheme_id],
-      distributor_id: [res.Name],
-      products: this.distributorSaleFB.array([])
+      retailer_id: [{ value: res.ss_retailer_id, disabled: true }],
+      retailer_name: [''],
+      soID: [res.soID],
+      is_direct_sale: [{ value: (res.soID > 0) ? false : true, disabled: true }],
+      isShippingAddressSameAsDispatch: [{ value: (res.isShippingAddressSameAsDispatch > 0) ? true : false, disabled: true }],
+      godownID: [{ value: res.godownID, disabled: true }],
+      Address_Master_ID: [res.Address_Master_ID],
+      AddressLine1: [res.AddressLine1],
+      AddressLine2: [res.AddressLine2],
+      City: [res.City],
+      Pincode: [res.Pincode],
+      State: [res.State],
+      Country: [res.Country],
+      products: this.distributorSaleFB.array([]),
+      paymentMode: [{ value: res.paymentMode, disabled: true }],
+      bankName: [res.bankName],
+      cheqNo: [res.cardNo],
+      cheqDate: [{ value: res.cheqDate, disabled: true }],
+      frightTerm: [{ value: res.frightTerm, disabled: true }],
+      dcNo: [res.dcNo],
+      grNo: [res.grNo],
+      transporter: [res.transporter],
+      deliveryDays: [res.deliveryDays],
+      remarks: [res.remarks],
+      erpInvoiceNo: [res.erpInvoiceNo],
     });
+
+    this.viewShippingAddress = true;
     this.prepareProductView(res.product)
   }
 
@@ -177,8 +333,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     if (this.componentSubscriptions) {
       this.componentSubscriptions.unsubscribe();
     }
-    this.unsubscribe.next();
-    this.unsubscribe.complete();
+    this.unsubscribe.forEach(sb => sb.unsubscribe());
     this.loading = false;
   }
 
@@ -198,9 +353,11 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
 	 */
   getTitle(): string {
     // tslint:disable-next-line:no-string-throw
-    if (this.pageAction == 'distributorSaleReturn')
-      return 'DistributorSale Return'
-    else return 'View DistributorSale';
+    if (this.pageAction == 'distributorSaleReturn') {
+      return 'Distributor Sale Return'
+    } else if (this.pageAction == 'retailerPurchaseApproval') {
+      return 'Sales Confirmation'
+    } else { return 'View Distributor Sale'; }
   }
 
   close() {
@@ -221,13 +378,13 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
   */
   ReuturnDistributorSale() {
     const controls = this.distributorSaleForm.controls;
-    
+
     /** check form */
     if (this.distributorSaleForm.invalid) {
-      Object.keys(controls).forEach(controlName =>{
+      Object.keys(controls).forEach(controlName => {
         controls[controlName].markAsTouched()
       }
-        
+
       );
       return;
     }
@@ -236,6 +393,51 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     this.returnDistributorSale(returnDistributorSale);
 
   }
+
+  /**  
+     * acceptPurchase
+    */
+  acceptPurchase() {
+    const controls = this.distributorSaleForm.controls;
+
+    /** check form */
+    if (this.distributorSaleForm.invalid) {
+      Object.keys(controls).forEach(controlName => {
+        controls[controlName].markAsTouched()
+      }
+
+      );
+      return;
+    }
+    this.data.notificationData.Status = 2;
+    const returnDistributorSale = this.prepareDistributorSale();
+    this.acceptRejectPurchase(returnDistributorSale);
+
+  }
+
+  /**  
+     * acceptPurchase
+    */
+  rejectPurchase() {
+    const controls = this.distributorSaleForm.controls;
+
+    /** check form */
+    if (this.distributorSaleForm.invalid) {
+      Object.keys(controls).forEach(controlName => {
+        controls[controlName].markAsTouched()
+      }
+
+      );
+      return;
+    }
+
+    this.data.notificationData.Status = 3;
+    
+    const returnDistributorSale = this.prepareDistributorSale();
+    this.acceptRejectPurchase(returnDistributorSale);
+
+  }
+
 
   /**
    * Returns prepared data for save
@@ -246,6 +448,12 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     _distributorSale.clear();
     _distributorSale.sl_distributorSale_id = this.data.distributorSaleId;
     _distributorSale.sl_distributor_sales_id = this.sl_distributor_sales_id;
+    if (this.data.action == 'retailerPurchaseApproval') {
+      _distributorSale.data = JSON.stringify(this.data.notificationData);
+      _distributorSale.retailer_name = this.userSession.Name;
+      _distributorSale.Distributor_Name = this.userSession.Distributor_Name;
+    }
+
     _distributorSale.products_json = JSON.stringify(this.prepareProduct())
     return _distributorSale;
   }
@@ -299,7 +507,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
       httpParams = httpParams.append(key, _distributorSale[key]);
     });
 
-    this.distributorSaleService
+    const distributorSaleServiceSubscription = this.distributorSaleService
       .returnDistributorSale(httpParams)
       .pipe(
         tap(response => {
@@ -316,12 +524,52 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
             this.store.dispatch(new Logout());
           }
         }),
-        takeUntil(this.unsubscribe),
         finalize(() => {
           this.loading = false;
           this.cdr.markForCheck();
         })
       )
       .subscribe();
+
+    this.unsubscribe.push(distributorSaleServiceSubscription);
+  }
+
+  /**
+   * Accpet reject distributor sales by retailer
+   *
+   * @param _distributorSale: User
+   */
+  acceptRejectPurchase(_distributorSale: DistributorSale) {
+    this.loading = true;
+    let httpParams = new HttpParams();
+    Object.keys(_distributorSale).forEach(function (key) {
+      httpParams = httpParams.append(key, _distributorSale[key]);
+    });
+
+    const distributorSaleServiceSubscription = this.distributorSaleService
+      .acceptRejectPurchase(httpParams)
+      .pipe(
+        tap(response => {
+          if (response.status == APP_CONSTANTS.response.SUCCESS) {
+            const message = `Purchase accepted successfully.`;
+            this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
+            this.dialogRef.close('reload');
+          } else if (response.status == APP_CONSTANTS.response.ERROR) {
+            const message = response.message;
+            this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
+          } else {
+            const message = 'Invalid token! Please login again';
+            this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
+            this.store.dispatch(new Logout());
+          }
+        }),
+        finalize(() => {
+          this.loading = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe();
+
+    this.unsubscribe.push(distributorSaleServiceSubscription);
   }
 }

@@ -12,9 +12,24 @@ import { UserPointsStatus } from '../../distributorSale/_models/distributorSale.
 
 export const selectDistributorSaleState = createFeatureSelector<DistributorSaleState>('distributorSale');
 
-export const selectDistributorSaleById = (distributorSaleId: number) => createSelector(
+export const selectDistributorSaleById = (distributorSaleId: number) => createSelector( 
     selectDistributorSaleState,
     distributorSaleState => distributorSaleState.entities[distributorSaleId]
+);
+
+export const selectDistributorSale = createSelector(
+    selectDistributorSaleState,
+    distributorSaleState => distributorSaleState.distributorSale
+);
+
+export const selectLoading = createSelector(
+    selectDistributorSaleState,
+    distributorSaleState => distributorSaleState.loading
+);
+
+export const selectDistributorSaleError = createSelector(
+    selectDistributorSaleState,
+    distributorSaleState => distributorSaleState.error
 );
 
 export const selectAllDistributorSale = createSelector(

@@ -12,9 +12,12 @@ import { MenuConfig } from '../../../../core/_config/demo1/menu.config';
 import { PageConfig } from '../../../../core/_config/demo1/page.config';
 // User permissions
 import { NgxPermissionsService } from 'ngx-permissions';
-// import { currentUserPermissions, Permission } from '../../../../core/auth';
+import { currentUserPermissions, currentUserRoleIds } from '../../../../core/auth';
+import { Permission } from '../../../../core/auth';
 import { select, Store } from '@ngrx/store';
 import { AppState } from '../../../../core/reducers';
+import roleJson from '../../../../core/_config/local_database/role.json';
+import permissionJson from '../../../../core/_config/local_database/permission.json';
 
 @Component({
 	selector: 'kt-base',
@@ -34,7 +37,7 @@ export class BaseComponent implements OnInit, OnDestroy {
 
 	// Private properties
 	private unsubscribe: Subscription[] = []; // Read more: => https://brianflove.com/2016/12/11/anguar-2-unsubscribe-observables/
-	// private currentUserPermissions$: Observable<Permission[]>;
+	private currentUserPermissions$: Observable<Permission[]>;
 
 
 	/**
@@ -54,7 +57,7 @@ export class BaseComponent implements OnInit, OnDestroy {
 		private htmlClassService: HtmlClassService,
 		private store: Store<AppState>,
 		private permissionsService: NgxPermissionsService) {
-		// this.loadRolesWithPermissions();
+		this.loadRolesWithPermissions();
 
 		// register configs by demos
 		this.layoutConfigService.loadConfigs(new LayoutConfig().configs);
@@ -107,16 +110,21 @@ export class BaseComponent implements OnInit, OnDestroy {
 	/**
 	 * NGX Permissions, init roles
 	 */
-	// loadRolesWithPermissions() {
-	// 	this.currentUserPermissions$ = this.store.pipe(select(currentUserPermissions));
-	// 	const subscr = this.currentUserPermissions$.subscribe(res => {
-	// 		if (!res || res.length === 0) {
-	// 			return;
-	// 		}
+	loadRolesWithPermissions() {
+		this.store.pipe(select(currentUserRoleIds)).subscribe(currentUserRoleId => {
+			roleJson.forEach(role => {
+				if (role.id == currentUserRoleId) {
+					role.permissions.forEach(permission => {
+						permissionJson.forEach(permissions => {
+							if (permissions.id == permission) {
+								this.permissionsService.flushPermissions();
+								this.permissionsService.addPermission(permissions.name);
+							}
+						});
 
-	// 		this.permissionsService.flushPermissions();
-	// 		res.forEach((pm: Permission) => this.permissionsService.addPermission(pm.name));
-	// 	});
-	// 	this.unsubscribe.push(subscr);
-	// }
+					});
+				}
+			});
+		})
+	}
 }
