@@ -21,7 +21,6 @@ export class ModuleGuard implements CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
 
         const moduleName = route.data['moduleName'] as string;
-        console.log(moduleName);
 
         if (!moduleName) {
             return of(false);

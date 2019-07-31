@@ -50,7 +50,7 @@ import { FrightTerm, Godown, PaymentMode } from '../../../../core/metadata';
 export class AddDistributorSaleComponent implements OnInit, OnDestroy {
   // Public properties
   distributorSale: DistributorSale;
-  distributorSaleForm: FormGroup;
+  addDistributorSaleForm: FormGroup;
   hasFormErrors: boolean = false;
   salesActiveScheme: any;
   salesActiveSchemebooster: any;
@@ -194,7 +194,8 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
 	 * Create form
 	 */
   createForm() {
-    this.distributorSaleForm = this.distributorSaleFB.group({
+    const numberPatern = '^[0-9.,]+$';
+    this.addDistributorSaleForm = this.distributorSaleFB.group({
       scheme_id: [this.salesActiveScheme.scheme_id, Validators.required],
       retailer_id: ['', Validators.required],
       retailer_name: [''],
@@ -203,13 +204,12 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
       isShippingAddressSameAsDispatch: [true],
       godownID: ['', Validators.required],
       Address_Master_ID: [''],
-      AddressLine1: ['A301'],
-      AddressLine2: ['Anand nagar'],
-      landline_no: ['6985745632'],
-      City: ['Ahmedabad'],
-      Pincode: ['380054'],
-      State: ['gujrat'],
-      Country: ['India'],
+      AddressLine1: [''],
+      AddressLine2: [''],
+      City: [''],
+      Pincode: [''],
+      State: [''],
+      Country: [''],
       products: this.distributorSaleFB.array([], Validators.required),
       paymentMode: ['', Validators.required],
       bankName: [''],
@@ -219,7 +219,11 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
       dcNo: [''],
       grNo: [''],
       transporter: [''],
-      deliveryDays: [''],
+      deliveryDays: ['',
+      Validators.compose([
+        Validators.pattern(numberPatern),
+      ])
+    ],
       remarks: [''],
       erpInvoiceNo: [''],
     });
@@ -232,9 +236,9 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
 	 */
   submit() {
     this.hasFormErrors = false;
-    const controls = this.distributorSaleForm.controls;
+    const controls = this.addDistributorSaleForm.controls;
     /** check form */
-    if (this.distributorSaleForm.invalid) {
+    if (this.addDistributorSaleForm.invalid) {
       Object.keys(controls).forEach(controlName => {
         return controls[controlName].markAsTouched()
       }
@@ -253,7 +257,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
 	 * Returns prepared data for save
 	 */
   prepareDistributorSale(): DistributorSale {
-    const controls = this.distributorSaleForm.controls;
+    const controls = this.addDistributorSaleForm.controls;
     const _distributorSale = new DistributorSale();
     _distributorSale.clear();
     _distributorSale.loyalty_id = this.salesActiveScheme.id;
@@ -274,7 +278,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     _distributorSale.paymentMode = controls['paymentMode'].value;
     _distributorSale.bankName = controls['bankName'].value;
     _distributorSale.cheqNo = controls['cheqNo'].value;
-    _distributorSale.cheqDate = controls['cheqDate'].value;
+    _distributorSale.cheqDate = this.datePipe.transform(controls['cheqDate'].value, "yyyy-MM-dd");
     _distributorSale.frightTerm = controls['frightTerm'].value;
     _distributorSale.dcNo = controls['dcNo'].value;
     _distributorSale.grNo = controls['grNo'].value;
@@ -292,7 +296,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
 	 * Returns prepared data for product
 	 */
   prepareProduct(): Product[] {
-    const controls = this.distributorSaleForm.controls['products'].value;;
+    const controls = this.addDistributorSaleForm.controls['products'].value;;
     const _products = [];
 
     let boost_point = 0;
@@ -343,7 +347,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
       .pipe(
         tap(response => {
           if (response.status == APP_CONSTANTS.response.SUCCESS) {
-            const message = `DistributorSale successfully has been added.`;
+            const message = `Distributor Sale has been successfully added.`;
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
             this.router.navigateByUrl('distributor-sales'); // distributorSale listing page
           } else if (response.status == APP_CONSTANTS.response.ERROR) {
@@ -411,7 +415,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
   * try to add dynamic product
   */
   createProduct(res) {
-    const currentProductArray = <FormArray>this.distributorSaleForm.controls['products'];
+    const currentProductArray = <FormArray>this.addDistributorSaleForm.controls['products'];
     currentProductArray.push(
       this.distributorSaleFB.group(res)
     )
@@ -426,7 +430,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     const viewContainerRef = this.entry;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
-    componentRef.instance.mainForm = this.distributorSaleForm;
+    componentRef.instance.mainForm = this.addDistributorSaleForm;
     const sub: Subscription = componentRef.instance.newAddedProductsIds.subscribe(
       event => {
         this.newAddedProductsIdsUpdate(event)
@@ -440,7 +444,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
   }
 
   is_direct_sale_toggle(event) {
-    this.distributorSaleForm.controls['soID'].setValue('');
+    this.addDistributorSaleForm.controls['soID'].setValue('');
     this.resetProductData();
     if (!event.checked) {
       this.viewOrderSelect = true;
@@ -473,6 +477,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     this.resetProductData();
     const numberPatern = '^[0-9.,]+$';
     this.store.pipe(select(selectOrderById(event.value))).subscribe((data: any) => {
+      this.addDistributorSaleForm.controls['retailer_id'].setValue(data.CustomerID);
       const productObject = data.Products;
       productObject.forEach((orderProduct: orderProduct) => {
         let productFormArray = {
@@ -513,7 +518,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
   }
 
   resetProductData() {
-    const currentProductArray = <FormArray>this.distributorSaleForm.controls['products'];
+    const currentProductArray = <FormArray>this.addDistributorSaleForm.controls['products'];
     //Clear
     currentProductArray.reset();
     while (currentProductArray.length !== 0) {
@@ -531,45 +536,49 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
   }
 
   retailerChange(event) {
-    this.distributorSaleForm.controls['Address_Master_ID'].setValue('');
-    this.distributorSaleForm.controls['retailer_name'].setValue('');
+    this.addDistributorSaleForm.controls['Address_Master_ID'].setValue('');
+    this.addDistributorSaleForm.controls['retailer_name'].setValue('');
     this.retailerAddressString = '';
     this.store.pipe(select(selectRetailerById(event.value))).subscribe((data: any) => {
-      this.distributorSaleForm.controls['Address_Master_ID'].setValue(data.Address_Master_ID);
-      this.distributorSaleForm.controls['retailer_name'].setValue(data.Name);
+      this.addDistributorSaleForm.controls['Address_Master_ID'].setValue(data.Address_Master_ID);
+      this.addDistributorSaleForm.controls['retailer_name'].setValue(data.Name);
       this.retailerAddressString = data.Address_Line1;
       this.retailerAddressString += ', ' + data.Address_Line2;
       this.retailerAddressString += ', ' + data.City;
       this.retailerAddressString += ', ' + data.State;
       this.retailerAddressString += ', (' + data.Pincode + ')';
       this.retailerAddressString += ', ' + data.Country;
+
+      this.addDistributorSaleForm.controls['AddressLine1'].setValue(data.Address_Line1);
+      this.addDistributorSaleForm.controls['AddressLine2'].setValue(data.Address_Line2);
+      this.addDistributorSaleForm.controls['City'].setValue(data.City);
+      this.addDistributorSaleForm.controls['State'].setValue(data.State);
+      this.addDistributorSaleForm.controls['Country'].setValue(data.Country);
+
     })
   }
 
   formControlValueChanged() {
-    this.distributorSaleForm.get('isShippingAddressSameAsDispatch').valueChanges.subscribe(data => {
+    this.addDistributorSaleForm.get('isShippingAddressSameAsDispatch').valueChanges.subscribe(data => {
       if (data) {
-        this.distributorSaleForm.get('AddressLine1').clearValidators()
-        this.distributorSaleForm.get('AddressLine2').clearValidators()
-        this.distributorSaleForm.get('landline_no').clearValidators()
-        this.distributorSaleForm.get('City').clearValidators()
-        this.distributorSaleForm.get('State').clearValidators()
-        this.distributorSaleForm.get('Country').clearValidators()
+        this.addDistributorSaleForm.get('AddressLine1').clearValidators()
+        this.addDistributorSaleForm.get('AddressLine2').clearValidators()
+        this.addDistributorSaleForm.get('City').clearValidators()
+        this.addDistributorSaleForm.get('State').clearValidators()
+        this.addDistributorSaleForm.get('Country').clearValidators()
       } else {
-        this.distributorSaleForm.get('AddressLine1').setValidators([Validators.required])
-        this.distributorSaleForm.get('AddressLine2').setValidators([Validators.required])
-        this.distributorSaleForm.get('landline_no').setValidators([Validators.required])
-        this.distributorSaleForm.get('City').setValidators([Validators.required])
-        this.distributorSaleForm.get('State').setValidators([Validators.required])
-        this.distributorSaleForm.get('Country').setValidators([Validators.required])
+        this.addDistributorSaleForm.get('AddressLine1').setValidators([Validators.required])
+        this.addDistributorSaleForm.get('AddressLine2').setValidators([Validators.required])
+        this.addDistributorSaleForm.get('City').setValidators([Validators.required])
+        this.addDistributorSaleForm.get('State').setValidators([Validators.required])
+        this.addDistributorSaleForm.get('Country').setValidators([Validators.required])
       }
 
-      this.distributorSaleForm.get('AddressLine1').updateValueAndValidity();
-      this.distributorSaleForm.get('AddressLine2').updateValueAndValidity();
-      this.distributorSaleForm.get('landline_no').updateValueAndValidity();
-      this.distributorSaleForm.get('City').updateValueAndValidity();
-      this.distributorSaleForm.get('State').updateValueAndValidity();
-      this.distributorSaleForm.get('Country').updateValueAndValidity();
+      this.addDistributorSaleForm.get('AddressLine1').updateValueAndValidity();
+      this.addDistributorSaleForm.get('AddressLine2').updateValueAndValidity();
+      this.addDistributorSaleForm.get('City').updateValueAndValidity();
+      this.addDistributorSaleForm.get('State').updateValueAndValidity();
+      this.addDistributorSaleForm.get('Country').updateValueAndValidity();
 
     });
   }

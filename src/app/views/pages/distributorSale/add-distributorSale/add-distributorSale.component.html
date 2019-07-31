@@ -4,7 +4,7 @@
 
     <kt-portlet-body>
         <!--begin::Form-->
-        <form [formGroup]="distributorSaleForm" class="kt-form kt-form--group-seperator-dashed">
+        <form [formGroup]="addDistributorSaleForm" class="kt-form kt-form--group-seperator-dashed">
 
             <kt-alert *ngIf="hasFormErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
                 Oh snap! Change a few things up and try submitting again.
@@ -90,13 +90,13 @@
                         </div>
                         <div class="col-lg-6 kt-margin-bottom-20-mobile">
                             <mat-form-field class="mat-form-field-fluid">
-                                <input type="text" matInput placeholder="Enter address line 1" formControlName="AddressLine1" maxlength="50" />
+                                <input type="text" matInput placeholder="Enter address line 1" formControlName="AddressLine1" maxlength="100" />
                                 <mat-error>Address line 1 is <strong>required</strong></mat-error>
                             </mat-form-field>
                         </div>
                         <div class="col-lg-6 kt-margin-bottom-20-mobile">
                             <mat-form-field class="mat-form-field-fluid">
-                                <input matInput placeholder="Enter address line 2" formControlName="AddressLine2" maxlength="50" />
+                                <input matInput placeholder="Enter address line 2" formControlName="AddressLine2" maxlength="100" />
                                 <mat-error>Address line 2 is <strong>required</strong></mat-error>
                             </mat-form-field>
                         </div>
@@ -160,9 +160,9 @@
                             </span>)</h3>
                         </div>
                         <div formArrayName="products">
-                            <div *ngFor="let product of distributorSaleForm['controls'].products['controls']; let i=index">
+                            <div *ngFor="let product of addDistributorSaleForm['controls'].products['controls']; let i=index">
                                 <div [formGroupName]="i">
-                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="distributorSaleForm.controls.products.controls[i]" [parantGroup]="distributorSaleForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction"></kt-popup-add-product>
+                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="addDistributorSaleForm.controls.products.controls[i]" [parantGroup]="addDistributorSaleForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction"></kt-popup-add-product>
                                 </div>
                             </div>
                         </div>
@@ -200,13 +200,13 @@
 
                     <div class="col-lg-6 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input type="text" matInput placeholder="Enter bank name" formControlName="bankName" maxlength="50" />
+                            <input type="text" matInput placeholder="Enter bank name" formControlName="bankName" maxlength="100" />
                         </mat-form-field>
                     </div>
 
                     <div class="col-lg-6 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input type="text" matInput placeholder="Enter Ref. no" formControlName="cheqNo" maxlength="50" />
+                            <input type="text" matInput placeholder="Enter Ref. no" formControlName="cheqNo" maxlength="100" />
                         </mat-form-field>
                     </div>
 
@@ -252,44 +252,44 @@
 
                     <div class="col-lg-6 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input type="text" matInput placeholder="Enter DC.No" formControlName="dcNo" maxlength="50" />
+                            <input type="text" matInput placeholder="Enter DC.No" formControlName="dcNo" maxlength="100" />
                         </mat-form-field>
                     </div>
 
                     <div class="col-lg-6 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input type="text" matInput placeholder="Enter GR.No" formControlName="grNo" maxlength="50" />
+                            <input type="text" matInput placeholder="Enter GR.No" formControlName="grNo" maxlength="100" />
                         </mat-form-field>
                     </div>
 
                     <div class="col-lg-6 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input type="text" matInput placeholder="Enter transporter" formControlName="transporter" maxlength="50" />
+                            <input type="text" matInput placeholder="Enter transporter" formControlName="transporter" maxlength="100" />
                         </mat-form-field>
                     </div>
 
                     <div class="col-lg-6 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input type="text" matInput placeholder="Enter delivery days" formControlName="deliveryDays" maxlength="50" />
+                            <input type="text" matInput placeholder="Enter delivery days" formControlName="deliveryDays" maxlength="100" />
                         </mat-form-field>
                     </div>
 
                     <div class="col-lg-6 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input type="text" matInput placeholder="Enter remarks" formControlName="remarks" maxlength="50" />
+                            <input type="text" matInput placeholder="Enter remarks" formControlName="remarks" maxlength="100" />
                         </mat-form-field>
                     </div>
 
                     <div class="col-lg-6 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input type="text" matInput placeholder="Enter ERP Invoice No" formControlName="erpInvoiceNo" maxlength="50" />
+                            <input type="text" matInput placeholder="Enter ERP Invoice No" formControlName="erpInvoiceNo" maxlength="100" />
                         </mat-form-field>
                     </div>
 
 
                 </div>
             </div>
-            <button (click)="submit()" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!distributorSaleForm.valid" id="kt_login_signin_submit" class="btn btn-primary btn-elevate kt-login__btn-primary">Add DistributorSale</button>
+            <button (click)="submit()" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!addDistributorSaleForm.valid" id="kt_login_signin_submit" class="btn btn-primary btn-elevate kt-login__btn-primary">Add DistributorSale</button>
         </form>
         <!--end::Form-->
     </kt-portlet-body>

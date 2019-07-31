@@ -25,7 +25,6 @@ export class InterceptService implements HttpInterceptor {
 		// tslint:disable-next-line:no-debugger
 		// modify request
 		const userSession = this.EncrDecr.getLocalStorage(environment.localStorageKey)
-		// console.log(request);
 
 		let clonedRequest = request.clone({
 			setHeaders: {

@@ -171,18 +171,21 @@ export class NotificationComponent implements OnInit, OnDestroy {
   }
 
   viewApproval(data) {
-    // console.log(data);    
+    console.log(data);
     // console.log(data.Type);
     // console.log(APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_ADD_SALES);
     // console.log(data.Status);
     // console.log(APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING);
+    let notificationData = [];
+    notificationData.push(data);
 
     if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_ADD_SALES && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
-      let notificationData = [];
-      notificationData.push(data);
+      /**
+       * Screen retailer approval
+       * Retailer to accept reject purchase cretaed by distributor
+       */
       const dialogRef = this.dialog.open(ViewDistributorSaleComponent, {
-        
-        data: { transactionID: data.Transaction_ID, action: 'retailerPurchaseApproval', notificationData:notificationData },
+        data: { transactionID: data.Transaction_ID, action: 'retailerPurchaseApproval', notificationData: notificationData },
         width: '600px',
       });
 
@@ -194,7 +197,20 @@ export class NotificationComponent implements OnInit, OnDestroy {
     } else if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_RETAILER_PURCHASE_RETURN && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
       console.log('Second else IF');
     } else if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_RETAILER_PARTIAL_PURCHASE_REQUEST && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
-      console.log('third else IF');
+      /**
+       * Screen distributor approval
+       * Approval for retailer accept purchse partial that's why approval to distributor to inform
+       */
+      const dialogRef = this.dialog.open(ViewDistributorSaleComponent, {
+        data: { transactionID: data.Transaction_ID, action: 'distributorPartialSalesAcceptApproval', notificationData: notificationData },
+        width: '600px',
+      });
+
+      dialogRef.afterClosed().subscribe(res => {
+        if (res == 'reload')
+          this.loadApprovalTab();
+      });
+
     } else if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_PARTIAL_PURCHASERETUN_REQUEST && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
       console.log('Fourth else IF');
     }
