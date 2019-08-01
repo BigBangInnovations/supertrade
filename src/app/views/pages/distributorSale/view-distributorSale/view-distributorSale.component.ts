@@ -66,6 +66,12 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
   godown$: Observable<Godown[]>;
   paymentMode$: Observable<PaymentMode[]>;
 
+  salesActiveScheme: any;
+  purchaseActiveScheme: any;
+  salesActiveSchemebooster: any;
+  purchaseActiveSchemebooster: any;
+  userData: any;
+
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
 
   //Product properry
@@ -110,6 +116,9 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     private EncrDecr: EncrDecrServiceService,
 
   ) {
+
+    this.pageAction = this.data.action;
+
     const OptionalSetting = new dynamicProductTemplateSetting();
     OptionalSetting.clear();
     OptionalSetting.displayDeleteButton = false;
@@ -128,13 +137,22 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     }
 
     this.OptionalSetting = OptionalSetting;
-    this.pageAction = this.data.action;
   }
 
   ngOnInit() {
+    let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
+    this.userData = JSON.parse(sessionStorage)
+
+    this.salesActiveScheme = this.userData.salesActiveScheme[0];
+    this.salesActiveSchemebooster = this.userData.salesActiveSchemeBooster[0];
+
+    this.purchaseActiveScheme = this.userData.purchaseActiveScheme[0];
+    this.purchaseActiveSchemebooster = this.userData.purchaseActiveSchemeBooster[0];
+
     //Load retailer
     const retailerLoadSubscription = this.store.select(fromRetailer.selectRetailerLoaded).pipe(
     ).subscribe(data => {
+
       if (data) {
         this.retailers$ = this.store.pipe(select(fromRetailer.selectAllRetailer));
       } else {
@@ -166,7 +184,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
 
     this.viewLoading$ = this.store.pipe(select(fromRetailer.selectRetailerLoading));
     this.userSession = this.EncrDecr.getLocalStorage(environment.localStorageKey)
-    this.userSession = JSON.parse(this.userSession) 
+    this.userSession = JSON.parse(this.userSession)
 
     this.viewDistributorSaleForm = this.distributorSaleFB.group({
       scheme_id: [''],
@@ -240,11 +258,6 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
 	 * Create form
 	 */
   createForm(res) {
-    // console.log('createForm(res)');
-    // console.log(res);
-
-    // this.viewDistributorSaleForm.removeControl('viewDistributorSaleForm');
-    // this.viewDistributorSaleForm.updateValueAndValidity();
 
     this.viewDistributorSaleForm.controls['scheme_id'].setValue(res.scheme_id);
     this.viewDistributorSaleForm.controls['retailer_id'].setValue(res.ss_retailer_id);
@@ -309,8 +322,19 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     const numberPatern = '^[0-9.,]+$';
     products.forEach(element => {
       let quantity = element.Quantity;
+      let points = element.points;
+      let points_boost = element.points_boost;
+
       if (this.pageAction == 'distributorSaleReturn') quantity = 0;
       if (this.pageAction == 'retailerPartialSalesAcceptApproval') quantity = element.acceptQty;
+      if (this.pageAction == 'retailerPurchaseApproval') {
+        let boost_point = 0;
+        if (this.purchaseActiveSchemebooster != undefined)
+          boost_point = this.purchaseActiveSchemebooster.boost_point;
+        points = element.points / quantity
+        points_boost = (element.points * boost_point) / 100;
+      }
+
       let res = {
         productCategoryCtrl: [''],
         productSubCategoryCtrl: [''],
@@ -343,8 +367,8 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
         InclusiveExclusiveCtrl: [''],
         VATFromCtrl: [''],
         VATCodeCtrl: [''],
-        points: [element.points],
-        points_boost: [element.points_boost],
+        points: [points],
+        points_boost: [points_boost],
       }
 
       currentProductArray.push(

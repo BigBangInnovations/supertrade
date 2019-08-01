@@ -7,33 +7,25 @@ export class PageConfig {
 			},
 		},
 		sales: {
-			sales: {
-				page: { title: 'Sales', desc: 'SuperTRADE Sales' }
-			},
+			page: { title: 'Sales', desc: 'SuperTRADE Sales' },
 			'add-sale': {
 				page: { 'title': 'Add Sales', 'desc': 'SuperTRADE Add Sales' },
 			},
 		},
-		distributorSale: {
-			distributorSale: {
-				page: { title: 'Distributor Sales', desc: 'SuperTRADE Distributor Sales' }
-			},
+		'distributor-sales': {
+			page: { title: 'Distributor Sales', desc: 'SuperTRADE Distributor Sales' },
 			'add-distributorSale': {
 				page: { 'title': 'Add Distributor Sales', 'desc': 'SuperTRADE Add Distributor Sales' },
 			},
 		},
 		purchase: {
-			'purchase': {
-				page: { 'title': 'Purchase', 'desc': 'SuperTRADE Purchase' },
-			},
+			page: { 'title': 'Purchase', 'desc': 'SuperTRADE Purchase' },
 			'add-purchase': {
 				page: { 'title': 'Add Purchase', 'desc': 'SuperTRADE Add Purchase' },
 			}
 		},
-		orders: {
-			'order': {
-				page: { 'title': 'Order', 'desc': 'SuperTRADE Order' },
-			},
+		order: {
+			page: { 'title': 'Order', 'desc': 'SuperTRADE Order' },
 			'add-order': {
 				page: { 'title': 'Add Order', 'desc': 'SuperTRADE Add Order' },
 			}

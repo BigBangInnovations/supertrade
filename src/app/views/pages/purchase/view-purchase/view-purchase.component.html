@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>{{ getTitle() }}</h2>
 <!-- <mat-dialog-content *ngIf="!(viewLoading$  | async);"> -->
 <mat-dialog-content>
-    <form [formGroup]="purchaseForm" class="kt-form kt-form--group-seperator-dashed">
+    <form [formGroup]="purchaseForm" [ngClass]="{'kt-hidden':(purchase$ | async)?.length === 0}" class="kt-form kt-form--group-seperator-dashed">
 
         <div class="kt-form__section kt-form__section--first">
             <div class="form-group kt-form__group row">
@@ -33,8 +33,14 @@
             </div>
         </div>
     </form>
+    <div style="margin-left: 50%;" [ngClass]="{'kt-hidden':(purchase$ | async)?.length != 0}" class=" kt-form kt-form--group-seperator-dashed">
+        <mat-spinner color="warn" diameter="30" strokeWidth="2"></mat-spinner>
+        <div style="position:relative;">
+            Loading...
+        </div>
+    </div>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
+<mat-dialog-actions align="end" [ngClass]="{'kt-hidden':(purchase$ | async)?.length === 0}">
     <button type="button" (click)="close()" mat-raised-button matTooltip="Close">
                                             Cancel
                                         </button>&nbsp;

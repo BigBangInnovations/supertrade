@@ -94,11 +94,11 @@ const routes: Routes = [
 	],
 	providers: [
 		InterceptService,
-		{
-			provide: HTTP_INTERCEPTORS,
-			useClass: InterceptService,
-			multi: true
-		},
+		// {
+		// 	provide: HTTP_INTERCEPTORS,
+		// 	useClass: InterceptService,
+		// 	multi: true
+		// },
 	],
 	declarations: [
 		AddSalesComponent,

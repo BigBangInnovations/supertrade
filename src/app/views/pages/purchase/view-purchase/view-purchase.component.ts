@@ -445,6 +445,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
           product.points_boost = data.points_boost;//Product original point
         }
         product.originalQty = data.productOriginalQuantityCtrl;//product original sale quantity
+        product.acceptQty = data.productQuantityCtrl;//Accepted Qunatity
         product.Quantity = data.productQuantityCtrl;//product original sale quantity :: return time it's a entered quantity by user
         product.Discount = data.productDiscountCtrl;//product original discount(%)
         product.SGSTTax = data.productTaxSGSTCtrl;//Product original SGST Tax(%)
@@ -553,7 +554,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
     });
 
     this.purchaseService
-      .acceptRejectPurchaseReturn(httpParams)
+      .acceptRejectPartialAcceptedPurchaseReturn(httpParams)
       .pipe(
         tap(response => {
           if (response.status == APP_CONSTANTS.response.SUCCESS) {

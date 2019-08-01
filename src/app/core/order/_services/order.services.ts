@@ -17,13 +17,13 @@ export class OrderService {
 
     // Order
     getAllOrder(data: any): Observable<any> {
-        const url = environment.superSALESApi+`getsalesorderscustomerhistory`;
+        const url = environment.superSALESApi+`getSTSyncSalesOrders`;
         return this.http.post<Order[]>(url, data);
     }
     
     // Order
     getAllorderselect(data: any): Observable<any> {
-        const url = environment.superSALESApi+`getsyncsalesorders`;
+        const url = environment.superSALESApi+`getSTSyncSalesOrders`;
         return this.http.get<Order[]>(url, {params:data});
     }
 
@@ -57,7 +57,7 @@ export class OrderService {
 
     // Order
     findOrder(data: any): Observable<any> {
-        const url = environment.superSALESApi+`getsalesorderscustomerhistory`;
+        const url = environment.superSALESApi+`getSTSyncSalesOrders`;
         return this.http.get<Order[]>(url, {params:data});
     }
 

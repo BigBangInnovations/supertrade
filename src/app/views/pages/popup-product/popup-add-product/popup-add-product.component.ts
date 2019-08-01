@@ -36,10 +36,11 @@ export class PopupAddProductComponent {
   productLoyaltyPoint: number;
   productLoyaltyBoostPoint: number;
   salesActiveSchemebooster: any;
+  purchaseActiveSchemebooster: any;
   userData: any;
   boost_point: number;
-  coreProductLoyaltyPoint:number;
-  productQuantity:number;
+  coreProductLoyaltyPoint: number;
+  productQuantity: number;
 
   /**
   * @param EncrDecr: EncrDecrServiceService
@@ -50,14 +51,26 @@ export class PopupAddProductComponent {
     let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
     this.userData = JSON.parse(sessionStorage)
     this.salesActiveSchemebooster = this.userData.salesActiveSchemeBooster[0];
+    this.purchaseActiveSchemebooster = this.userData.purchaseActiveSchemeBooster[0];
 
-    this.boost_point = 0;
-    if (this.salesActiveSchemebooster != undefined)
-      this.boost_point = this.salesActiveSchemebooster.boost_point;
+
+
 
   }
 
   ngAfterContentInit(): void {
+    this.boost_point = 0;
+    if (
+      this.pageAction == 'retailerPurchaseApproval'
+    ) {
+
+      if (this.purchaseActiveSchemebooster != undefined)
+        this.boost_point = this.purchaseActiveSchemebooster.boost_point;
+    } else {
+      if (this.salesActiveSchemebooster != undefined)
+        this.boost_point = this.salesActiveSchemebooster.boost_point;
+    }
+
     this.productQuantity = this.productForm.controls['productQuantityCtrl'].value;
     this.productAmount = this.productForm.controls['productPriceCtrl'].value * this.productQuantity;
     this.productDiscount = (this.productAmount * this.productForm.controls['productDiscountCtrl'].value) / 100;
@@ -66,7 +79,7 @@ export class PopupAddProductComponent {
     this.productSGST = (this.productGrossAmount * this.productForm.controls['productTaxSGSTCtrl'].value) / 100;
     this.productNetAmount = this.productGrossAmount + this.productCGST + this.productSGST;
     this.coreProductLoyaltyPoint = this.productForm.controls['productLoyaltyPointCtrl'].value;
-    this.productLoyaltyPoint =  this.coreProductLoyaltyPoint * this.productQuantity;
+    this.productLoyaltyPoint = this.coreProductLoyaltyPoint * this.productQuantity;
     this.productLoyaltyBoostPoint = (this.productLoyaltyPoint * this.boost_point) / 100;
   }
   getControlLabel(type: string) {

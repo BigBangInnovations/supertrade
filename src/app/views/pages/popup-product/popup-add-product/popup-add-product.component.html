@@ -21,10 +21,21 @@ pageAction != 'addSale'
 && pageAction != 'retailerPurchaseApproval' 
 && pageAction != 'addDistributorSale'
 && pageAction != 'retailerPurchaseReturnApproval'
+&& pageAction != 'distributorPartialAcceptPurchaseReturnApproval'
 ">
 
                     <mat-list-item role="listitem">
                         <span matLine>Original sale quantity </span>
+                        <div class="kt-align-right">{{getControlLabel('productOriginalQuantityCtrl')}}</div>
+                    </mat-list-item>
+                    <mat-divider></mat-divider>
+                </ng-container>
+
+                <ng-container *ngIf="
+pageAction == 'distributorPartialAcceptPurchaseReturnApproval'
+">
+                    <mat-list-item role="listitem">
+                        <span matLine>Original return quantity </span>
                         <div class="kt-align-right">{{getControlLabel('productOriginalQuantityCtrl')}}</div>
                     </mat-list-item>
                     <mat-divider></mat-divider>

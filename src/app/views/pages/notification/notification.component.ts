@@ -172,12 +172,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
   }
 
   viewApproval(data) {
-    console.log(data);
     let newTransaction_ID = data.Transaction_ID.replace('PAR', ""); 
-    // console.log(data.Type);
-    // console.log(APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_ADD_SALES);
-    // console.log(data.Status);
-    // console.log(APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING);
     let notificationData = [];
     notificationData.push(data);
 

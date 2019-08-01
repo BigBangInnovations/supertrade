@@ -105,7 +105,6 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     if (this.data.saleId) {
       this.sale$ = this.store.pipe(select(selectSaleById(this.data.saleId)));
       this.sale$.subscribe(res => {
-        // console.log(res);        
         this.createForm(res);
       });
     }

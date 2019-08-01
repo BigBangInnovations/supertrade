@@ -388,6 +388,5 @@ export class AddOrderComponent implements OnInit, OnDestroy {
 
   newAddedProductsIdsUpdate(ids) {
     this.addedProductsIds = ids.addedProductsIds;
-    // console.log(this.addedProductsIds);
   }
 }

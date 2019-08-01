@@ -47,7 +47,7 @@ export class OrderListComponent implements OnInit, OnDestroy {
 	hasDateError: boolean = false;
 	// Table fields
 	dataSource: OrderDataSource;
-	displayedColumns = ['SeriesPrefix', 'SOMadeBy', 'SOMadeFrom', 'totalNetAmount', 'totalDiscount', 'totalGrossAmount', 'totalTaxAmount', 'finalSalesAmount'];
+	displayedColumns = ['SeriesPrefix', 'CreatedTime','SOMadeBy', 'SOMadeFrom', 'totalNetAmount', 'totalDiscount', 'totalGrossAmount', 'totalTaxAmount', 'finalSalesAmount'];
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 	@ViewChild('sort1', { static: true }) sort: MatSort;
 	// Filter fields

@@ -114,10 +114,10 @@ export class BaseComponent implements OnInit, OnDestroy {
 		this.store.pipe(select(currentUserRoleIds)).subscribe(currentUserRoleId => {
 			roleJson.forEach(role => {
 				if (role.id == currentUserRoleId) {
+					this.permissionsService.flushPermissions();
 					role.permissions.forEach(permission => {
 						permissionJson.forEach(permissions => {
 							if (permissions.id == permission) {
-								this.permissionsService.flushPermissions();
 								this.permissionsService.addPermission(permissions.name);
 							}
 						});

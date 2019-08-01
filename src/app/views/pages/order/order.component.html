@@ -61,53 +61,54 @@
 
         <!-- MATERIAL TABLE | Binded to datasources -->
         <!-- See off.documentations 'https://material.angular.io/components/table/overview' -->
-        <div class="mat-table__wrapper">
-            <h4 mat-line class="text-center mt-3">Order List</h4>
+        <h4 mat-line class="text-center mt-3">Order List</h4>
 
-            <!-- start:: filter -->
-            <div class="kt-form__filtration around_border">
-                <div class="row align-items-center">
-                    <div class="col-md-2 kt-margin-bottom-10-mobile">
-                        <table>
-                            <tr>
-                                <td colspan="2"> Filter</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <mat-form-field>
-                                        <input matInput [matDatepicker]="dp3" (focus)="dp3.open()" #startDateInput placeholder="Satrt Date" readonly>
-                                        <mat-datepicker-toggle matSuffix [for]="dp3">
-                                        </mat-datepicker-toggle>
-                                        <mat-datepicker touchUi #dp3 disabled="false"></mat-datepicker>
-                                    </mat-form-field>
-                                    <small *ngIf="hasDateError" class="alert-danger">Enter valid date</small>
-                                </td>
+        <!-- start:: filter -->
+        <div class="kt-form__filtration around_border">
+            <div class="row align-items-center">
+                <div class="col-md-2 kt-margin-bottom-10-mobile">
+                    <table>
+                        <tr>
+                            <td colspan="2"> Filter</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <mat-form-field>
+                                    <input matInput [matDatepicker]="dp3" (focus)="dp3.open()" #startDateInput placeholder="Satrt Date" readonly>
+                                    <mat-datepicker-toggle matSuffix [for]="dp3">
+                                    </mat-datepicker-toggle>
+                                    <mat-datepicker touchUi #dp3 disabled="false"></mat-datepicker>
+                                </mat-form-field>
+                                <small *ngIf="hasDateError" class="alert-danger">Enter valid date</small>
+                            </td>
 
-                                <td>
-                                    <mat-form-field>
-                                        <input matInput [matDatepicker]="dp4" (focus)="dp4.open()" #endDateInput placeholder="End Date" readonly>
-                                        <mat-datepicker-toggle matSuffix [for]="dp4">
-                                        </mat-datepicker-toggle>
-                                        <mat-datepicker touchUi #dp4 disabled="false"></mat-datepicker>
+                            <td>
+                                <mat-form-field>
+                                    <input matInput [matDatepicker]="dp4" (focus)="dp4.open()" #endDateInput placeholder="End Date" readonly>
+                                    <mat-datepicker-toggle matSuffix [for]="dp4">
+                                    </mat-datepicker-toggle>
+                                    <mat-datepicker touchUi #dp4 disabled="false"></mat-datepicker>
 
-                                    </mat-form-field>
-                                </td>
-                                <td>
-                                    <button (click)="loadOrderList()" mat-raised-button color="accent">Apply</button>
-                                </td>
-                            </tr>
-                        </table>
-                        <!-- <mat-form-field class="mat-form-field-fluid">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <button (click)="loadOrderList()" mat-raised-button color="accent">Apply</button>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- <mat-form-field class="mat-form-field-fluid">
                                         <input matInput placeholder="Search user" #searchInput placeholder="Search">
                                         <mat-hint align="start">
                                             <strong>Search</strong> in all fields
                                         </mat-hint>
                                     </mat-form-field> -->
-                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- end::filter -->
+        <!-- end::filter -->
+
+        <div class="mat-table__wrapper">
 
             <mat-table class="mat-elevation-z8" #table [dataSource]="dataSource" matSort #sort1="matSort" matSortActive="id" matSortDirection="asc" matSortDisableClear>
                 <!-- Checkbox Column -->
@@ -129,6 +130,11 @@
                     <!-- ATTRIBUTE mat-sort-header  for sorting | https://material.angular.io/components/sort/overview -->
                     <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
                     <mat-cell *matCellDef="let order">{{ order.SeriesPrefix }}{{ order.SeriesPostfix }}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="CreatedTime">
+                    <mat-header-cell *matHeaderCellDef>Date</mat-header-cell>
+                    <mat-cell *matCellDef="let order">{{order.CreatedTime | date: 'dd-MM-yyyy'}}</mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="SOMadeBy">
