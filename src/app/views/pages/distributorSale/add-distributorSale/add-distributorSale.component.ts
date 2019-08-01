@@ -494,6 +494,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
           productTaxIGSTSurchargesCtrl: [orderProduct.IGSTSurcharges],
           productOriginalQuantityCtrl: [orderProduct.Quantity],
           productReturnedQuantityCtrl: [0],
+          productAcceptedQuantityCtrl: [0],
           productQuantityCtrl: [orderProduct.Quantity,
           Validators.compose([
             Validators.required,

@@ -160,6 +160,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
         )],
         productOriginalQuantityCtrl: [element.Quantity],
         productReturnedQuantityCtrl: [element.ReturnQuantity],
+        productAcceptedQuantityCtrl: [element.acceptQty],
         productDiscountCtrl: [element.Discount],
         productLoyaltyPointCtrl: [(element.points) / element.Quantity],
         productBarCodeCtrl: [''],

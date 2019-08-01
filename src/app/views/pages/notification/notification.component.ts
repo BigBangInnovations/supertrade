@@ -13,6 +13,7 @@ import { APP_CONSTANTS } from '../../../../config/default/constants'
 import { MatPaginator, MatSort, MatSnackBar, MatDialog } from '@angular/material';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ViewDistributorSaleComponent } from '../distributorSale/view-distributorSale/view-distributorSale.component';
+import { ViewPurchaseComponent } from '../purchase/view-purchase/view-purchase.component';
 import {
   Notification,
   getNotificationError,
@@ -172,6 +173,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   viewApproval(data) {
     console.log(data);
+    let newTransaction_ID = data.Transaction_ID.replace('PAR', ""); 
     // console.log(data.Type);
     // console.log(APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_ADD_SALES);
     // console.log(data.Status);
@@ -185,7 +187,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
        * Retailer to accept reject purchase cretaed by distributor
        */
       const dialogRef = this.dialog.open(ViewDistributorSaleComponent, {
-        data: { transactionID: data.Transaction_ID, action: 'retailerPurchaseApproval', notificationData: notificationData },
+        data: { transactionID: newTransaction_ID, action: 'retailerPurchaseApproval', notificationData: notificationData },
         width: '600px',
       });
 
@@ -195,14 +197,26 @@ export class NotificationComponent implements OnInit, OnDestroy {
       });
 
     } else if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_RETAILER_PURCHASE_RETURN && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
-      console.log('Second else IF');
+      /** 
+       * Screen Distributor approva
+       * Retailer request for his purchase return than approval comes to distributor
+       */
+      const dialogRef = this.dialog.open(ViewPurchaseComponent, {
+        data: { transactionID: newTransaction_ID, action: 'retailerPurchaseReturnApproval', notificationData: notificationData },
+        width: '600px',
+      });
+
+      dialogRef.afterClosed().subscribe(res => {
+        if (res == 'reload')
+          this.loadApprovalTab();
+      });
     } else if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_RETAILER_PARTIAL_PURCHASE_REQUEST && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
       /**
        * Screen distributor approval
        * Approval for retailer accept purchse partial that's why approval to distributor to inform
        */
       const dialogRef = this.dialog.open(ViewDistributorSaleComponent, {
-        data: { transactionID: data.Transaction_ID, action: 'distributorPartialSalesAcceptApproval', notificationData: notificationData },
+        data: { transactionID: newTransaction_ID, action: 'retailerPartialSalesAcceptApproval', notificationData: notificationData },
         width: '600px',
       });
 
@@ -212,7 +226,20 @@ export class NotificationComponent implements OnInit, OnDestroy {
       });
 
     } else if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_PARTIAL_PURCHASERETUN_REQUEST && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
-      console.log('Fourth else IF');
+      /** 
+       * Screen retailer approva
+       * distributor acept retailer purchase return request partial, 
+       * approvel to retailer regard  this confirmation
+       */
+      const dialogRef = this.dialog.open(ViewPurchaseComponent, {
+        data: { transactionID: newTransaction_ID, action: 'distributorPartialAcceptPurchaseReturnApproval', notificationData: notificationData },
+        width: '600px',
+      });
+
+      dialogRef.afterClosed().subscribe(res => {
+        if (res == 'reload')
+          this.loadApprovalTab();
+      });
     }
   }
 }

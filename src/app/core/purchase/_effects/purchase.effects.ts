@@ -61,10 +61,10 @@ export class PurchaseEffects {
         .pipe(
             ofType<LOAD_PURCHASE>(PurchaseActionTypes.LOAD_PURCHASE), 
             mergeMap(({ payload }) =>
-                this.purchaseService.findDistributorSaleAsPurchase(payload).pipe(
+                this.purchaseService.findPurchaseReturn(payload).pipe(
                     map(response => {
                         if (response.status == APP_CONSTANTS.response.SUCCESS) {
-                            return new LOAD_PURCHASE_SUCCESS(response.data[0].distributorSales);
+                            return new LOAD_PURCHASE_SUCCESS(response.data[0]);
                         } else {
                             this.authNoticeService.setNotice(this.translate.instant('AUTH.REPONSE.INVALID_TOKEN'), 'danger');
                             return new Logout()

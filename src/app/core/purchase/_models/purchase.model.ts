@@ -7,12 +7,16 @@ export class Purchase {
     // invoice_id: string;
     // transaction_id: string;
     date: string;
+    data: string;
+    retailer_name: string;
+    Distributor_Name: string;
     // sl_user_id: number;
     // company_id: number;
     // is_active: boolean;
     scheme_id: string;
     loyalty_id: number;
     distributor_id: number;
+    retailer_id: number;
     GrossAmount: number;
     //Customr Detail
     name: string;
@@ -35,12 +39,16 @@ export class Purchase {
         // this.invoice_id = '';
         // this.transaction_id = '';
         this.date = '';
+        this.data = '';
+        this.retailer_name = '';
+        this.Distributor_Name = '';
         // this.sl_user_id = undefined;;
         // this.company_id = undefined;;
         // this.is_active = false;
         this.scheme_id = '';
         this.loyalty_id = undefined;
         this.distributor_id = undefined;
+        this.retailer_id = undefined;
         this.GrossAmount = undefined;;
         this.name = '';
         this.mobile_no = '';

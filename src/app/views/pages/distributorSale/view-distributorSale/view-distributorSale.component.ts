@@ -115,6 +115,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     OptionalSetting.displayDeleteButton = false;
     if (
       this.data.action == 'DistributorSaleReturn'
+      || this.data.action == 'retailerPartialSalesAcceptApproval'
       //  || this.data.action == 'viewDistributorSale'
     ) {
       OptionalSetting.displayPointCalculation = false;
@@ -165,7 +166,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
 
     this.viewLoading$ = this.store.pipe(select(fromRetailer.selectRetailerLoading));
     this.userSession = this.EncrDecr.getLocalStorage(environment.localStorageKey)
-    this.userSession = JSON.parse(this.userSession)
+    this.userSession = JSON.parse(this.userSession) 
 
     this.viewDistributorSaleForm = this.distributorSaleFB.group({
       scheme_id: [''],
@@ -222,7 +223,6 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
         httpParams = httpParams.append('transaction_id', this.data.transactionID);
         this.store.dispatch(new LOAD_DISTRIBUTOR_SALE(httpParams));
         this.distributorSale$ = this.store.pipe(select(selectDistributorSale));
-
         const distributorSaleLoadSubscription = this.distributorSale$.pipe(
         ).subscribe((res: any) => {
           if (res && res.length > 0) {
@@ -240,11 +240,15 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
 	 * Create form
 	 */
   createForm(res) {
+    // console.log('createForm(res)');
+    // console.log(res);
+
     // this.viewDistributorSaleForm.removeControl('viewDistributorSaleForm');
     // this.viewDistributorSaleForm.updateValueAndValidity();
 
     this.viewDistributorSaleForm.controls['scheme_id'].setValue(res.scheme_id);
     this.viewDistributorSaleForm.controls['retailer_id'].setValue(res.ss_retailer_id);
+    this.viewDistributorSaleForm.controls['retailer_name'].setValue(res.Retailer_Name);
     this.viewDistributorSaleForm.controls['soID'].setValue(res.soID);
     this.viewDistributorSaleForm.controls['is_direct_sale'].setValue((res.soID > 0) ? false : true);
     this.viewDistributorSaleForm.controls['isShippingAddressSameAsDispatch'].setValue((res.isShippingAddressSameAsDispatch > 0) ? true : false);
@@ -306,6 +310,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     products.forEach(element => {
       let quantity = element.Quantity;
       if (this.pageAction == 'distributorSaleReturn') quantity = 0;
+      if (this.pageAction == 'retailerPartialSalesAcceptApproval') quantity = element.acceptQty;
       let res = {
         productCategoryCtrl: [''],
         productSubCategoryCtrl: [''],
@@ -329,6 +334,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
         )],
         productOriginalQuantityCtrl: [element.Quantity],
         productReturnedQuantityCtrl: [element.ReturnQuantity],
+        productAcceptedQuantityCtrl: [element.acceptQty],
         productDiscountCtrl: [element.Discount],
         productLoyaltyPointCtrl: [(element.points) / element.Quantity],
         productBarCodeCtrl: [''],
@@ -381,8 +387,8 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
       return 'Distributor sale return'
     } else if (this.pageAction == 'retailerPurchaseApproval') {
       return 'Purchase confirmation'
-    } else if (this.pageAction == 'distributorPartialSalesAcceptApproval') {
-      return 'Partial sales accepted confirmation'
+    } else if (this.pageAction == 'retailerPartialSalesAcceptApproval') {
+      return 'Retailer accepted partial sales confirmation'
     } else { return 'View Distributor Sale'; }
   }
 
@@ -483,6 +489,49 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
 
   }
 
+  /**  
+     * acceptPartialSaleAcceptedByRetailer
+    */
+  acceptPartialSaleAcceptedByRetailer() {
+    this.enableAttributes();
+    const controls = this.viewDistributorSaleForm.controls;
+
+    /** check form */
+    if (this.viewDistributorSaleForm.invalid) {
+      Object.keys(controls).forEach(controlName => {
+        controls[controlName].markAsTouched()
+      }
+      );
+      return;
+    }
+    this.data.notificationData[0].Status = 2;
+    const returnDistributorSale = this.prepareDistributorSale();
+    this.acceptRejectPartialSaleAcceptedByRetailer(returnDistributorSale);
+
+  }
+
+  /**  
+     * rejectPartialSaleAcceptedByRetailer
+    */
+  rejectPartialSaleAcceptedByRetailer() {
+    this.enableAttributes();
+    const controls = this.viewDistributorSaleForm.controls;
+
+    /** check form */
+    if (this.viewDistributorSaleForm.invalid) {
+      Object.keys(controls).forEach(controlName => {
+        controls[controlName].markAsTouched()
+      }
+
+      );
+      return;
+    }
+
+    this.data.notificationData[0].Status = 3;
+    const returnDistributorSale = this.prepareDistributorSale();
+    this.acceptRejectPartialSaleAcceptedByRetailer(returnDistributorSale);
+
+  }
 
   /**
    * Returns prepared data for save
@@ -494,12 +543,17 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     _distributorSale.sl_distributorSale_id = this.data.distributorSaleId;
     _distributorSale.sl_distributor_sales_id = this.sl_distributor_sales_id;
 
-    if (this.data.action == 'retailerPurchaseApproval' 
-    || this.data.action == 'distributorPartialSalesAcceptApproval'
+    if (this.data.action == 'retailerPurchaseApproval'
     ) {
       _distributorSale.data = JSON.stringify(this.data.notificationData);
       _distributorSale.retailer_name = this.userSession.Name;
       _distributorSale.Distributor_Name = this.userSession.Distributor_Name;
+    } else if (this.data.action == 'retailerPartialSalesAcceptApproval'
+    ) {
+      _distributorSale.data = JSON.stringify(this.data.notificationData);
+      _distributorSale.retailer_id = this.viewDistributorSaleForm.controls['retailer_id'].value;
+      _distributorSale.retailer_name = this.viewDistributorSaleForm.controls['retailer_name'].value;
+      _distributorSale.Distributor_Name = this.userSession.Name;
     }
 
     _distributorSale.products_json = JSON.stringify(this.prepareProduct())
@@ -510,7 +564,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
    * Returns prepared data for product
    */
   prepareProduct(): Product[] {
-    const controls = this.viewDistributorSaleForm.controls['products'].value;;
+    const controls = this.viewDistributorSaleForm.controls['products'].value;
     const _products = [];
     controls.forEach(data => {
       if (data.productQuantityCtrl > 0) {
@@ -526,6 +580,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
         product.points = data.points;//Product original point :: Return product time It's total get boost point in order
         product.points_boost = data.points_boost;//Product original point
         product.originalQty = data.productOriginalQuantityCtrl;//product original sale quantity
+        product.acceptQty = data.productAcceptedQuantityCtrl;//product original sale quantity
         product.Quantity = data.productQuantityCtrl;//product original sale quantity :: return time it's a entered quantity by user
         product.Discount = data.productDiscountCtrl;//product original discount(%)
         product.SGSTTax = data.productTaxSGSTCtrl;//Product original SGST Tax(%)
@@ -600,6 +655,46 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
         tap(response => {
           if (response.status == APP_CONSTANTS.response.SUCCESS) {
             const message = `Purchase accepted successfully.`;
+            this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
+            this.dialogRef.close('reload');
+          } else if (response.status == APP_CONSTANTS.response.ERROR) {
+            const message = response.message;
+            this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
+          } else {
+            const message = 'Invalid token! Please login again';
+            this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
+            this.store.dispatch(new Logout());
+          }
+        }),
+        finalize(() => {
+          this.loading = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe();
+
+    this.unsubscribe.push(distributorSaleServiceSubscription);
+  }
+
+
+  /**
+ * Accpet reject distributor sales by retailer
+ *
+ * @param _distributorSale: User
+ */
+  acceptRejectPartialSaleAcceptedByRetailer(_distributorSale: DistributorSale) {
+    this.loading = true;
+    let httpParams = new HttpParams();
+    Object.keys(_distributorSale).forEach(function (key) {
+      httpParams = httpParams.append(key, _distributorSale[key]);
+    });
+
+    const distributorSaleServiceSubscription = this.distributorSaleService
+      .acceptRejectPartialSaleAcceptedByRetailer(httpParams)
+      .pipe(
+        tap(response => {
+          if (response.status == APP_CONSTANTS.response.SUCCESS) {
+            const message = `Accepted successfully.`;
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
             this.dialogRef.close('reload');
           } else if (response.status == APP_CONSTANTS.response.ERROR) {

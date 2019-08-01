@@ -13,7 +13,7 @@
 
                 <div class="col-lg-12 kt-margin-bottom-20-mobile">
                     <mat-form-field class="mat-form-field-fluid">
-                        <input matInput placeholder="Distributor name" formControlName="distributor_id" readonly />
+                        <input matInput placeholder="Distributor name" formControlName="distributor_name" readonly />
                     </mat-form-field>
                 </div>
 
@@ -43,4 +43,23 @@
                                             Return
                                         </button>
     </ng-container>
+
+    <ng-container *ngIf="pageAction == 'retailerPurchaseReturnApproval'">
+        <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!purchaseForm.valid" mat-raised-button color="primary" (click)="acceptRetailerPurchaseReturn()" matTooltip="Accept sale return">
+                                                    Accept
+                                                </button> &nbsp;&nbsp;
+        <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!purchaseForm.valid" mat-raised-button color="warn" (click)="rejectRetailerPurchaseReturn()" matTooltip="Reject sale return">
+                                                    Reject
+                                                </button>
+    </ng-container>
+
+    <ng-container *ngIf="pageAction == 'distributorPartialAcceptPurchaseReturnApproval'">
+        <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!purchaseForm.valid" mat-raised-button color="primary" (click)="acceptPartialAcceptedPurchaseReturn()" matTooltip="Accept sale return">
+                                                    Accept
+                                                </button> &nbsp;&nbsp;
+        <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!purchaseForm.valid" mat-raised-button color="warn" (click)="rejectPartialAcceptedPurchaseReturn()" matTooltip="Reject sale return">
+                                                    Reject
+                                                </button>
+    </ng-container>
+
 </mat-dialog-actions>

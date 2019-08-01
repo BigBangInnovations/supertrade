@@ -23,6 +23,8 @@ export class Product {
     points_boost: number;
     tot_points: number;
     tot_points_boost: number;
+    return_points: number;
+    return_points_boost: number;
     SGSTTax: number;
     SGSTSurcharges: number;
     IGSTTax: number;
@@ -63,6 +65,8 @@ export class Product {
         this.points_boost = 0;
         this.tot_points = 0;
         this.tot_points_boost = 0;
+        this.return_points = 0;
+        this.return_points_boost= 0;
         this.SGSTTax = 0;
         this.SGSTSurcharges = 0;
         this.IGSTTax = 0;

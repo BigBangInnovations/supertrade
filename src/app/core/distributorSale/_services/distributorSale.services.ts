@@ -39,6 +39,11 @@ export class DistributorSaleService {
     acceptRejectPurchase(data: any): Observable<any> {
 		const url = `retailer-purchase-approve`;
         return this.http.post(url, data)
+    }
+    
+    acceptRejectPartialSaleAcceptedByRetailer(data: any): Observable<any> {
+		const url = `distributor-partialAccepted-sales-approve`;
+        return this.http.post(url, data)
 	}
 
     // UPDATE => PUT: update the distributorSale on the server

@@ -84,15 +84,26 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
     private layoutUtilsService: LayoutUtilsService,
     private cdr: ChangeDetectorRef,
   ) {
+
     const OptionalSetting = new dynamicProductTemplateSetting();
     OptionalSetting.clear();
     OptionalSetting.displayDeleteButton = false;
+
     if (
-      this.data.action == 'saleReturn' ||
-      this.data.action == 'PurchaseReturn' ||
-      this.data.action == 'addOrder' ||
-      this.data.action == 'viewSale' ||
-      this.data.action == 'viewPurchase'
+      this.data.action == 'retailerPurchaseReturnApproval'
+    ) {
+      OptionalSetting.displayDeleteButton = true;
+      OptionalSetting.displayPointCalculation = false;
+    }
+    
+
+    if (
+      this.data.action == 'saleReturn'
+       || this.data.action == 'PurchaseReturn' 
+       || this.data.action == 'addOrder' 
+       || this.data.action == 'viewSale' 
+       || this.data.action == 'viewPurchase'
+       || this.data.action == 'distributorPartialAcceptPurchaseReturnApproval'
     ) {
       OptionalSetting.displayPointCalculation = false;
     }
@@ -105,9 +116,10 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
     this.purchaseForm = this.purchaseFB.group({
       scheme_id: [''],
       distributor_id: [''],
+      distributor_name: [''],
       products: this.purchaseFB.array([])
     });
-    
+
     if (this.data.purchaseId) {
       this.purchase$ = this.store.pipe(select(selectPurchaseById(this.data.purchaseId)));
       this.purchase$.subscribe(res => {
@@ -115,15 +127,17 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
         this.createForm(res);
       });
     } else if (this.data.transactionID) {
+      
       let httpParams = new HttpParams();
       httpParams = httpParams.append('transaction_id', this.data.transactionID);
       this.store.dispatch(new LOAD_PURCHASE(httpParams));
       this.purchase$ = this.store.pipe(select(selectPurchase));
       this.viewLoading$ = this.store.pipe(select(selectLoading));
       this.purchase$.subscribe((res: any) => {
-        if (res && res.length > 0) {
-          this.sl_distributor_sales_id = res[0].id;
-          this.createForm(res[0]);
+        if (res && res != '') {
+          this.data.purchaseId = res.id;
+          this.sl_distributor_sales_id = res.sl_distributor_sales_id;
+          this.createForm(res);
         }
       });
     }
@@ -135,7 +149,10 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
   createForm(res) {
     this.purchaseForm = this.purchaseFB.group({
       scheme_id: [res.scheme_id],
-      distributor_id: [res.Name],
+      distributor_name: [res.Name],
+      retailer_name: [res.Retailer_Name],
+      distributor_id: [res.ss_distributor_id],
+      retailer_id: [res.ss_retailer_id],
       products: this.purchaseFB.array([])
     });
     this.prepareProductView(res.product)
@@ -146,7 +163,20 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
     const numberPatern = '^[0-9.,]+$';
     products.forEach(element => {
       let quantity = element.Quantity;
-      if (this.pageAction == 'purchaseReturn') quantity = 0;
+
+      if (
+        this.pageAction == 'purchaseReturn'
+        || this.pageAction == 'retailerPurchaseReturnApproval'
+      ) quantity = 0;
+
+      if (this.pageAction == 'distributorPartialAcceptPurchaseReturnApproval'
+      ) quantity = element.acceptQty;
+
+      let maxApproveQuantity = element.Quantity - element.ReturnQuantity;
+      if (
+        this.pageAction == 'retailerPurchaseReturnApproval'
+      ) maxApproveQuantity = element.Quantity;
+
       let res = {
         productCategoryCtrl: [''],
         productSubCategoryCtrl: [''],
@@ -163,13 +193,14 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
           [
             Validators.required,
             Validators.min(0),
-            Validators.max(element.Quantity - element.ReturnQuantity),
+            Validators.max(maxApproveQuantity),
             Validators.pattern(numberPatern),
             Validators.maxLength(5)
           ]
         )],
         productOriginalQuantityCtrl: [element.Quantity],
         productReturnedQuantityCtrl: [element.ReturnQuantity],
+        productAcceptedQuantityCtrl: [element.acceptQty],
         productDiscountCtrl: [element.Discount],
         productLoyaltyPointCtrl: [(element.points) / element.Quantity],
         productBarCodeCtrl: [''],
@@ -180,6 +211,8 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
         VATCodeCtrl: [''],
         points: [element.points],
         points_boost: [element.points_boost],
+        return_points: [element.return_points],
+        return_points_boost: [element.return_points_boost],
       }
 
       currentProductArray.push(
@@ -219,8 +252,13 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 	 */
   getTitle(): string {
     // tslint:disable-next-line:no-string-throw
-    if (this.pageAction == 'purchaseReturn')
+    if (this.pageAction == 'purchaseReturn') {
       return 'Purchase Return'
+    } else if (this.pageAction == 'retailerPurchaseReturnApproval') {
+      return 'Sales Return approval'
+    }else if (this.pageAction == 'distributorPartialAcceptPurchaseReturnApproval') {
+      return 'Partial accepted sales return approval'
+    }
     else return 'View Purchase';
   }
 
@@ -258,6 +296,102 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 
   }
 
+  enableAttributes() {
+
+  }
+
+  disableAttributes() {
+
+  }
+
+  /**  
+    * acceptRetailerPurchaseReturn
+   */
+  acceptRetailerPurchaseReturn() {
+    this.enableAttributes();
+    const controls = this.purchaseForm.controls;
+
+    /** check form */
+    if (this.purchaseForm.invalid) {
+      Object.keys(controls).forEach(controlName => {
+        controls[controlName].markAsTouched()
+      }
+
+      );
+      return;
+    }
+    this.data.notificationData[0].Status = 2;
+    const returnPurchase = this.preparePurchase();
+    this.acceptRejectPurchaseReturn(returnPurchase);
+
+  }
+
+  /**  
+     * rejectRetailerPurchaseReturn
+    */
+   rejectRetailerPurchaseReturn() {
+    this.enableAttributes();
+    const controls = this.purchaseForm.controls;
+
+    /** check form */
+    if (this.purchaseForm.invalid) {
+      Object.keys(controls).forEach(controlName => {
+        controls[controlName].markAsTouched()
+      }
+
+      );
+      return;
+    }
+    this.data.notificationData[0].Status = 3;
+    const returnPurchase = this.preparePurchase();
+
+    this.acceptRejectPurchaseReturn(returnPurchase);
+
+  }
+
+  /**  
+    * acceptPartialAcceptedPurchaseReturn
+   */
+  acceptPartialAcceptedPurchaseReturn() {
+    this.enableAttributes();
+    const controls = this.purchaseForm.controls;
+
+    /** check form */
+    if (this.purchaseForm.invalid) {
+      Object.keys(controls).forEach(controlName => {
+        controls[controlName].markAsTouched()
+      }
+
+      );
+      return;
+    }
+    this.data.notificationData[0].Status = 2;
+    const returnPurchase = this.preparePurchase();
+    this.acceptRejectPartialAcceptedPurchaseReturn(returnPurchase);
+  }
+
+  /**  
+     * rejectPartialAcceptedPurchaseReturn
+    */
+  rejectPartialAcceptedPurchaseReturn() {
+    this.enableAttributes();
+    const controls = this.purchaseForm.controls;
+
+    /** check form */
+    if (this.purchaseForm.invalid) {
+      Object.keys(controls).forEach(controlName => {
+        controls[controlName].markAsTouched()
+      }
+
+      );
+      return;
+    }
+    this.data.notificationData[0].Status = 3;
+    const returnPurchase = this.preparePurchase();
+    this.acceptRejectPartialAcceptedPurchaseReturn(returnPurchase);
+
+  }
+
   /**
    * Returns prepared data for save
    */
@@ -266,7 +400,16 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
     const _purchase = new Purchase();
     _purchase.clear();
     _purchase.sl_purchase_id = this.data.purchaseId;
+    _purchase.distributor_id = this.purchaseForm.controls['distributor_id'].value;
+    _purchase.retailer_id = this.purchaseForm.controls['retailer_id'].value;
     _purchase.sl_distributor_sales_id = this.sl_distributor_sales_id;
+    if (this.data.action == 'retailerPurchaseReturnApproval'
+    || this.data.action == 'distributorPartialAcceptPurchaseReturnApproval'
+    ) {
+      _purchase.data = JSON.stringify(this.data.notificationData);
+      _purchase.retailer_name = this.purchaseForm.controls['retailer_name'].value;
+      _purchase.Distributor_Name = this.purchaseForm.controls['distributor_name'].value;
+    }
     _purchase.products_json = JSON.stringify(this.prepareProduct())
     return _purchase;
   }
@@ -278,6 +421,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
     const controls = this.purchaseForm.controls['products'].value;;
     const _products = [];
     controls.forEach(data => {
+
       if (data.productQuantityCtrl > 0) {
         //Clear Product and set default value
 
@@ -288,8 +432,18 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
         product.serial_no = '';//Serial number
         product.ProductAmount = data.productPriceCtrl * data.productQuantityCtrl;//Product Amount:: Product prive * Quantity
         product.Price = data.productPriceCtrl;//Product original price :: Return product time It's total get point in order
-        product.points = data.points;//Product original point :: Return product time It's total get boost point in order
-        product.points_boost = data.points_boost;//Product original point
+        if (
+          this.data.action == 'retailerPurchaseReturnApproval'
+          || this.data.action == 'distributorPartialAcceptPurchaseReturnApproval'
+          ) {
+          product.return_points = data.return_points;//
+          product.return_points_boost = data.return_points_boost;//
+          product.points = data.return_points;//Product original point :: Return product time It's total get boost point in order
+          product.points_boost = data.return_points_boost;//Product original point
+        } else {
+          product.points = data.points;//Product original point :: Return product time It's total get boost point in order
+          product.points_boost = data.points_boost;//Product original point
+        }
         product.originalQty = data.productOriginalQuantityCtrl;//product original sale quantity
         product.Quantity = data.productQuantityCtrl;//product original sale quantity :: return time it's a entered quantity by user
         product.Discount = data.productDiscountCtrl;//product original discount(%)
@@ -309,7 +463,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Add User
+   * returnPurchase
    *
    * @param _purchase: User
    */
@@ -326,6 +480,84 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
         tap(response => {
           if (response.status == APP_CONSTANTS.response.SUCCESS) {
             const message = `Purchase return successfully.`;
+            this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
+            this.dialogRef.close('reload');
+          } else if (response.status == APP_CONSTANTS.response.ERROR) {
+            const message = response.message;
+            this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
+          } else {
+            const message = 'Invalid token! Please login again';
+            this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
+            this.store.dispatch(new Logout());
+          }
+        }),
+        takeUntil(this.unsubscribe),
+        finalize(() => {
+          this.loading = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe();
+  }
+
+  /**
+   * acceptRejectPurchaseReturn
+   *
+   * @param _purchase: User
+   */
+  acceptRejectPurchaseReturn(_purchase: Purchase) {
+    this.loading = true;
+    let httpParams = new HttpParams();
+    Object.keys(_purchase).forEach(function (key) {
+      httpParams = httpParams.append(key, _purchase[key]);
+    });
+
+    this.purchaseService
+      .acceptRejectPurchaseReturn(httpParams)
+      .pipe(
+        tap(response => {
+          if (response.status == APP_CONSTANTS.response.SUCCESS) {
+            const message = `Purchase return approval updated successfully.`;
+            this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
+            this.dialogRef.close('reload');
+          } else if (response.status == APP_CONSTANTS.response.ERROR) {
+            const message = response.message;
+            this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
+          } else {
+            const message = 'Invalid token! Please login again';
+            this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
+            this.store.dispatch(new Logout());
+          }
+        }),
+        takeUntil(this.unsubscribe),
+        finalize(() => {
+          this.loading = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe();
+  }
+
+  
+
+  /**
+   * acceptRejectPurchaseReturn
+   *
+   * @param _purchase: User
+   */
+  acceptRejectPartialAcceptedPurchaseReturn(_purchase: Purchase) {
+    this.loading = true;
+    let httpParams = new HttpParams();
+    Object.keys(_purchase).forEach(function (key) {
+      httpParams = httpParams.append(key, _purchase[key]);
+    });
+
+    this.purchaseService
+      .acceptRejectPurchaseReturn(httpParams)
+      .pipe(
+        tap(response => {
+          if (response.status == APP_CONSTANTS.response.SUCCESS) {
+            const message = `Partial sales return approval updated successfully.`;
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
             this.dialogRef.close('reload');
           } else if (response.status == APP_CONSTANTS.response.ERROR) {

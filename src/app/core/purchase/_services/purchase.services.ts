@@ -34,7 +34,17 @@ export class PurchaseService {
     returnPurchase(data: any): Observable<any> {
 		const url = `add-purchase-return`;
         return this.http.post(url, data)
-	}
+    }
+
+    acceptRejectPurchaseReturn(data: any): Observable<any> {
+		const url = `approve-distributor-sales-return`;
+        return this.http.post(url, data)
+    }
+    
+    acceptRejectPartialAcceptedPurchaseReturn(data: any): Observable<any> {
+		const url = `retailer-partialAccepted-purchaseReturn-approve`;
+        return this.http.post(url, data)
+    }
 
     // UPDATE => PUT: update the purchase on the server
 	updatePurchase(purchase: Purchase): Observable<any> {
@@ -57,6 +67,12 @@ export class PurchaseService {
     // Purchase
     findPurchase(data: any): Observable<any> {
         const url = `get-purchase`;
+        return this.http.post<Purchase[]>(url, data);
+    }
+
+    // Purchase
+    findPurchaseReturn(data: any): Observable<any> {
+        const url = `get-purchase-return`;
         return this.http.post<Purchase[]>(url, data);
     }
 

@@ -15,11 +15,12 @@
                           </button>
                 </mat-list-item>
                 <ng-container *ngIf="
-pageAction != 'addSale' &&
-pageAction != 'addOrder' &&
-pageAction != 'addPurchase' &&
-pageAction != 'retailerPurchaseApproval' &&
-pageAction != 'addDistributorSale'
+pageAction != 'addSale'
+&& pageAction != 'addOrder' 
+&& pageAction != 'addPurchase' 
+&& pageAction != 'retailerPurchaseApproval' 
+&& pageAction != 'addDistributorSale'
+&& pageAction != 'retailerPurchaseReturnApproval'
 ">
 
                     <mat-list-item role="listitem">
@@ -27,20 +28,52 @@ pageAction != 'addDistributorSale'
                         <div class="kt-align-right">{{getControlLabel('productOriginalQuantityCtrl')}}</div>
                     </mat-list-item>
                     <mat-divider></mat-divider>
+                </ng-container>
 
+                <ng-container *ngIf="
+pageAction == 'retailerPurchaseReturnApproval'
+">
+
+                    <mat-list-item role="listitem">
+                        <span matLine>Requested return quantity </span>
+                        <div class="kt-align-right">{{getControlLabel('productOriginalQuantityCtrl')}}</div>
+                    </mat-list-item>
+                </ng-container>
+
+                <ng-container *ngIf="
+pageAction == 'retailerPartialSalesAcceptApproval'
+|| pageAction == 'distributorPartialAcceptPurchaseReturnApproval'
+">
+                    <mat-list-item role="listitem">
+                        <span matLine>Accepted quantity </span>
+                        <div class="kt-align-right">{{getControlLabel('productAcceptedQuantityCtrl')}}</div>
+                    </mat-list-item>
+                    <mat-divider></mat-divider>
+                </ng-container>
+                <ng-container *ngIf="
+pageAction != 'addSale'
+&& pageAction != 'addOrder'
+&& pageAction != 'addPurchase' 
+&& pageAction != 'retailerPurchaseApproval' 
+&& pageAction != 'addDistributorSale'
+&& pageAction != 'retailerPartialSalesAcceptApproval'
+&& pageAction != 'retailerPurchaseReturnApproval'
+&& pageAction != 'distributorPartialAcceptPurchaseReturnApproval'
+">
                     <mat-list-item role="listitem">
                         <span matLine>Total return quantity </span>
                         <div class="kt-align-right">{{ getControlLabel('productReturnedQuantityCtrl') }}</div>
                     </mat-list-item>
                 </ng-container>
                 <mat-list-item role="listitem" *ngIf="
-                pageAction == 'saleReturn' ||
-                pageAction == 'purchaseReturn' || 
-                pageAction == 'addSale' || 
-                pageAction == 'addPurchase' || 
-                pageAction == 'addDistributorSale' || 
-                pageAction == 'retailerPurchaseApproval' || 
-                pageAction == 'addOrder' 
+                pageAction == 'saleReturn'
+                || pageAction == 'purchaseReturn'
+                || pageAction == 'addSale' 
+                || pageAction == 'addPurchase' 
+                || pageAction == 'addDistributorSale'
+                || pageAction == 'retailerPurchaseApproval' 
+                || pageAction == 'addOrder' 
+                || pageAction == 'retailerPurchaseReturnApproval' 
                 ">
                     <mat-form-field>
                         <input maxlength="5" matInput formControlName="productQuantityCtrl" placeholder="Quantity" (input)="getProductAmount($event.target.value);">

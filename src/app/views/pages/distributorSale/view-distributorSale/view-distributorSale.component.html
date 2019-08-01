@@ -265,11 +265,13 @@
                                                 </button>
     </ng-container>
 
-    <ng-container *ngIf="pageAction == 'distributorPartialSalesAcceptApproval'">
-        <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!viewDistributorSaleForm.valid" mat-raised-button color="primary" (click)="acceptPurchase()" matTooltip="Accept Purchase">
+    <ng-container *ngIf="pageAction == 'retailerPartialSalesAcceptApproval'">
+        <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!viewDistributorSaleForm.valid" mat-raised-button color="primary" (click)="acceptPartialSaleAcceptedByRetailer()"
+            matTooltip="Accept Purchase">
                                                     Accept
                                                 </button> &nbsp;&nbsp;
-        <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!viewDistributorSaleForm.valid" mat-raised-button color="warn" (click)="rejectPurchase()" matTooltip="Reject Purchase">
+        <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!viewDistributorSaleForm.valid" mat-raised-button color="warn" (click)="rejectPartialSaleAcceptedByRetailer()"
+            matTooltip="Reject Purchase">
                                                     Reject
                                                 </button>
     </ng-container>
