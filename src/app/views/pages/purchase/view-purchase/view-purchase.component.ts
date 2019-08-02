@@ -57,6 +57,8 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
   totalNetAmount: number;
   pageAction: string;
   private unsubscribe: Subject<any>;
+  isSGSTTax: boolean = false;
+  isIGSTTax: boolean = false;
 
   /**
  * Component constructor
@@ -95,15 +97,15 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
       OptionalSetting.displayDeleteButton = true;
       OptionalSetting.displayPointCalculation = false;
     }
-    
+
 
     if (
       this.data.action == 'saleReturn'
-       || this.data.action == 'PurchaseReturn' 
-       || this.data.action == 'addOrder' 
-       || this.data.action == 'viewSale' 
-       || this.data.action == 'viewPurchase'
-       || this.data.action == 'distributorPartialAcceptPurchaseReturnApproval'
+      || this.data.action == 'PurchaseReturn'
+      || this.data.action == 'addOrder'
+      || this.data.action == 'viewSale'
+      || this.data.action == 'viewPurchase'
+      || this.data.action == 'distributorPartialAcceptPurchaseReturnApproval'
     ) {
       OptionalSetting.displayPointCalculation = false;
     }
@@ -127,7 +129,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
         this.createForm(res);
       });
     } else if (this.data.transactionID) {
-      
+
       let httpParams = new HttpParams();
       httpParams = httpParams.append('transaction_id', this.data.transactionID);
       this.store.dispatch(new LOAD_PURCHASE(httpParams));
@@ -147,6 +149,9 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 	 * Create form
 	 */
   createForm(res) {
+    if (res.Tax_Type == 'SGST') this.isSGSTTax = true;
+    else if (res.Tax_Type == 'IGST') this.isIGSTTax = true;
+
     this.purchaseForm = this.purchaseFB.group({
       scheme_id: [res.scheme_id],
       distributor_name: [res.Name],
@@ -256,7 +261,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
       return 'Purchase Return'
     } else if (this.pageAction == 'retailerPurchaseReturnApproval') {
       return 'Sales Return approval'
-    }else if (this.pageAction == 'distributorPartialAcceptPurchaseReturnApproval') {
+    } else if (this.pageAction == 'distributorPartialAcceptPurchaseReturnApproval') {
       return 'Partial accepted sales return approval'
     }
     else return 'View Purchase';
@@ -271,8 +276,9 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
     const viewContainerRef = this.entry;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
-    // componentRef.instance.purchaseForm = this.purchaseForm;
     componentRef.instance.mainForm = this.purchaseForm;
+    componentRef.instance.isSGSTTax = this.isSGSTTax;
+    componentRef.instance.isIGSTTax = this.isIGSTTax;
   }
 
   /**  
@@ -329,7 +335,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
   /**  
      * rejectRetailerPurchaseReturn
     */
-   rejectRetailerPurchaseReturn() {
+  rejectRetailerPurchaseReturn() {
     this.enableAttributes();
     const controls = this.purchaseForm.controls;
 
@@ -404,7 +410,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
     _purchase.retailer_id = this.purchaseForm.controls['retailer_id'].value;
     _purchase.sl_distributor_sales_id = this.sl_distributor_sales_id;
     if (this.data.action == 'retailerPurchaseReturnApproval'
-    || this.data.action == 'distributorPartialAcceptPurchaseReturnApproval'
+      || this.data.action == 'distributorPartialAcceptPurchaseReturnApproval'
     ) {
       _purchase.data = JSON.stringify(this.data.notificationData);
       _purchase.retailer_name = this.purchaseForm.controls['retailer_name'].value;
@@ -435,7 +441,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
         if (
           this.data.action == 'retailerPurchaseReturnApproval'
           || this.data.action == 'distributorPartialAcceptPurchaseReturnApproval'
-          ) {
+        ) {
           product.return_points = data.return_points;//
           product.return_points_boost = data.return_points_boost;//
           product.points = data.return_points;//Product original point :: Return product time It's total get boost point in order
@@ -539,7 +545,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  
+
 
   /**
    * acceptRejectPurchaseReturn

@@ -31,6 +31,7 @@ import { PopupProductTotalCalculationComponent } from '../../popup-product/popup
 import { dynamicProductTemplateSetting } from '../../../../core/common/common.model'
 import * as fromDistributor from '../../../../core/distributor'
 import * as fromRetailer from '../../../../core/retailer'
+import { selectRetailerById } from '../../../../core/retailer'
 import { Retailer } from '../../../../core/retailer/_models/retailer.model';
 
 @Component({
@@ -63,7 +64,8 @@ export class AddOrderComponent implements OnInit, OnDestroy {
   today = new Date();
   private addedProductsIds: any[] = [];
   private unsubscribe: Subject<any>;
-
+  isSGSTTax: boolean = false;
+  isIGSTTax: boolean = false;
 	/**
 	 * Component constructor
 	 *
@@ -116,7 +118,15 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     const routeSubscription = this.activatedRoute.params.subscribe(params => {
       let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
       this.userData = JSON.parse(sessionStorage)
+      // console.log(this.userData.companySettings.SalesOrderFormat);      
       this.isDistributor = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.DISTRIBUTOR_TYPE) ? true : false;
+      if (!this.isDistributor) {
+        if (this.userData.companySettings.ManageSGST == '1') {
+          if (this.userData.Tax_Type == 'VAT') this.isSGSTTax = true;
+        } else if (this.userData.companySettings.ManageIGST == '1') {
+          if (this.userData.Tax_Type == 'CST') this.isIGSTTax = true;
+        }
+      }
       this.initOrder();
 
       if (this.isDistributor) {
@@ -236,6 +246,7 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     _order.CustomerID = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE) ? this.userData.ID : controls['retailer_id'].value;
     _order.FulfilledByID = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE) ? controls['distributor_id'].value : this.userData.ID;
     _order.Description = controls['Description'].value;
+    _order.SeriesPrefix = _order.SeriesPrefix +''+ this.userData.companySettings.SalesOrderFormat;
     _order.NetAmount = 0;
     _order.GrossAmount = 0;
     _order.LocalTaxValue = 0;
@@ -375,8 +386,9 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     const viewContainerRef = this.entry;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
-    // componentRef.instance.orderForm = this.orderForm;
     componentRef.instance.mainForm = this.orderForm;
+    componentRef.instance.isSGSTTax = this.isSGSTTax;
+    componentRef.instance.isIGSTTax = this.isIGSTTax;
     const sub: Subscription = componentRef.instance.newAddedProductsIds.subscribe(
       event => {
         // console.log(event)
@@ -388,5 +400,15 @@ export class AddOrderComponent implements OnInit, OnDestroy {
 
   newAddedProductsIdsUpdate(ids) {
     this.addedProductsIds = ids.addedProductsIds;
+  }
+
+  retailerChange(event) {
+    this.store.pipe(select(selectRetailerById(event.value))).subscribe((data: any) => {
+      if (this.userData.companySettings.ManageSGST == '1') {
+        if (data.Tax_Type == 'VAT') this.isSGSTTax = true;
+      } else if (this.userData.companySettings.ManageIGST == '1') {
+        if (data.Tax_Type == 'CST') this.isIGSTTax = true;
+      }
+    })
   }
 }

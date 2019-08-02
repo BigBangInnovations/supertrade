@@ -34,7 +34,9 @@ export class ViewOrderComponent implements OnInit, OnDestroy {
   orderForm: FormGroup;
   hasFormErrors: boolean = false;
   componentRef: any;
-  OptionalSetting: dynamicProductTemplateSetting;
+  OptionalSetting: dynamicProductTemplateSetting; 
+  isSGSTTax: boolean = false;
+  isIGSTTax: boolean = false;
 
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
 
@@ -82,6 +84,9 @@ export class ViewOrderComponent implements OnInit, OnDestroy {
 	 * Create form
 	 */
   createForm(res) {
+    if (res.Tax_Type == 'SGST') this.isSGSTTax = true;
+    else if (res.Tax_Type == 'IGST') this.isIGSTTax = true;
+    
     this.orderForm = this.orderFB.group({
       scheme_id: [res.scheme_id],
       distributor_id: [res.Name],
@@ -164,5 +169,7 @@ export class ViewOrderComponent implements OnInit, OnDestroy {
     const componentRef = viewContainerRef.createComponent(componentFactory);
     // componentRef.instance.orderForm = this.orderForm;
     componentRef.instance.mainForm = this.orderForm;
+    componentRef.instance.isSGSTTax = this.isSGSTTax;
+    componentRef.instance.isIGSTTax = this.isIGSTTax;
   }
 }

@@ -70,6 +70,9 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
   godown$: Observable<Godown[]>;
   paymentMode$: Observable<PaymentMode[]>;
 
+  isSGSTTax: boolean = false;
+  isIGSTTax: boolean = false; 
+
   orderSelect$: Observable<Order[]>;
   userSession: string;
   retailerAddressString: string = '';
@@ -220,10 +223,10 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
       grNo: [''],
       transporter: [''],
       deliveryDays: ['',
-      Validators.compose([
-        Validators.pattern(numberPatern),
-      ])
-    ],
+        Validators.compose([
+          Validators.pattern(numberPatern),
+        ])
+      ],
       remarks: [''],
       erpInvoiceNo: [''],
     });
@@ -288,6 +291,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     _distributorSale.erpInvoiceNo = controls['erpInvoiceNo'].value;
     _distributorSale.erpInvoiceNo = controls['erpInvoiceNo'].value;
     _distributorSale.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
+    _distributorSale.Tax_Type = (this.isSGSTTax)?'SGST':(this.isIGSTTax?'IGST':'');
     _distributorSale.products_json = JSON.stringify(this.prepareProduct())
     return _distributorSale;
   }
@@ -394,7 +398,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     const _messageType = MessageType.Read;
 
     const dialogRef = this.dialog.open(PopupProductComponent, {
-      data: { addedProductsIds: this.addedProductsIds, isDiscount: false },
+      data: { addedProductsIds: this.addedProductsIds, isDiscount: true },
       // data: { addedProductsIds: [] },
       width: '600px',
     });
@@ -431,6 +435,8 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
     componentRef.instance.mainForm = this.addDistributorSaleForm;
+    componentRef.instance.isSGSTTax = this.isSGSTTax;
+    componentRef.instance.isIGSTTax = this.isIGSTTax;
     const sub: Subscription = componentRef.instance.newAddedProductsIds.subscribe(
       event => {
         this.newAddedProductsIdsUpdate(event)
@@ -456,11 +462,14 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
           let httpParams = new HttpParams();
           let getsalesordersArray = {};
           getsalesordersArray['CompanyID'] = JSON.parse(this.userSession).Company_ID;
-          getsalesordersArray['CreatedBy'] = JSON.parse(this.userSession).Tagged_To;
+          if (JSON.parse(this.userSession).Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE)
+            getsalesordersArray['CustomerID'] = JSON.parse(this.userSession).ID;
+          else
+            getsalesordersArray['FulfilledByID'] = JSON.parse(this.userSession).ID;
           httpParams = httpParams.append('TokenID', JSON.parse(this.userSession).Security_Token);
           httpParams = httpParams.append('CompanyID', JSON.parse(this.userSession).Company_ID);
           httpParams = httpParams.append('UserID', JSON.parse(this.userSession).Tagged_To);
-          httpParams = httpParams.append('getsyncsalesordersjson', JSON.stringify(getsalesordersArray));
+          httpParams = httpParams.append('getsalesordersjson', JSON.stringify(getsalesordersArray));
 
           this.store.dispatch(new fromOrderselect.LoadOrderselect(httpParams))
           this.orderSelect$ = this.store.pipe(select(fromOrderselect.selectAllOrderselect));
@@ -477,7 +486,8 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     this.resetProductData();
     const numberPatern = '^[0-9.,]+$';
     this.store.pipe(select(selectOrderById(event.value))).subscribe((data: any) => {
-      this.addDistributorSaleForm.controls['retailer_id'].setValue(data.CustomerID);
+      this.addDistributorSaleForm.controls['retailer_id'].setValue(data.CustomerID)
+      this.retailerChange({value:data.CustomerID})
       const productObject = data.Products;
       productObject.forEach((orderProduct: orderProduct) => {
         let productFormArray = {
@@ -505,7 +515,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
 
           ],
           productDiscountCtrl: [orderProduct.Discount],
-          productLoyaltyPointCtrl: [0],
+          productLoyaltyPointCtrl: [orderProduct.LoyaltyPoint],
           productBarCodeCtrl: [''],
           productProductCodeCtrl: [''],
           VATPercentageCtrl: [orderProduct.VATPercentage],
@@ -541,6 +551,13 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     this.addDistributorSaleForm.controls['retailer_name'].setValue('');
     this.retailerAddressString = '';
     this.store.pipe(select(selectRetailerById(event.value))).subscribe((data: any) => {
+
+      if (this.userData.companySettings.ManageSGST == '1') {
+        if (data.Tax_Type == 'VAT') this.isSGSTTax = true;
+      } else if (this.userData.companySettings.ManageIGST == '1') {
+        if (data.Tax_Type == 'CST') this.isIGSTTax = true;
+      }
+
       this.addDistributorSaleForm.controls['Address_Master_ID'].setValue(data.Address_Master_ID);
       this.addDistributorSaleForm.controls['retailer_name'].setValue(data.Name);
       this.retailerAddressString = data.Address_Line1;

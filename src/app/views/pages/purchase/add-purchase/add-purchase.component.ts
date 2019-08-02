@@ -61,6 +61,9 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
   private addedProductsIds: any[] = [];
   private unsubscribe: Subject<any>;
 
+  isSGSTTax: boolean = false;
+  isIGSTTax: boolean = false;
+
 	/**
 	 * Component constructor
 	 *
@@ -110,6 +113,12 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
     const routeSubscription = this.activatedRoute.params.subscribe(params => {
       let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
       this.userData = JSON.parse(sessionStorage)
+
+      if (this.userData.companySettings.ManageSGST == '1') {
+        if (this.userData.Tax_Type == 'VAT') this.isSGSTTax = true;
+      } else if (this.userData.companySettings.ManageIGST == '1') {
+        if (this.userData.Tax_Type == 'CST') this.isIGSTTax = true;
+      }
 
       this.purchaseActiveScheme = this.userData.purchaseActiveScheme[0];
       this.purchaseActiveSchemebooster = this.userData.purchaseActiveSchemeBooster[0];
@@ -200,6 +209,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
     _purchase.scheme_id = controls['scheme_id'].value;
     _purchase.distributor_id = controls['distributor_id'].value;
     _purchase.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
+    _purchase.Tax_Type = (this.isSGSTTax)?'SGST':(this.isIGSTTax?'IGST':'');
     _purchase.products_json = JSON.stringify(this.prepareProduct())
     return _purchase;
   }
@@ -343,8 +353,9 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
     const viewContainerRef = this.entry;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
-    // componentRef.instance.purchaseForm = this.purchaseForm;
     componentRef.instance.mainForm = this.purchaseForm;
+    componentRef.instance.isSGSTTax = this.isSGSTTax;
+    componentRef.instance.isIGSTTax = this.isIGSTTax;
     const sub: Subscription = componentRef.instance.newAddedProductsIds.subscribe(
       event => {
         // console.log(event)

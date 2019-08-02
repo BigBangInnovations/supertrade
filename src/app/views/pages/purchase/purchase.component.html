@@ -66,18 +66,18 @@
             <!-- <mat-card-header> -->
             <mat-card-subtitle>{{purchaseActiveSchemeDetail.scheme_name}}</mat-card-subtitle>
             <mat-card-title>
-                <ng-template *ngIf="purchaseActiveSchemeDetail.bonusType == 'percentage';else elseGift">
-                    You are getting {{purchaseActiveSchemeDetail.bonusPercentage}} points.
-                </ng-template>
+                <ng-container *ngIf="purchaseActiveSchemeDetail.bonus_type === 'percentage';else elseGift">
+                    You are getting {{purchaseActiveSchemeDetail.bonus_percentage}} points.
+                </ng-container>
 
                 <ng-template #elseGift>
-                    <ng-template *ngIf="purchaseActiveSchemeDetail.bonusType == 'gift';else elseValue">
-                        {{purchaseActiveSchemeDetail.bonusGift}}
-                    </ng-template>
+                    <ng-container *ngIf="purchaseActiveSchemeDetail.bonus_type == 'gift';else elseValue">
+                        {{purchaseActiveSchemeDetail.bonus_gift}}
+                    </ng-container>
                 </ng-template>
 
                 <ng-template #elseValue>
-                    {{purchaseActiveSchemeDetail.bonusValue}}
+                    {{purchaseActiveSchemeDetail.bonus_value}}
                 </ng-template>
 
             </mat-card-title>
@@ -168,6 +168,11 @@
                 <ng-container matColumnDef="invoice_id">
                     <mat-header-cell *matHeaderCellDef>Invoice ID</mat-header-cell>
                     <mat-cell *matCellDef="let purchase">{{purchase.invoice_id}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="distributor_name">
+                    <mat-header-cell *matHeaderCellDef>Distributor Name</mat-header-cell>
+                    <mat-cell *matCellDef="let purchase">{{purchase.Name}}</mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="scheme_id">

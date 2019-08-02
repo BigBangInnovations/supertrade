@@ -74,6 +74,7 @@ export class DistributorSale {
     erpInvoiceNo = '';
     date = '';
     products_json: string
+    Tax_Type: string
     data: string
 
     clear(): void {
@@ -109,6 +110,7 @@ export class DistributorSale {
         this.erpInvoiceNo = '';
         this.date = '';
         this.products_json = '';
+        this.Tax_Type = '';
         this.data = '';
     }
 }

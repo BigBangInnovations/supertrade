@@ -24,7 +24,7 @@ import { environment } from '../../../../../environments/environment';
 import { PopupProductComponent } from '../../popup-product/popup-product.component';
 import { PopupAddProductComponent } from '../../popup-product/popup-add-product/popup-add-product.component';
 import { Product } from '../../../../core/product/_models/product.model'
-import { SalesService } from '../../../../core/sales/_services/index' 
+import { SalesService } from '../../../../core/sales/_services/index'
 import { APP_CONSTANTS } from '../../../../../config/default/constants'
 import { Logout } from '../../../../core/auth';
 import { PopupProductTotalCalculationComponent } from '../../popup-product/popup-add-product/popup-product-total-calculation/popup-product-total-calculation.component'
@@ -49,8 +49,10 @@ export class AddSalesComponent implements OnInit, OnDestroy {
   userData: any;
   componentRef: any;
   loading = false;
-  OptionalSetting:dynamicProductTemplateSetting;
+  OptionalSetting: dynamicProductTemplateSetting;
   pageAction: string;
+  isSGSTTax: boolean = false;
+  isIGSTTax: boolean = false;
   // Private properties
   private subscriptions: Subscription[] = [];
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
@@ -109,6 +111,15 @@ export class AddSalesComponent implements OnInit, OnDestroy {
     const routeSubscription = this.activatedRoute.params.subscribe(params => {
       let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
       this.userData = JSON.parse(sessionStorage)
+
+      if (this.userData.companySettings.ManageSGST == '1') {
+        /**
+         * When retailer do sales 
+         * and company setting SGST is enable 
+         * than default tax is SGST
+         */
+        this.isSGSTTax = true;
+      }
 
       this.salesActiveScheme = this.userData.salesActiveScheme[0];
       this.salesActiveSchemebooster = this.userData.salesActiveSchemeBooster[0];
@@ -193,9 +204,8 @@ export class AddSalesComponent implements OnInit, OnDestroy {
     _sale.loyalty_id = this.salesActiveScheme.id;
     _sale.scheme_id = controls['scheme_id'].value;
     _sale.distributor_id = this.userData.Distributor_ID;
-
-    //End Customer Detail
-    _sale.name = controls['name'].value;
+      //End Customer Detail
+      _sale.name = controls['name'].value;
     _sale.mobile_no = controls['mobile_no'].value;
     _sale.landline_no = controls['landline_no'].value;
     _sale.address_line1 = controls['address_line1'].value;
@@ -204,6 +214,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
     _sale.pincode = controls['pincode'].value;
     _sale.state = controls['state'].value;
     _sale.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
+    _sale.Tax_Type = (this.isSGSTTax)?'SGST':(this.isIGSTTax?'IGST':'');
     _sale.products_json = JSON.stringify(this.prepareProduct())
     return _sale;
   }
@@ -240,6 +251,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
       product.VATFrom = data.productVATFrom;//Product vat from customer OR Other side
       product.tot_points = data.productLoyaltyPointCtrl * data.productQuantityCtrl;//Total Point:: Product Org.Point * Quantity
       product.tot_points_boost = (product.tot_points * boost_point) / 100;//Total Point boost:: Product Org.boostPoint * Quantity
+      
       _products.push(product);
     });
     return _products;
@@ -309,7 +321,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
     const _messageType = MessageType.Read;
 
     const dialogRef = this.dialog.open(PopupProductComponent, {
-      data: { addedProductsIds: this.addedProductsIds, isDiscount:false },
+      data: { addedProductsIds: this.addedProductsIds, isDiscount: false },
       // data: { addedProductsIds: [] },
       width: '600px',
     });
@@ -348,6 +360,8 @@ export class AddSalesComponent implements OnInit, OnDestroy {
     const componentRef = viewContainerRef.createComponent(componentFactory);
     // componentRef.instance.saleForm = this.saleForm;
     componentRef.instance.mainForm = this.saleForm;
+    componentRef.instance.isSGSTTax = this.isSGSTTax;
+    componentRef.instance.isIGSTTax = this.isIGSTTax;
     const sub: Subscription = componentRef.instance.newAddedProductsIds.subscribe(
       event => {
         // console.log(event)

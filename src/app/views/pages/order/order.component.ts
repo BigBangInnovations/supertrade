@@ -25,6 +25,7 @@ import { environment } from '../../../../environments/environment';
 // Components
 import { ViewOrderComponent } from './view-order/view-order.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { APP_CONSTANTS } from '../../../../config/default/constants'
 
 // Table with EDIT item in MODAL
 // ARTICLE for table with sort/filter/paginator
@@ -47,7 +48,7 @@ export class OrderListComponent implements OnInit, OnDestroy {
 	hasDateError: boolean = false;
 	// Table fields
 	dataSource: OrderDataSource;
-	displayedColumns = ['SeriesPrefix', 'CreatedTime','SOMadeBy', 'SOMadeFrom', 'totalNetAmount', 'totalDiscount', 'totalGrossAmount', 'totalTaxAmount', 'finalSalesAmount'];
+	displayedColumns = ['SeriesPrefix', 'CreatedTime', 'SOMadeBy', 'SOMadeFrom', 'totalNetAmount', 'totalDiscount', 'totalGrossAmount', 'totalTaxAmount', 'finalSalesAmount'];
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 	@ViewChild('sort1', { static: true }) sort: MatSort;
 	// Filter fields
@@ -228,7 +229,11 @@ export class OrderListComponent implements OnInit, OnDestroy {
 		}
 		if (userSession != null) {
 			getsalesordersArray['CompanyID'] = JSON.parse(userSession).Company_ID;
-			getsalesordersArray['CustomerID'] = JSON.parse(userSession).ID;
+			if (JSON.parse(userSession).Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE)
+				getsalesordersArray['CustomerID'] = JSON.parse(userSession).ID;
+			else
+				getsalesordersArray['FulfilledByID'] = JSON.parse(userSession).ID;
+
 			// getsalesordersArray = {
 			// 	'CompanyID': JSON.parse(userSession).Company_ID,
 			// 	'CustomerID': JSON.parse(userSession).ID

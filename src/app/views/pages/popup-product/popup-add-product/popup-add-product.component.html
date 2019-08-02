@@ -1,20 +1,20 @@
 <div [formGroup]="productForm" class="kt-margin-t-10">
-    <mat-accordion>
-        <mat-expansion-panel class="kt-bg-light-dark">
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    <label>{{getControlLabel('productNameCtrl')}}</label>
-                </mat-panel-title>
-            </mat-expansion-panel-header>
+    <!-- <mat-accordion> -->
+    <mat-expansion-panel class="kt-bg-light-dark">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                <label>{{getControlLabel('productNameCtrl')}}</label>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
 
-            <mat-list role="list">
-                <mat-list-item role="listitem">
-                    <h3 mat-line>Price: {{ getControlLabel('productPriceCtrl') }} </h3>
-                    <button mat-icon-button (click)="deleteProduct(index)" *ngIf="OptionalSetting.displayDeleteButton">
+        <mat-list role="list">
+            <mat-list-item role="listitem">
+                <h3 mat-line>Price: {{ getControlLabel('productPriceCtrl') }} </h3>
+                <button mat-icon-button (click)="deleteProduct(index)" *ngIf="OptionalSetting.displayDeleteButton">
                             <mat-icon class="mat-24 kt-font-danger">delete</mat-icon>
                           </button>
-                </mat-list-item>
-                <ng-container *ngIf="
+            </mat-list-item>
+            <ng-container *ngIf="
 pageAction != 'addSale'
 && pageAction != 'addOrder' 
 && pageAction != 'addPurchase' 
@@ -24,44 +24,44 @@ pageAction != 'addSale'
 && pageAction != 'distributorPartialAcceptPurchaseReturnApproval'
 ">
 
-                    <mat-list-item role="listitem">
-                        <span matLine>Original sale quantity </span>
-                        <div class="kt-align-right">{{getControlLabel('productOriginalQuantityCtrl')}}</div>
-                    </mat-list-item>
-                    <mat-divider></mat-divider>
-                </ng-container>
+                <mat-list-item role="listitem">
+                    <span matLine>Original sale quantity </span>
+                    <div class="kt-align-right">{{getControlLabel('productOriginalQuantityCtrl')}}</div>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+            </ng-container>
 
-                <ng-container *ngIf="
+            <ng-container *ngIf="
 pageAction == 'distributorPartialAcceptPurchaseReturnApproval'
 ">
-                    <mat-list-item role="listitem">
-                        <span matLine>Original return quantity </span>
-                        <div class="kt-align-right">{{getControlLabel('productOriginalQuantityCtrl')}}</div>
-                    </mat-list-item>
-                    <mat-divider></mat-divider>
-                </ng-container>
+                <mat-list-item role="listitem">
+                    <span matLine>Original return quantity </span>
+                    <div class="kt-align-right">{{getControlLabel('productOriginalQuantityCtrl')}}</div>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+            </ng-container>
 
-                <ng-container *ngIf="
+            <ng-container *ngIf="
 pageAction == 'retailerPurchaseReturnApproval'
 ">
 
-                    <mat-list-item role="listitem">
-                        <span matLine>Requested return quantity </span>
-                        <div class="kt-align-right">{{getControlLabel('productOriginalQuantityCtrl')}}</div>
-                    </mat-list-item>
-                </ng-container>
+                <mat-list-item role="listitem">
+                    <span matLine>Requested return quantity </span>
+                    <div class="kt-align-right">{{getControlLabel('productOriginalQuantityCtrl')}}</div>
+                </mat-list-item>
+            </ng-container>
 
-                <ng-container *ngIf="
+            <ng-container *ngIf="
 pageAction == 'retailerPartialSalesAcceptApproval'
 || pageAction == 'distributorPartialAcceptPurchaseReturnApproval'
 ">
-                    <mat-list-item role="listitem">
-                        <span matLine>Accepted quantity </span>
-                        <div class="kt-align-right">{{getControlLabel('productAcceptedQuantityCtrl')}}</div>
-                    </mat-list-item>
-                    <mat-divider></mat-divider>
-                </ng-container>
-                <ng-container *ngIf="
+                <mat-list-item role="listitem">
+                    <span matLine>Accepted quantity </span>
+                    <div class="kt-align-right">{{getControlLabel('productAcceptedQuantityCtrl')}}</div>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+            </ng-container>
+            <ng-container *ngIf="
 pageAction != 'addSale'
 && pageAction != 'addOrder'
 && pageAction != 'addPurchase' 
@@ -71,12 +71,12 @@ pageAction != 'addSale'
 && pageAction != 'retailerPurchaseReturnApproval'
 && pageAction != 'distributorPartialAcceptPurchaseReturnApproval'
 ">
-                    <mat-list-item role="listitem">
-                        <span matLine>Total return quantity </span>
-                        <div class="kt-align-right">{{ getControlLabel('productReturnedQuantityCtrl') }}</div>
-                    </mat-list-item>
-                </ng-container>
-                <mat-list-item role="listitem" *ngIf="
+                <mat-list-item role="listitem">
+                    <span matLine>Total return quantity </span>
+                    <div class="kt-align-right">{{ getControlLabel('productReturnedQuantityCtrl') }}</div>
+                </mat-list-item>
+            </ng-container>
+            <mat-list-item role="listitem" *ngIf="
                 pageAction == 'saleReturn'
                 || pageAction == 'purchaseReturn'
                 || pageAction == 'addSale' 
@@ -86,24 +86,30 @@ pageAction != 'addSale'
                 || pageAction == 'addOrder' 
                 || pageAction == 'retailerPurchaseReturnApproval' 
                 ">
-                    <mat-form-field>
-                        <input maxlength="5" matInput formControlName="productQuantityCtrl" placeholder="Quantity" (input)="getProductAmount($event.target.value);">
-                    </mat-form-field>
-                </mat-list-item>
+                <mat-form-field>
+                    <input maxlength="5" matInput formControlName="productQuantityCtrl" placeholder="Quantity" (input)="getProductAmount($event.target.value);">
+                </mat-form-field>
+            </mat-list-item>
 
+            <mat-list-item role="listitem">
+                <span matLine>Product Amount </span>
+                <div class="kt-align-right">{{ productAmount | number:'1.2-2' }}</div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item role="listitem">
+                <span matLine>Discount @{{getControlLabel('productDiscountCtrl')}}% </span>
+                <div class="kt-align-right">{{ productDiscount | number:'1.2-2' }}</div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item role="listitem">
+                <span matLine>Gross Amount </span>
+                <div class="kt-align-right">{{ productGrossAmount | number:'1.2-2' }}</div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <ng-container *ngIf="isSGSTTax">
                 <mat-list-item role="listitem">
-                    <span matLine>Product Amount </span>
-                    <div class="kt-align-right">{{ productAmount | number:'1.2-2' }}</div>
-                </mat-list-item>
-                <mat-divider></mat-divider>
-                <mat-list-item role="listitem">
-                    <span matLine>Discount @{{getControlLabel('productDiscountCtrl')}}% </span>
-                    <div class="kt-align-right">{{ productDiscount | number:'1.2-2' }}</div>
-                </mat-list-item>
-                <mat-divider></mat-divider>
-                <mat-list-item role="listitem">
-                    <span matLine>Gross Amount </span>
-                    <div class="kt-align-right">{{ productGrossAmount | number:'1.2-2' }}</div>
+                    <span matLine>SGST @{{getControlLabel('productTaxSGSTCtrl')}}% </span>
+                    <div class="kt-align-right">{{ productSGST | number:'1.2-2' }}</div>
                 </mat-list-item>
                 <mat-divider></mat-divider>
                 <mat-list-item role="listitem">
@@ -111,28 +117,33 @@ pageAction != 'addSale'
                     <div class="kt-align-right">{{ productCGST | number:'1.2-2' }}</div>
                 </mat-list-item>
                 <mat-divider></mat-divider>
+            </ng-container>
+
+            <ng-container *ngIf="isIGSTTax">
                 <mat-list-item role="listitem">
-                    <span matLine>SGST @{{getControlLabel('productTaxSGSTCtrl')}}% </span>
-                    <div class="kt-align-right">{{ productSGST | number:'1.2-2' }}</div>
+                    <span matLine>SGST @{{getControlLabel('productTaxIGSTCtrl')}}% </span>
+                    <div class="kt-align-right">{{ productIGST | number:'1.2-2' }}</div>
+                </mat-list-item>
+            </ng-container>
+
+
+            <mat-list-item role="listitem" class="font-weight-bold">
+                <span matLine class="font-weight-bold">Product Net Amount </span>
+                <div class="kt-align-right">{{ productNetAmount | number:'1.2-2' }}</div>
+            </mat-list-item>
+            <ng-template [ngIf]="OptionalSetting.displayPointCalculation">
+                <mat-divider></mat-divider>
+                <mat-list-item role="listitem">
+                    <span matLine class="text-info">Loyalty Point:({{ coreProductLoyaltyPoint }} * {{ productQuantity }}) </span>
+                    <div class="kt-align-right">{{ productLoyaltyPoint | number:'1.2-2' }}</div>
                 </mat-list-item>
                 <mat-divider></mat-divider>
-                <mat-list-item role="listitem" class="font-weight-bold">
-                    <span matLine class="font-weight-bold">Product Net Amount </span>
-                    <div class="kt-align-right">{{ productNetAmount | number:'1.2-2' }}</div>
+                <mat-list-item role="listitem">
+                    <span matLine class="text-info">Loyalty Boost Point </span>
+                    <div class="kt-align-right">{{ productLoyaltyBoostPoint | number:'1.2-2' }}</div>
                 </mat-list-item>
-                <ng-template [ngIf]="OptionalSetting.displayPointCalculation">
-                    <mat-divider></mat-divider>
-                    <mat-list-item role="listitem">
-                        <span matLine class="text-info">Loyalty Point:({{ coreProductLoyaltyPoint }} * {{ productQuantity }}) </span>
-                        <div class="kt-align-right">{{ productLoyaltyPoint | number:'1.2-2' }}</div>
-                    </mat-list-item>
-                    <mat-divider></mat-divider>
-                    <mat-list-item role="listitem">
-                        <span matLine class="text-info">Loyalty Boost Point </span>
-                        <div class="kt-align-right">{{ productLoyaltyBoostPoint | number:'1.2-2' }}</div>
-                    </mat-list-item>
-                </ng-template>
-            </mat-list>
-        </mat-expansion-panel>
-    </mat-accordion>
+            </ng-template>
+        </mat-list>
+    </mat-expansion-panel>
+    <!-- </mat-accordion> -->
 </div>

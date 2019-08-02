@@ -47,7 +47,7 @@ export class DistributorSaleListComponent implements OnInit, OnDestroy {
 	hasDateError: boolean = false;
 	// Table fields
 	dataSource: DistributorSaleDataSource;
-	displayedColumns = ["date", "invoice_id", "scheme_id", "total_quantity", "total_amount", "total_loyalty_point", "total_loyalty_boost_point", 'actions'];
+	displayedColumns = ["date", "invoice_id", "retailer_name", "scheme_id", "total_quantity", "total_amount", "total_loyalty_point", "total_loyalty_boost_point", 'actions'];
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 	@ViewChild('sort1', { static: true }) sort: MatSort;
 	// Filter fields

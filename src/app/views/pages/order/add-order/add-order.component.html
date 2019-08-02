@@ -17,7 +17,7 @@
                     <div class="col-lg-12 kt-margin-bottom-20-mobile">
                         <ng-container *ngIf="isDistributor">
                             <mat-form-field class="mat-form-field-fluid">
-                                <mat-select formControlName="retailer_id" placeholder="Retailer">
+                                <mat-select formControlName="retailer_id" placeholder="Retailer" (selectionChange)="retailerChange($event)">
                                     <ng-template #loading1>
                                         <mat-option value=''>
                                             Loading...
@@ -74,13 +74,15 @@
                             </span>)</h3>
                         </div>
                         <div formArrayName="products">
-                            <div *ngFor="let product of orderForm['controls'].products['controls']; let i=index">
-                                <div [formGroupName]="i">
-                                    <!-- <input formControlName="productBarCodeCtrl" placeholder="Item name"> -->
-                                    <!-- index: {{productBarCodeCtrl}} -->
-                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="orderForm.controls.products.controls[i]" [parantGroup]="orderForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction"></kt-popup-add-product>
+                            <mat-accordion>
+                                <div *ngFor="let product of orderForm['controls'].products['controls']; let i=index">
+                                    <div [formGroupName]="i">
+                                        <!-- <input formControlName="productBarCodeCtrl" placeholder="Item name"> -->
+                                        <!-- index: {{productBarCodeCtrl}} -->
+                                        <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="orderForm.controls.products.controls[i]" [parantGroup]="orderForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction" [isSGSTTax]="isSGSTTax" [isIGSTTax]="isIGSTTax"></kt-popup-add-product>
+                                    </div>
                                 </div>
-                            </div>
+                            </mat-accordion>
                         </div>
                         <ng-template #popupProductCalculation></ng-template>
                         <!-- <ng-template (newAddedProductsIds)="newAddedProductsIdsUpdate($event)"></ng-template> -->

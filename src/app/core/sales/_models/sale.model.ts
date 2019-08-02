@@ -26,6 +26,7 @@ export class Sale {
     // NetAmount: number;
     // product: Product[];
     products_json: string
+    Tax_Type: string
 
     clear(): void {
         this.id = undefined;
@@ -50,6 +51,7 @@ export class Sale {
         this.pincode = '';
         // this.NetAmount = undefined;;
         this.products_json = '';
+        this.Tax_Type = '';
 	}
 }
 

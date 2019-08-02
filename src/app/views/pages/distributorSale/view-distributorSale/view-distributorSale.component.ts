@@ -71,6 +71,8 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
   salesActiveSchemebooster: any;
   purchaseActiveSchemebooster: any;
   userData: any;
+  isSGSTTax: boolean = false;
+  isIGSTTax: boolean = false;
 
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
 
@@ -258,6 +260,8 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
 	 * Create form
 	 */
   createForm(res) {
+    if (res.Tax_Type == 'SGST') this.isSGSTTax = true;
+    else if (res.Tax_Type == 'IGST') this.isIGSTTax = true;
 
     this.viewDistributorSaleForm.controls['scheme_id'].setValue(res.scheme_id);
     this.viewDistributorSaleForm.controls['retailer_id'].setValue(res.ss_retailer_id);
@@ -425,8 +429,9 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     const viewContainerRef = this.entry;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
-    // componentRef.instance.viewDistributorSaleForm = this.viewDistributorSaleForm;
     componentRef.instance.mainForm = this.viewDistributorSaleForm;
+    componentRef.instance.isSGSTTax = this.isSGSTTax;
+    componentRef.instance.isIGSTTax = this.isIGSTTax;
   }
 
   /**  

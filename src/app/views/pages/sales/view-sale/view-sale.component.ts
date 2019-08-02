@@ -57,6 +57,10 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
   totalNetAmount: number;
   pageAction: string;
   private unsubscribe: Subject<any>;
+
+  isSGSTTax: boolean = false;
+  isIGSTTax: boolean = false;
+
   /**
  * Component constructor
  *
@@ -90,8 +94,8 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     if (
       this.data.action == 'saleReturn' ||
       this.data.action == 'PurchaseReturn' ||
-      this.data.action == 'addOrder' || 
-      this.data.action == 'viewSale' || 
+      this.data.action == 'addOrder' ||
+      this.data.action == 'viewSale' ||
       this.data.action == 'viewPurchase'
     ) {
       OptionalSetting.displayPointCalculation = false;
@@ -105,6 +109,8 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     if (this.data.saleId) {
       this.sale$ = this.store.pipe(select(selectSaleById(this.data.saleId)));
       this.sale$.subscribe(res => {
+
+
         this.createForm(res);
       });
     }
@@ -115,6 +121,9 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
 	 * Create form
 	 */
   createForm(res) {
+    if (res.Tax_Type == 'SGST') this.isSGSTTax = true;
+    else if (res.Tax_Type == 'IGST') this.isIGSTTax = true;
+
     this.saleForm = this.saleFB.group({
       scheme_id: [res.scheme_id],
       name: [res.name],
@@ -223,8 +232,9 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     const viewContainerRef = this.entry;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
-    // componentRef.instance.saleForm = this.saleForm;
     componentRef.instance.mainForm = this.saleForm;
+    componentRef.instance.isSGSTTax = this.isSGSTTax;
+    componentRef.instance.isIGSTTax = this.isIGSTTax;
   }
 
   /**  
