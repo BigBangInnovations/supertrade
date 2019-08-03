@@ -71,7 +71,8 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
   paymentMode$: Observable<PaymentMode[]>;
 
   isSGSTTax: boolean = false;
-  isIGSTTax: boolean = false; 
+  isIGSTTax: boolean = false;
+  step: number;
 
   orderSelect$: Observable<Order[]>;
   userSession: string;
@@ -291,7 +292,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     _distributorSale.erpInvoiceNo = controls['erpInvoiceNo'].value;
     _distributorSale.erpInvoiceNo = controls['erpInvoiceNo'].value;
     _distributorSale.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
-    _distributorSale.Tax_Type = (this.isSGSTTax)?'SGST':(this.isIGSTTax?'IGST':'');
+    _distributorSale.Tax_Type = (this.isSGSTTax) ? 'SGST' : (this.isIGSTTax ? 'IGST' : '');
     _distributorSale.products_json = JSON.stringify(this.prepareProduct())
     return _distributorSale;
   }
@@ -487,7 +488,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     const numberPatern = '^[0-9.,]+$';
     this.store.pipe(select(selectOrderById(event.value))).subscribe((data: any) => {
       this.addDistributorSaleForm.controls['retailer_id'].setValue(data.CustomerID)
-      this.retailerChange({value:data.CustomerID})
+      this.retailerChange({ value: data.CustomerID })
       const productObject = data.Products;
       productObject.forEach((orderProduct: orderProduct) => {
         let productFormArray = {
@@ -599,5 +600,34 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
       this.addDistributorSaleForm.get('Country').updateValueAndValidity();
 
     });
+  }
+
+  /**
+* Checking control validation
+*
+* @param controlName: string => Equals to formControlName
+* @param validationType: string => Equals to valitors name
+*/
+  isControlHasError(controlName: string, validationType: string): boolean {
+    const control = this.addDistributorSaleForm.controls[controlName];
+    if (!control) {
+      return false;
+    }
+    if (controlName == 'products') {
+      const result = control.hasError(validationType);
+      return result;
+    } else {
+      const result = control.hasError(validationType) && (control.dirty || control.touched);
+      return result;
+    }
+
+
+  }
+
+  changeExpansionpanel(event) {
+    this.step = null;
+    setTimeout(() => {
+      this.step = event;
+    }, 10);
   }
 }

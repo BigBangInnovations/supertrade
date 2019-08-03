@@ -218,4 +218,19 @@ export class PopupProductComponent implements OnInit {
       }
     });
   }
+
+  	/**
+	 * Checking control validation
+	 *
+	 * @param controlName: string => Equals to formControlName
+	 * @param validationType: string => Equals to valitors name
+	 */
+	isControlHasError(controlName: string, validationType: string): boolean {
+		const control = this.popupProductForm.controls[controlName];
+		if (!control) {
+			return false;
+    }
+		const result = control.hasError(validationType) && (control.dirty || control.touched);
+		return result;
+	}
 }

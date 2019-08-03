@@ -27,6 +27,8 @@ export class PopupAddProductComponent {
   @Input() pageAction: string;
 
   @Input() index: number;
+  
+  @Input() step: number;
 
   @Output() quantityChange = new EventEmitter();
 
@@ -143,4 +145,19 @@ export class PopupAddProductComponent {
     arrayControl.removeAt(index);
     this.quantityChange.emit();
   }
+
+    	/**
+	 * Checking control validation
+	 *
+	 * @param controlName: string => Equals to formControlName
+	 * @param validationType: string => Equals to valitors name
+	 */
+	isControlHasError(controlName: string, validationType: string): boolean {
+		const control = this.productForm.controls[controlName];
+		if (!control) {
+			return false;
+    }
+		const result = control.hasError(validationType) && (control.dirty || control.touched);
+		return result;
+	}
 }

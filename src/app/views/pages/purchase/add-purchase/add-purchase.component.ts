@@ -63,6 +63,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 
   isSGSTTax: boolean = false;
   isIGSTTax: boolean = false;
+  step: number;
 
 	/**
 	 * Component constructor
@@ -209,7 +210,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
     _purchase.scheme_id = controls['scheme_id'].value;
     _purchase.distributor_id = controls['distributor_id'].value;
     _purchase.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
-    _purchase.Tax_Type = (this.isSGSTTax)?'SGST':(this.isIGSTTax?'IGST':'');
+    _purchase.Tax_Type = (this.isSGSTTax) ? 'SGST' : (this.isIGSTTax ? 'IGST' : '');
     _purchase.products_json = JSON.stringify(this.prepareProduct())
     return _purchase;
   }
@@ -368,5 +369,34 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
   newAddedProductsIdsUpdate(ids) {
     this.addedProductsIds = ids.addedProductsIds;
     // console.log(this.addedProductsIds);
+  }
+
+  /**
+* Checking control validation
+*
+* @param controlName: string => Equals to formControlName
+* @param validationType: string => Equals to valitors name
+*/
+  isControlHasError(controlName: string, validationType: string): boolean {
+    const control = this.purchaseForm.controls[controlName];
+    if (!control) {
+      return false;
+    }
+    if (controlName == 'products') {
+      const result = control.hasError(validationType);
+      return result;
+    } else {
+      const result = control.hasError(validationType) && (control.dirty || control.touched);
+      return result;
+    }
+
+
+  }
+
+  changeExpansionpanel(event) {
+    this.step = null;
+    setTimeout(() => {
+      this.step = event;
+    }, 10);
   }
 }

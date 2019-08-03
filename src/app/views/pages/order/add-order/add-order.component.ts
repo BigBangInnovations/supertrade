@@ -66,6 +66,7 @@ export class AddOrderComponent implements OnInit, OnDestroy {
   private unsubscribe: Subject<any>;
   isSGSTTax: boolean = false;
   isIGSTTax: boolean = false;
+  step: number;
 	/**
 	 * Component constructor
 	 *
@@ -246,7 +247,7 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     _order.CustomerID = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE) ? this.userData.ID : controls['retailer_id'].value;
     _order.FulfilledByID = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE) ? controls['distributor_id'].value : this.userData.ID;
     _order.Description = controls['Description'].value;
-    _order.SeriesPrefix = _order.SeriesPrefix +''+ this.userData.companySettings.SalesOrderFormat;
+    _order.SeriesPrefix = _order.SeriesPrefix + '' + this.userData.companySettings.SalesOrderFormat;
     _order.NetAmount = 0;
     _order.GrossAmount = 0;
     _order.LocalTaxValue = 0;
@@ -410,5 +411,34 @@ export class AddOrderComponent implements OnInit, OnDestroy {
         if (data.Tax_Type == 'CST') this.isIGSTTax = true;
       }
     })
+  }
+
+  /**
+* Checking control validation
+*
+* @param controlName: string => Equals to formControlName
+* @param validationType: string => Equals to valitors name
+*/
+  isControlHasError(controlName: string, validationType: string): boolean {
+    const control = this.orderForm.controls[controlName];
+    if (!control) {
+      return false;
+    }
+    if (controlName == 'products') {
+      const result = control.hasError(validationType);
+      return result;
+    } else {
+      const result = control.hasError(validationType) && (control.dirty || control.touched);
+      return result;
+    }
+
+
+  }
+
+  changeExpansionpanel(event) {
+    this.step = null;
+    setTimeout(() => {
+      this.step = event;
+    }, 10);
   }
 }

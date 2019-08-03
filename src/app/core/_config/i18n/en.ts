@@ -126,6 +126,14 @@ export const locale = {
 					ADD_MESSAGE: 'Customer has been created'
 				}
 			}
+		},
+		POPUPPRODUCT:{
+			VALIDATION: {
+				REQUIRED: '{{name}} is required',
+				NUMBER_PATTERN: '{{name}} has only numeric value allow',
+				MIN_LENGTH_FIELD: 'Minimum field length:',
+				MAX_LENGTH_FIELD: 'Maximum field length:',
+			},
 		}
 	}
 };

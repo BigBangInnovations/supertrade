@@ -1,8 +1,6 @@
 <h2 mat-dialog-title>{{ getTitle() }}</h2>
-<!-- <mat-dialog-content *ngIf="!(viewLoading$  | async);"> -->
-<mat-dialog-content>
-    <form [formGroup]="purchaseForm" [ngClass]="{'kt-hidden':(purchase$ | async)?.length === 0}" class="kt-form kt-form--group-seperator-dashed">
-
+<form focusFirstInvalidField (ngModelChange)="changeExpansionpanel($event)" [formGroup]="purchaseForm" [ngClass]="{'kt-hidden':(purchase$ | async)?.length === 0}" class="kt-form kt-form--group-seperator-dashed">
+    <mat-dialog-content>
         <div class="kt-form__section kt-form__section--first">
             <div class="form-group kt-form__group row">
                 <div class="col-lg-12 kt-margin-bottom-20-mobile">
@@ -25,49 +23,53 @@
                         <mat-accordion>
                             <div *ngFor="let product of purchaseForm['controls'].products['controls']; let i=index">
                                 <div [formGroupName]="i">
-                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="purchaseForm.controls.products.controls[i]" [parantGroup]="purchaseForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction" [isSGSTTax]="isSGSTTax" [isIGSTTax]="isIGSTTax"></kt-popup-add-product>
+                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="purchaseForm.controls.products.controls[i]" [parantGroup]="purchaseForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction" [isSGSTTax]="isSGSTTax" [isIGSTTax]="isIGSTTax"
+                                        [step]="step"></kt-popup-add-product>
                                 </div>
                             </div>
                         </mat-accordion>
                     </div>
                     <ng-template #popupProductCalculation></ng-template>
+                    <mat-error *ngIf="isControlHasError('products','required')">
+                        <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Products'} }}</strong>
+                    </mat-error>
                 </div>
             </div>
         </div>
-    </form>
-    <div style="margin-left: 50%;" [ngClass]="{'kt-hidden':(purchase$ | async)?.length != 0}" class=" kt-form kt-form--group-seperator-dashed">
-        <mat-spinner color="warn" diameter="30" strokeWidth="2"></mat-spinner>
-        <div style="position:relative;">
-            Loading...
+        <div style="margin-left: 50%;" [ngClass]="{'kt-hidden':(purchase$ | async)?.length != 0}" class=" kt-form kt-form--group-seperator-dashed">
+            <mat-spinner color="warn" diameter="30" strokeWidth="2"></mat-spinner>
+            <div style="position:relative;">
+                Loading...
+            </div>
         </div>
-    </div>
-</mat-dialog-content>
-<mat-dialog-actions align="end" [ngClass]="{'kt-hidden':(purchase$ | async)?.length === 0}">
-    <button type="button" (click)="close()" mat-raised-button matTooltip="Close">
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" [ngClass]="{'kt-hidden':(purchase$ | async)?.length === 0}">
+        <button type="button" (click)="close()" mat-raised-button matTooltip="Close">
                                             Cancel
                                         </button>&nbsp;
-    <ng-container *ngIf="pageAction == 'purchaseReturn'">
-        <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!purchaseForm.valid" mat-raised-button color="primary" (click)="ReuturnPurchase()" matTooltip="Return Purchase">
+        <ng-container *ngIf="pageAction == 'purchaseReturn'">
+            <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" mat-raised-button color="primary" (click)="ReuturnPurchase()" matTooltip="Return Purchase">
                                             Return
                                         </button>
-    </ng-container>
+        </ng-container>
 
-    <ng-container *ngIf="pageAction == 'retailerPurchaseReturnApproval'">
-        <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!purchaseForm.valid" mat-raised-button color="primary" (click)="acceptRetailerPurchaseReturn()" matTooltip="Accept sale return">
+        <ng-container *ngIf="pageAction == 'retailerPurchaseReturnApproval'">
+            <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" mat-raised-button color="primary" (click)="acceptRetailerPurchaseReturn()" matTooltip="Accept sale return">
                                                     Accept
                                                 </button> &nbsp;&nbsp;
-        <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!purchaseForm.valid" mat-raised-button color="warn" (click)="rejectRetailerPurchaseReturn()" matTooltip="Reject sale return">
+            <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" mat-raised-button color="warn" (click)="rejectRetailerPurchaseReturn()" matTooltip="Reject sale return">
                                                     Reject
                                                 </button>
-    </ng-container>
+        </ng-container>
 
-    <ng-container *ngIf="pageAction == 'distributorPartialAcceptPurchaseReturnApproval'">
-        <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!purchaseForm.valid" mat-raised-button color="primary" (click)="acceptPartialAcceptedPurchaseReturn()" matTooltip="Accept sale return">
+        <ng-container *ngIf="pageAction == 'distributorPartialAcceptPurchaseReturnApproval'">
+            <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" mat-raised-button color="primary" (click)="acceptPartialAcceptedPurchaseReturn()" matTooltip="Accept sale return">
                                                     Accept
                                                 </button> &nbsp;&nbsp;
-        <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!purchaseForm.valid" mat-raised-button color="warn" (click)="rejectPartialAcceptedPurchaseReturn()" matTooltip="Reject sale return">
+            <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" mat-raised-button color="warn" (click)="rejectPartialAcceptedPurchaseReturn()" matTooltip="Reject sale return">
                                                     Reject
                                                 </button>
-    </ng-container>
+        </ng-container>
 
-</mat-dialog-actions>
+    </mat-dialog-actions>
+</form>

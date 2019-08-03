@@ -1,6 +1,7 @@
 <h2 mat-dialog-title>{{ getTitle() }}</h2>
-<mat-dialog-content>
-    <form [formGroup]="saleForm" class="kt-form kt-form--group-seperator-dashed">
+<form focusFirstInvalidField (ngModelChange)="changeExpansionpanel($event)" [formGroup]="saleForm" class="kt-form kt-form--group-seperator-dashed">
+    <mat-dialog-content>
+
         <div class="kt-form__section kt-form__section--first">
             <div class="form-group kt-form__group row">
                 <div class="col-lg-12 kt-margin-bottom-20-mobile">
@@ -22,7 +23,8 @@
                                 <div [formGroupName]="i">
                                     <!-- <input formControlName="productBarCodeCtrl" placeholder="Item name"> -->
                                     <!-- index: {{productBarCodeCtrl}} -->
-                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="saleForm.controls.products.controls[i]" [parantGroup]="saleForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction" [isSGSTTax]="isSGSTTax" [isIGSTTax]="isIGSTTax"></kt-popup-add-product>
+                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="saleForm.controls.products.controls[i]" [parantGroup]="saleForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction" [isSGSTTax]="isSGSTTax" [isIGSTTax]="isIGSTTax"
+                                        [step]="step"></kt-popup-add-product>
                                 </div>
                             </div>
                         </mat-accordion>
@@ -92,15 +94,16 @@
                 </div>
             </div>
         </div>
-    </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-    <button type="button" (click)="close()" mat-raised-button matTooltip="Close">
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button type="button" (click)="close()" mat-raised-button matTooltip="Close">
         Cancel
     </button>&nbsp;
-    <ng-container *ngIf="pageAction == 'saleReturn'">
-        <button type="button" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!saleForm.valid" mat-raised-button color="primary" (click)="ReuturnSale()" matTooltip="Return Sale">
+        <ng-container *ngIf="pageAction == 'saleReturn'">
+            <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!saleForm.valid" mat-raised-button color="primary" (click)="ReuturnSale()" matTooltip="Return Sale">
         Return
     </button>
-    </ng-container>
-</mat-dialog-actions>
+        </ng-container>
+    </mat-dialog-actions>
+
+</form>

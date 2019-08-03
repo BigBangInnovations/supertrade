@@ -17,7 +17,8 @@ import {
 	StickyDirective,
 	TabClickEventDirective,
 	TimeElapsedPipe,
-	ToggleDirective
+	ToggleDirective,
+	FocusFirstInvalidFieldDirective
 } from './_base/layout';
 
 @NgModule({
@@ -33,6 +34,7 @@ import {
 		SparklineChartDirective,
 		ContentAnimateDirective,
 		StickyDirective,
+		FocusFirstInvalidFieldDirective,
 		// pipes
 		TimeElapsedPipe,
 		JoinPipe,
@@ -51,6 +53,7 @@ import {
 		SparklineChartDirective,
 		ContentAnimateDirective,
 		StickyDirective,
+		FocusFirstInvalidFieldDirective,
 		// pipes
 		TimeElapsedPipe,
 		JoinPipe,

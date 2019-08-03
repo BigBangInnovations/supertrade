@@ -1,13 +1,6 @@
 <kt-portlet>
-    <!-- <kt-portlet-header [title]="getComponentTitle()" [class]="'kt-portlet__head--lg'" [viewLoading$]="loading$">
-    </kt-portlet-header> -->
-
     <kt-portlet-body>
-        <!--begin::Form-->
-        <form [formGroup]="purchaseForm" class="kt-form kt-form--group-seperator-dashed">
-            <!-- <div class="row">
-                <div class="col-lg-2"></div>
-                <div class="col-lg-8 kt-ribbon--border-dash-hor"> -->
+        <form focusFirstInvalidField (ngModelChange)="changeExpansionpanel($event)" [formGroup]="purchaseForm" class="kt-form kt-form--group-seperator-dashed">
             <kt-alert *ngIf="hasFormErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
                 Oh snap! Change a few things up and try submitting again.
             </kt-alert>
@@ -42,10 +35,13 @@
                                     </ng-container>
                                 </ng-container>
                             </mat-select>
+                            <mat-error *ngIf="isControlHasError('distributor_id','required')">
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Distributor'} }}</strong>
+                            </mat-error>
                         </mat-form-field>
                     </div>
 
-                    <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile kt-margin-t-10">
                         <div class="kt-form__heading">
                             <h3 class="kt-form__heading-title pointer-cursor">Product detail (<span matTooltip="Add new product" (click)="addProduct()" class="kt-portlet__head-icon">
                                 <i class="la la-plus"></i>
@@ -58,21 +54,23 @@
                                         <!-- <input formControlName="productBarCodeCtrl" placeholder="Item name"> -->
                                         <!-- index: {{productBarCodeCtrl}} -->
 
-                                        <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="purchaseForm.controls.products.controls[i]" [parantGroup]="purchaseForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction" [isSGSTTax]="isSGSTTax" [isIGSTTax]="isIGSTTax"></kt-popup-add-product>
+                                        <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="purchaseForm.controls.products.controls[i]" [parantGroup]="purchaseForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction" [isSGSTTax]="isSGSTTax" [isIGSTTax]="isIGSTTax"
+                                            [step]="step"></kt-popup-add-product>
 
                                     </div>
                                 </div>
                             </mat-accordion>
                         </div>
                         <ng-template #popupProductCalculation></ng-template>
+                        <mat-error *ngIf="isControlHasError('products','required')">
+                            <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Products'} }}</strong>
+                        </mat-error>
                         <!-- <ng-template (newAddedProductsIds)="newAddedProductsIdsUpdate($event)"></ng-template> -->
                     </div>
                 </div>
             </div>
-            <button (click)="submit()" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!purchaseForm.valid" id="kt_login_signin_submit" class="btn btn-primary btn-elevate kt-login__btn-primary">Add Purchase</button>
-            <!-- </div>
-                <div class="col-lg-2"></div>
-            </div> -->
+            <button (click)="submit()" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" id="kt_login_signin_submit" class="btn btn-primary btn-elevate kt-login__btn-primary">Add Purchase</button>
+
         </form>
         <!--end::Form-->
     </kt-portlet-body>

@@ -60,6 +60,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
 
   isSGSTTax: boolean = false;
   isIGSTTax: boolean = false;
+  step: number;
 
   /**
  * Component constructor
@@ -340,5 +341,14 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
+  }
+
+  changeExpansionpanel(event) {
+    console.log(event);
+    
+    this.step = null;
+    setTimeout(() => {
+      this.step = event;
+    }, 10);
   }
 }

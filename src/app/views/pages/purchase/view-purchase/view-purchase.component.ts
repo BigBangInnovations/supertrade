@@ -59,6 +59,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
   private unsubscribe: Subject<any>;
   isSGSTTax: boolean = false;
   isIGSTTax: boolean = false;
+  step: number;
 
   /**
  * Component constructor
@@ -583,5 +584,36 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
+  }
+
+
+
+  /**
+* Checking control validation
+*
+* @param controlName: string => Equals to formControlName
+* @param validationType: string => Equals to valitors name
+*/
+  isControlHasError(controlName: string, validationType: string): boolean {
+    const control = this.purchaseForm.controls[controlName];
+    if (!control) {
+      return false;
+    }
+    if (controlName == 'products') {
+      const result = control.hasError(validationType);
+      return result;
+    } else {
+      const result = control.hasError(validationType) && (control.dirty || control.touched);
+      return result;
+    }
+
+
+  }
+
+  changeExpansionpanel(event) {
+    this.step = null;
+    setTimeout(() => {
+      this.step = event;
+    }, 10);
   }
 }

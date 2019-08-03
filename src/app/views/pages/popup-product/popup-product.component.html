@@ -1,4 +1,4 @@
-<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress' : (viewLoading$) | async, 'kt-portlet--body-progress-overlay' : loadingAfterSubmit }">
+<div style="height: 450px;" class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress' : (viewLoading$) | async, 'kt-portlet--body-progress-overlay' : loadingAfterSubmit }">
     <div class="kt-portlet__head kt-portlet__head__custom">
         <div class="kt-portlet__head-label">
             <h3 class="kt-portlet__head-title">Add new product</h3>
@@ -20,6 +20,9 @@
                                     {{categoryArray.value.Name}}
                                 </mat-option>
                             </mat-select>
+                            <mat-error *ngIf="isControlHasError('productQuantityCtrl','required')">
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Product category'} }}</strong>
+                            </mat-error>
                         </mat-form-field>
                         <mat-form-field class="mat-form-field-fluid">
                             <mat-select formControlName="productSubCategoryCtrl" placeholder="Product sub category" (selectionChange)="changeSubCategory($event.value)">
@@ -27,6 +30,9 @@
                                     {{subCategory.value.Name}}
                                 </mat-option>
                             </mat-select>
+                            <mat-error *ngIf="isControlHasError('productQuantityCtrl','required')">
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Product sub category'} }}</strong>
+                            </mat-error>
                         </mat-form-field>
 
                         <mat-form-field class="mat-form-field-fluid">
@@ -35,10 +41,28 @@
                                     {{product.value.Name}}
                                 </mat-option>
                             </mat-select>
+                            <mat-error *ngIf="isControlHasError('productQuantityCtrl','required')">
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Product'} }}</strong>
+                            </mat-error>
                         </mat-form-field>
 
                         <mat-form-field class="mat-form-field-fluid">
                             <input maxlength="5" matInput placeholder="Quantity" value="" formControlName="productQuantityCtrl">
+                            <mat-error *ngIf="isControlHasError('productQuantityCtrl','required')">
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Quantity'} }}</strong>
+                            </mat-error>
+
+                            <mat-error *ngIf="isControlHasError('productQuantityCtrl','pattern')">
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.NUMBER_PATTERN' | translate:{'name':'Quantity'} }}</strong>
+                            </mat-error>
+
+                            <mat-error *ngIf="isControlHasError('email','minLength')">
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.MIN_LENGTH_FIELD' | translate }} 1</strong>
+                            </mat-error>
+                            <mat-error *ngIf="isControlHasError('email','maxLength')">
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.MAX_LENGTH_FIELD' | translate }} 5</strong>
+                            </mat-error>
+
                         </mat-form-field>
                         <!-- Hidden field start -->
 
@@ -62,7 +86,7 @@
             <div class="kt-form__actions kt-form__actions--solid">
                 <div class="row text-right">
                     <div class="col-lg-12">
-                        <button type="button" mat-raised-button (click)="close()" cdkFocusInitial matTooltip="Cancel">
+                        <button type="button" mat-raised-button (click)="close()" matTooltip="Cancel">
                                     Cancel
                                 </button>&nbsp;
                         <button type="button" mat-raised-button color="primary" (click)="onSubmit()" [disabled]="((viewLoading$) | async) || (!popupProductForm.valid)" matTooltip="Add product">

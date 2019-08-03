@@ -53,6 +53,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
   pageAction: string;
   isSGSTTax: boolean = false;
   isIGSTTax: boolean = false;
+  step: number;
   // Private properties
   private subscriptions: Subscription[] = [];
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
@@ -157,14 +158,14 @@ export class AddSalesComponent implements OnInit, OnDestroy {
   createForm() {
     this.saleForm = this.saleFB.group({
       scheme_id: [this.salesActiveScheme.scheme_id, Validators.required],
-      name: ['Kaushik', Validators.required],
-      mobile_no: ['9687453313', Validators.required],
-      address_line1: ['A301', Validators.required],
-      address_line2: ['Anand nagar', Validators.required],
-      landline_no: ['6985745632', Validators.required],
-      city: ['Ahmedabad', Validators.required],
-      pincode: ['380054', Validators.required],
-      state: ['gujrat', Validators.required],
+      name: ['', Validators.required],
+      mobile_no: ['', Validators.required],
+      address_line1: [''],
+      address_line2: [''],
+      landline_no: [''],
+      city: [''],
+      pincode: [''],
+      state: [''],
       products: this.saleFB.array([], Validators.required)
     });
   }
@@ -374,5 +375,34 @@ export class AddSalesComponent implements OnInit, OnDestroy {
   newAddedProductsIdsUpdate(ids) {
     this.addedProductsIds = ids.addedProductsIds;
     // console.log(this.addedProductsIds);
+  }
+
+  /**
+* Checking control validation
+*
+* @param controlName: string => Equals to formControlName
+* @param validationType: string => Equals to valitors name
+*/
+isControlHasError(controlName: string, validationType: string): boolean {
+  const control = this.saleForm.controls[controlName];
+  if (!control) {
+    return false;
+  }
+  if (controlName == 'products') {
+    const result = control.hasError(validationType);
+    return result;
+  } else {
+    const result = control.hasError(validationType) && (control.dirty || control.touched);
+    return result;
+  }
+
+
+}
+
+  changeExpansionpanel(event) {
+    this.step = null;
+    setTimeout(() => {
+      this.step = event;
+    }, 10);
   }
 }
