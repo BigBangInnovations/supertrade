@@ -572,6 +572,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     _distributorSale.clear();
     _distributorSale.sl_distributorSale_id = this.data.distributorSaleId;
     _distributorSale.sl_distributor_sales_id = this.sl_distributor_sales_id;
+    _distributorSale.Tax_Type = (this.isSGSTTax) ? 'SGST' : (this.isIGSTTax ? 'IGST' : '');
 
     if (this.data.action == 'retailerPurchaseApproval'
     ) {

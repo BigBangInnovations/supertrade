@@ -290,7 +290,6 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     _distributorSale.deliveryDays = controls['deliveryDays'].value;
     _distributorSale.remarks = controls['remarks'].value;
     _distributorSale.erpInvoiceNo = controls['erpInvoiceNo'].value;
-    _distributorSale.erpInvoiceNo = controls['erpInvoiceNo'].value;
     _distributorSale.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
     _distributorSale.Tax_Type = (this.isSGSTTax) ? 'SGST' : (this.isIGSTTax ? 'IGST' : '');
     _distributorSale.products_json = JSON.stringify(this.prepareProduct())

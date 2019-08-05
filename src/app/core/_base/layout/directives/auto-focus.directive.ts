@@ -10,10 +10,9 @@ export class FocusFirstInvalidFieldDirective {
 
     @HostListener('submit')
     onFormSubmit() {
-        console.log('Auto focus call');
-        
-        const invalidElements = this.el.nativeElement.querySelectorAll('.ng-invalid');
 
+        const invalidElements = this.el.nativeElement.querySelectorAll('.ng-invalid');
+        console.log(invalidElements);
         if (invalidElements.length > 0) {
             let invalidE = invalidElements[0].querySelector('mat-select');
             let invalidI = invalidElements[0].querySelector('input');

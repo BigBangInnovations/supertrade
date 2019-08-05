@@ -410,6 +410,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
     _purchase.distributor_id = this.purchaseForm.controls['distributor_id'].value;
     _purchase.retailer_id = this.purchaseForm.controls['retailer_id'].value;
     _purchase.sl_distributor_sales_id = this.sl_distributor_sales_id;
+    _purchase.Tax_Type = (this.isSGSTTax) ? 'SGST' : (this.isIGSTTax ? 'IGST' : '');
     if (this.data.action == 'retailerPurchaseReturnApproval'
       || this.data.action == 'distributorPartialAcceptPurchaseReturnApproval'
     ) {
@@ -429,7 +430,11 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
     const _products = [];
     controls.forEach(data => {
 
-      if (data.productQuantityCtrl > 0) {
+      if (
+        data.productQuantityCtrl > 0
+        ||
+        (this.data.action == 'distributorPartialAcceptPurchaseReturnApproval')
+      ) {
         //Clear Product and set default value
 
         const product = new Product();

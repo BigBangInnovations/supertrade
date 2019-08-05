@@ -298,7 +298,7 @@
             </div>
             <!-- <button (click)="submit()" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!addDistributorSaleForm.valid" id="kt_login_signin_submit" class="btn btn-primary btn-elevate kt-login__btn-primary">Add DistributorSale</button> -->
             <!-- <button (click)="submit()" focusFirstInvalidField [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" id="kt_login_signin_submit" class="btn btn-primary btn-elevate kt-login__btn-primary">Add DistributorSale</button> -->
-            <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" id="kt_login_signin_submit" class="btn btn-primary btn-elevate kt-login__btn-primary">Add DistributorSale</button>
+            <button (click)="submit()" type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" id="kt_login_signin_submit" class="btn btn-primary btn-elevate kt-login__btn-primary">Add DistributorSale</button>
         </form>
         <!--end::Form-->
     </kt-portlet-body>
