@@ -205,7 +205,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 							 */
 							this.settingLoading = true;
 							let paramString = {}
-							paramString['CompanyID'] = 105;
+							paramString['CompanyID'] = response.data[0].user.Company_ID;
 							let param = { get_Settings:JSON.stringify(paramString)}
 							this.auth
 								.getCompanySettings(param)
@@ -231,7 +231,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 								.subscribe();
 						}
 					} else {
-						this.authNoticeService.setNotice(this.translate.instant('AUTH.VALIDATION.INVALID_LOGIN'), 'danger');
+						// this.authNoticeService.setNotice(this.translate.instant('AUTH.VALIDATION.INVALID_LOGIN'), 'danger');
+						this.authNoticeService.setNotice(response.message, 'danger');
 					}
 				}),
 				takeUntil(this.unsubscribe),

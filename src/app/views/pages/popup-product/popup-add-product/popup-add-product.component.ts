@@ -69,6 +69,9 @@ export class PopupAddProductComponent {
   }
 
   ngAfterContentInit(): void {
+    console.log('this.pageAction');
+    console.log(this.pageAction);
+    
     this.boost_point = 0;
     if (
       this.pageAction == 'retailerPurchaseApproval'

@@ -126,7 +126,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     OptionalSetting.clear();
     OptionalSetting.displayDeleteButton = false;
     if (
-      this.data.action == 'DistributorSaleReturn'
+      this.data.action == 'distributorSaleReturn'
       || this.data.action == 'retailerPartialSalesAcceptApproval'
       //  || this.data.action == 'viewDistributorSale'
     ) {
@@ -226,7 +226,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
           this.viewMetadataLoading$ = this.store.pipe(select(fromMetadata.selectMetadataLoading));
           const viewMetadataLoadingSubscription = this.viewMetadataLoading$.pipe(
           ).subscribe((metadataRes: any) => {
-            this.sl_distributor_sales_id = res.sl_distributor_sales_id;
+            this.sl_distributor_sales_id = res.id;
             this.createForm(res);
           });
           this.unsubscribe.push(viewMetadataLoadingSubscription);
@@ -499,7 +499,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
   /**  
      * acceptPurchase
     */
-  rejectPurchase() {
+  rejectPurchase() { 
     this.enableAttributes();
     const controls = this.viewDistributorSaleForm.controls;
 

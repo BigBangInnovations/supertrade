@@ -32,7 +32,7 @@ export class DistributorSaleService {
     }
     
     returnDistributorSale(data: any): Observable<any> {
-		const url = `add-distributorSale-return`;
+		const url = `add-distributor-sales-return`;
         return this.http.post(url, data)
     }
     

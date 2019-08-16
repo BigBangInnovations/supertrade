@@ -85,6 +85,7 @@ pageAction != 'addSale'
                 || pageAction == 'retailerPurchaseApproval' 
                 || pageAction == 'addOrder' 
                 || pageAction == 'retailerPurchaseReturnApproval' 
+                || pageAction == 'distributorSaleReturn' 
                 ">
                 <mat-form-field class="col-lg-12">
                     <input maxlength="5" matInput formControlName="productQuantityCtrl" placeholder="Quantity" (input)="getProductAmount($event.target.value);">
