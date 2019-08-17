@@ -61,6 +61,26 @@ export function distributorSaleReducer(state = initialDistributorSaleState, acti
             distributorSale:[],
             error: action.payload
         };
+        
+        case DistributorSaleActionTypes.LOAD_DISTRIBUTOR_SALE_RETURN: return {
+            ...state,
+            loading: true,
+            loaded: false,
+            distributorSale:[]
+        };
+        case DistributorSaleActionTypes.LOAD_DISTRIBUTOR_SALE_RETURN_SUCCESS: return {
+            ...state,
+            loading: false,
+            loaded: true,
+            distributorSale:action.payload
+        };
+        case DistributorSaleActionTypes.LOAD_DISTRIBUTOR_SALE_RETURN_FAIL: return {
+            ...state,
+            loading: false,
+            loaded: false,
+            distributorSale:[],
+            error: action.payload
+        };
         case DistributorSaleActionTypes.DistributorSalePageToggleLoading: return {
                 ...state, listLoading: action.payload.isLoading, lastCreatedDistributorSaleId: undefined
         };

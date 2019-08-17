@@ -79,6 +79,15 @@ export class DistributorSaleService {
         return this.http.post<DistributorSale[]>(url, data);
     }
 
+    /**
+     * From Retailer notification scren
+     * Get distributor sale return for approval 
+     */
+    findDistributorSaleReturnAsPurchaseReturn(data: any): Observable<any> {
+        const url = `get-distributor-sales-return`;
+        return this.http.post<DistributorSale[]>(url, data);
+    }
+
  	/*
  	 * Handle Http operation that failed.
  	 * Let the app continue.

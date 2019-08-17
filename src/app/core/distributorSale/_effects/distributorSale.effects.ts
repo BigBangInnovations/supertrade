@@ -36,7 +36,10 @@ import {
     DistributorSaleActions,
     LOAD_DISTRIBUTOR_SALE,
     LOAD_DISTRIBUTOR_SALE_FAIL,
-    LOAD_DISTRIBUTOR_SALE_SUCCESS
+    LOAD_DISTRIBUTOR_SALE_SUCCESS,
+    LOAD_DISTRIBUTOR_SALE_RETURN,
+    LOAD_DISTRIBUTOR_SALE_RETURN_FAIL,
+    LOAD_DISTRIBUTOR_SALE_RETURN_SUCCESS
 } from '../_actions/distributorSale.actions';
 
 @Injectable()
@@ -73,6 +76,26 @@ export class DistributorSaleEffects {
                     }
                     ),
                     catchError(err => of(new LOAD_DISTRIBUTOR_SALE_FAIL(err)))
+                )
+            )
+        );
+
+        @Effect()
+    loadDistributorSaleReturn$ = this.actions$
+        .pipe(
+            ofType<LOAD_DISTRIBUTOR_SALE_RETURN>(DistributorSaleActionTypes.LOAD_DISTRIBUTOR_SALE_RETURN), 
+            mergeMap(({ payload }) =>
+                this.distributorSaleService.findDistributorSaleReturnAsPurchaseReturn(payload).pipe(
+                    map(response => {
+                        if (response.status == APP_CONSTANTS.response.SUCCESS) {
+                            return new LOAD_DISTRIBUTOR_SALE_RETURN_SUCCESS(response.data[0]);
+                        } else {
+                            this.authNoticeService.setNotice(this.translate.instant('AUTH.REPONSE.INVALID_TOKEN'), 'danger');
+                            return new Logout()
+                        }
+                    }
+                    ),
+                    catchError(err => of(new LOAD_DISTRIBUTOR_SALE_RETURN_FAIL(err)))
                 )
             )
         );

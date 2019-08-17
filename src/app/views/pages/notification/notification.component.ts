@@ -178,29 +178,45 @@ export class NotificationComponent implements OnInit, OnDestroy {
     let newTransaction_ID = data.Transaction_ID.replace('PAR', ""); 
     let notificationData = [];
     notificationData.push(data);
+console.log(data.Type);
 
-    if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_ADD_SALES && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
-      /**
-       * Screen retailer approval
-       * Retailer to accept reject purchase cretaed by distributor
-       */
-      const dialogRef = this.dialog.open(ViewDistributorSaleComponent, {
-        data: { transactionID: newTransaction_ID, action: 'retailerPurchaseApproval', notificationData: notificationData },
-        width: '600px',
-      });
+if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_ADD_SALES && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
+  /**
+   * Screen retailer approval
+   * Retailer to accept reject purchase cretaed by distributor
+   */
+  const dialogRef = this.dialog.open(ViewDistributorSaleComponent, {
+    data: {Type:data.Type, transactionID: newTransaction_ID, action: 'retailerPurchaseApproval', notificationData: notificationData },
+    width: '600px',
+  });
 
-      dialogRef.afterClosed().subscribe(res => {
-        if (res == 'reload')
-          this.loadApprovalTab();
-      });
+  dialogRef.afterClosed().subscribe(res => {
+    if (res == 'reload')
+      this.loadApprovalTab();
+  });
 
-    } else if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_RETAILER_PURCHASE_RETURN && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
+}else if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_DISTRIBUTOR_ADD_SALES_RETURN && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
+  /**
+   * Screen retailer approval
+   * Retailer to accept reject purchase return cretaed by distributor
+   */
+  const dialogRef = this.dialog.open(ViewPurchaseComponent, {
+    data: {Type:data.Type,  transactionID: newTransaction_ID, action: 'retailerPurchaseReturnApprovalByDistributor', notificationData: notificationData },
+    width: '600px',
+  });
+
+  dialogRef.afterClosed().subscribe(res => {
+    if (res == 'reload')
+      this.loadApprovalTab();
+  });
+
+} else if (data.Type && data.Type == APP_CONSTANTS.NOTIFICATION_TYPE.SUPERTRADE_RETAILER_PURCHASE_RETURN && data.Status == APP_CONSTANTS.NOTIFICATION_STATUS.STATUS_PENDING) {
       /** 
        * Screen Distributor approva
        * Retailer request for his purchase return than approval comes to distributor
        */
       const dialogRef = this.dialog.open(ViewPurchaseComponent, {
-        data: { transactionID: newTransaction_ID, action: 'retailerPurchaseReturnApproval', notificationData: notificationData },
+        data: {Type:data.Type,  transactionID: newTransaction_ID, action: 'retailerPurchaseReturnApproval', notificationData: notificationData },
         width: '600px',
       });
 
@@ -214,7 +230,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
        * Approval for retailer accept purchse partial that's why approval to distributor to inform
        */
       const dialogRef = this.dialog.open(ViewDistributorSaleComponent, {
-        data: { transactionID: newTransaction_ID, action: 'retailerPartialSalesAcceptApproval', notificationData: notificationData },
+        data: {Type:data.Type,  transactionID: newTransaction_ID, action: 'retailerPartialSalesAcceptApproval', notificationData: notificationData },
         width: '600px',
       });
 
@@ -230,7 +246,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
        * approvel to retailer regard  this confirmation
        */
       const dialogRef = this.dialog.open(ViewPurchaseComponent, {
-        data: { transactionID: newTransaction_ID, action: 'distributorPartialAcceptPurchaseReturnApproval', notificationData: notificationData },
+        data: {Type:data.Type,  transactionID: newTransaction_ID, action: 'distributorPartialAcceptPurchaseReturnApproval', notificationData: notificationData },
         width: '600px',
       });
 

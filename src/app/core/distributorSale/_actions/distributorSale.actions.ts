@@ -21,6 +21,10 @@ export enum DistributorSaleActionTypes {
     LOAD_DISTRIBUTOR_SALE = '[DistributorSale] load DistributorSale',
     LOAD_DISTRIBUTOR_SALE_SUCCESS = '[DistributorSale] load DistributorSale success',
     LOAD_DISTRIBUTOR_SALE_FAIL = '[DistributorSale] load DistributorSale fail',
+
+    LOAD_DISTRIBUTOR_SALE_RETURN = '[DistributorSaleReturn] load DistributorSaleReturn',
+    LOAD_DISTRIBUTOR_SALE_RETURN_SUCCESS = '[DistributorSaleReturn] load DistributorSaleReturn success',
+    LOAD_DISTRIBUTOR_SALE_RETURN_FAIL = '[DistributorSaleReturn] load DistributorSaleReturn fail',
 }
 
 export class DistributorSaleOnServerCreated implements Action {
@@ -95,6 +99,21 @@ export class LOAD_DISTRIBUTOR_SALE_FAIL implements Action {
     constructor(public payload: string) {}
 }
 
+export class LOAD_DISTRIBUTOR_SALE_RETURN implements Action {
+    readonly type = DistributorSaleActionTypes.LOAD_DISTRIBUTOR_SALE_RETURN;
+    constructor(public payload) { }
+}
+
+export class LOAD_DISTRIBUTOR_SALE_RETURN_SUCCESS implements Action {
+    readonly type = DistributorSaleActionTypes.LOAD_DISTRIBUTOR_SALE_RETURN_SUCCESS
+    constructor(public payload: { purchase: DistributorSale[] }) { }
+}
+
+export class LOAD_DISTRIBUTOR_SALE_RETURN_FAIL implements Action {
+    readonly type = DistributorSaleActionTypes.LOAD_DISTRIBUTOR_SALE_RETURN_FAIL
+    constructor(public payload: string) {}
+}
+
 export type DistributorSaleActions = DistributorSaleCreated
 | DistributorSaleUpdated
 | DistributorSaleDeleted
@@ -108,4 +127,8 @@ export type DistributorSaleActions = DistributorSaleCreated
 | DistributorSaleActionToggleLoading
 | LOAD_DISTRIBUTOR_SALE
 | LOAD_DISTRIBUTOR_SALE_SUCCESS
-| LOAD_DISTRIBUTOR_SALE_FAIL;
+| LOAD_DISTRIBUTOR_SALE_FAIL
+| LOAD_DISTRIBUTOR_SALE_RETURN
+| LOAD_DISTRIBUTOR_SALE_RETURN_SUCCESS
+| LOAD_DISTRIBUTOR_SALE_RETURN_FAIL
+;

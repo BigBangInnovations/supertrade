@@ -15,6 +15,7 @@ import { Store, select } from '@ngrx/store';
 import { AppState } from '../../../../core/reducers';
 // Services and Models
 import { Purchase, selectPurchaseById, LOAD_PURCHASE, selectPurchaseError, selectPurchase, selectLoading } from '../../../../core/purchase';
+import { LOAD_DISTRIBUTOR_SALE_RETURN, selectDistributorSale, selectLoading as distributorSelectLoading } from '../../../../core/distributorSale';
 import { delay } from 'rxjs/operators';
 import { PopupProductComponent } from '../../popup-product/popup-product.component';
 
@@ -107,6 +108,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
       || this.data.action == 'viewSale'
       || this.data.action == 'viewPurchase'
       || this.data.action == 'distributorPartialAcceptPurchaseReturnApproval'
+      || this.data.action == 'retailerPurchaseReturnApprovalByDistributor'
     ) {
       OptionalSetting.displayPointCalculation = false;
     }
@@ -133,13 +135,25 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 
       let httpParams = new HttpParams();
       httpParams = httpParams.append('transaction_id', this.data.transactionID);
-      this.store.dispatch(new LOAD_PURCHASE(httpParams));
-      this.purchase$ = this.store.pipe(select(selectPurchase));
-      this.viewLoading$ = this.store.pipe(select(selectLoading));
+      if(this.data.Type == 171){
+        this.store.dispatch(new LOAD_DISTRIBUTOR_SALE_RETURN(httpParams));
+        this.purchase$ = this.store.pipe(select(selectDistributorSale));
+        this.viewLoading$ = this.store.pipe(select(distributorSelectLoading));
+      }else{
+        this.store.dispatch(new LOAD_PURCHASE(httpParams));
+        this.purchase$ = this.store.pipe(select(selectPurchase));
+        this.viewLoading$ = this.store.pipe(select(selectLoading));
+      }
+      
       this.purchase$.subscribe((res: any) => {
         if (res && res != '') {
+          if(this.data.Type == 171){
+            this.data.purchaseId = 0;
+            this.sl_distributor_sales_id = res.id;  
+          }else{
           this.data.purchaseId = res.id;
           this.sl_distributor_sales_id = res.sl_distributor_sales_id;
+          }
           this.createForm(res);
         }
       });
@@ -262,6 +276,8 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
       return 'Purchase Return'
     } else if (this.pageAction == 'retailerPurchaseReturnApproval') {
       return 'Sales Return approval'
+    }else if (this.pageAction == 'retailerPurchaseReturnApprovalByDistributor') {
+      return 'Purchase Return approval'
     } else if (this.pageAction == 'distributorPartialAcceptPurchaseReturnApproval') {
       return 'Partial accepted sales return approval'
     }

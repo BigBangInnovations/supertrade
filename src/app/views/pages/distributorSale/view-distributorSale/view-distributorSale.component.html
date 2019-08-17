@@ -28,7 +28,7 @@
                                     </mat-option>
                                 </ng-template>
 
-                                <ng-container *ngIf="!(viewLoading$  | async); else loading1">
+                                <ng-container *ngIf="!(viewLoading$  | async); else loading1"> 
                                     <ng-container *ngIf="(retailers$ | async)?.length; else noRetailer">
                                         <mat-option *ngFor="let retailerArray of ((retailers$ | async) | keyvalue)" [value]="retailerArray.value.ID">
                                             {{retailerArray.value.Name}}

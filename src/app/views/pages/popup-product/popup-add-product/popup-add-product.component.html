@@ -22,6 +22,7 @@ pageAction != 'addSale'
 && pageAction != 'addDistributorSale'
 && pageAction != 'retailerPurchaseReturnApproval'
 && pageAction != 'distributorPartialAcceptPurchaseReturnApproval'
+&& pageAction != 'retailerPurchaseReturnApprovalByDistributor'
 ">
 
                 <mat-list-item role="listitem">
@@ -33,6 +34,7 @@ pageAction != 'addSale'
 
             <ng-container *ngIf="
 pageAction == 'distributorPartialAcceptPurchaseReturnApproval'
+
 ">
                 <mat-list-item role="listitem">
                     <span matLine>Original return quantity </span>
@@ -43,6 +45,7 @@ pageAction == 'distributorPartialAcceptPurchaseReturnApproval'
 
             <ng-container *ngIf="
 pageAction == 'retailerPurchaseReturnApproval'
+|| pageAction == 'retailerPurchaseReturnApprovalByDistributor'
 ">
 
                 <mat-list-item role="listitem">
@@ -70,6 +73,7 @@ pageAction != 'addSale'
 && pageAction != 'retailerPartialSalesAcceptApproval'
 && pageAction != 'retailerPurchaseReturnApproval'
 && pageAction != 'distributorPartialAcceptPurchaseReturnApproval'
+&& pageAction != 'retailerPurchaseReturnApprovalByDistributor'
 ">
                 <mat-list-item role="listitem">
                     <span matLine>Total return quantity </span>
