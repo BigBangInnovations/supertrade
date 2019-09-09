@@ -148,9 +148,6 @@ export class SalesListComponent implements OnInit, OnDestroy {
 			.select(fromRetailerSalesSchemeList.selectRetailerSalesSchemeListLoaded)
 			.pipe()
 			.subscribe(data => {
-				console.log('data');
-				console.log(data);
-				
 				if (data) {
 					this.retailerSalesSchemeList$ = this.store.pipe(
 						select(fromRetailerSalesSchemeList.selectAllRetailerSalesSchemeList)

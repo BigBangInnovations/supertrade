@@ -25,6 +25,9 @@ import { environment } from '../../../../environments/environment';
 // Components
 import { ViewPurchaseComponent } from './view-purchase/view-purchase.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import * as fromRetailerPurchaseSchemeList from '../../../core/retailerPurchaseSchemeList';
+import { Scheme } from '../../../core/retailerPurchaseSchemeList/_models/scheme.model';
+import { APP_CONSTANTS } from '../../../../config/default/constants';
 
 // Table with EDIT item in MODAL
 // ARTICLE for table with sort/filter/paginator
@@ -54,6 +57,7 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 	// @ViewChild('searchInput', {static: true}) searchInput: ElementRef;
 	@ViewChild('startDateInput', { static: true }) startDateInput: ElementRef;
 	@ViewChild('endDateInput', { static: true }) endDateInput: ElementRef;
+	@ViewChild("scheme_id", { static: true }) scheme_id;
 	// @ViewChild('filterButton', {static: true}) filterButton: ElementRef;
 	// Selection
 	selection = new SelectionModel<Purchase>(true, []);
@@ -65,6 +69,8 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 	private subscriptions: Subscription[] = [];
 	progressBarValue: number;
 	accumulated_points: number;
+	viewRetailerPurchaseSchemeListLoading$: Observable<boolean>;
+	retailerPurchaseSchemeList$: Observable<Scheme[]>;
 
 	/**
 	 * Component constructor
@@ -137,6 +143,31 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 		// )
 		// .subscribe();
 		// this.subscriptions.push(searchSubscription);
+
+		//start get all active retailer scheme
+		this.store
+			.select(fromRetailerPurchaseSchemeList.selectRetailerPurchaseSchemeListLoaded)
+			.pipe()
+			.subscribe(data => {
+				if (data) {
+					this.retailerPurchaseSchemeList$ = this.store.pipe(
+						select(fromRetailerPurchaseSchemeList.selectAllRetailerPurchaseSchemeList)
+					);
+				} else {
+					let httpParamsScheme = new HttpParams();
+					httpParamsScheme = httpParamsScheme.append('scheme_type', APP_CONSTANTS.SCHEME.SCHEME_TYPE.SALES);
+					httpParamsScheme = httpParamsScheme.append('type', APP_CONSTANTS.SCHEME.TYPE.RETAILER_SCHEME);
+					this.store.dispatch(
+						new fromRetailerPurchaseSchemeList.LoadRetailerPurchaseSchemeList(httpParamsScheme)
+					);
+					this.retailerPurchaseSchemeList$ = this.store.pipe(
+						select(fromRetailerPurchaseSchemeList.selectAllRetailerPurchaseSchemeList)
+					);
+				}
+			});
+		this.viewRetailerPurchaseSchemeListLoading$ = this.store.pipe(
+			select(fromRetailerPurchaseSchemeList.selectRetailerPurchaseSchemeListLoading)
+		);
 
 		// Init DataSource
 		this.dataSource = new PurchaseDataSource(this.store);
@@ -235,6 +266,7 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 			this.hasDateError = false;
 			let startDate = this.startDateInput.nativeElement.value
 			let endDate = this.endDateInput.nativeElement.value
+			let scheme_id = this.scheme_id.value;
 
 			this.purchaseActiveScheme = data;
 			let httpParams = new HttpParams();
@@ -250,7 +282,13 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 					return;
 				}
 			}
-			httpParams = httpParams.append('scheme_id', this.purchaseActiveScheme);
+			if (scheme_id == "" || scheme_id == undefined || scheme_id == 'undefined')
+					httpParams = httpParams.append(
+						"scheme_id",
+						this.purchaseActiveScheme
+					);
+				else httpParams = httpParams.append("scheme_id", scheme_id);
+
 			// Call request from server
 			this.store.dispatch(new PurchasePageRequested({ page: queryParams, body: httpParams }));
 			this.selection.clear();

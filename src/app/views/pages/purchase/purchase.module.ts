@@ -10,6 +10,7 @@ import { PartialsModule } from '../../partials/partials.module';
 import { PurchaseEffects, PurchaseService, purchaseReducer  } from '../../../core/purchase'
 import { ProductEffects, productReducer, ProductService } from '../../../core/product'
 import { DistributorEffects, distributorReducer, DistributorService } from '../../../core/distributor'
+import { retailerPurchaseSchemeListService, retailerPurchaseSchemeListReducer, RetailerPurchaseSchemeListEffects } from '../../../core/retailerPurchaseSchemeList';
 // Translate
 import { TranslateModule } from '@ngx-translate/core';
 // NGRX
@@ -82,7 +83,10 @@ const routes: Routes = [
 		//distributor
 		EffectsModule.forFeature([DistributorEffects]),
 		StoreModule.forFeature('distributor', distributorReducer),
-
+		//retailerPurchaseSchemeList
+		EffectsModule.forFeature([RetailerPurchaseSchemeListEffects]),
+		StoreModule.forFeature('retailerPurchaseSchemeList', retailerPurchaseSchemeListReducer),
+		
 		MatIconModule,
 		MatListModule,
 		MatProgressSpinnerModule,
@@ -123,7 +127,8 @@ const routes: Routes = [
 		// },		
 		// PurchaseService,
 		ProductService,
-		DistributorService
+		DistributorService,
+		retailerPurchaseSchemeListService,
 	],
 	entryComponents: [
 		ActionNotificationComponent,
@@ -143,7 +148,8 @@ export class PurchaseModule {
 			providers: [
 				// PurchaseService,
 				ProductService,
-				DistributorService
+				DistributorService,
+				retailerPurchaseSchemeListService,
 
 			]
 		};
