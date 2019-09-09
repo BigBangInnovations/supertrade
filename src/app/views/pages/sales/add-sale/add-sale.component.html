@@ -58,6 +58,10 @@
                                 <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Customer name'} }}</strong>
                             </mat-error>
 
+                            <mat-error *ngIf="isControlHasError('mobile_no','pattern')">
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.NUMBER_PATTERN' | translate }}</strong>
+                            </mat-error>
+
                             <mat-error *ngIf="isControlHasError('name','maxLength')">
                                 <strong>{{ 'POPUPPRODUCT.VALIDATION.MAX_LENGTH_FIELD' | translate }} 20</strong>
                             </mat-error>
@@ -74,12 +78,20 @@
                                 <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Customer number'} }}</strong>
                             </mat-error>
 
+                            <mat-error *ngIf="isControlHasError('mobile_no','pattern')">
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.NUMBER_PATTERN' | translate }}</strong>
+                            </mat-error>
+
                             <mat-error *ngIf="isControlHasError('mobile_no','maxLength')">
                                 <strong>{{ 'POPUPPRODUCT.VALIDATION.MAX_LENGTH_FIELD' | translate }} 15</strong>
                             </mat-error>
 
                             <mat-error *ngIf="isControlHasError('mobile_no','maxlength')">
                                 <strong>{{ 'POPUPPRODUCT.VALIDATION.MAX_LENGTH_FIELD' | translate }} 15</strong>
+                            </mat-error>
+
+                            <mat-error *ngIf="isControlHasError('mobile_no','incorrect')">
+                                <strong>{{ saleForm.controls['mobile_no'].errors.incorrect }} </strong>
                             </mat-error>
 
                         </mat-form-field>
@@ -95,10 +107,19 @@
                             <mat-error *ngIf="isControlHasError('landline_no','maxLength')">
                                 <strong>{{ 'POPUPPRODUCT.VALIDATION.MAX_LENGTH_FIELD' | translate }} 15</strong>
                             </mat-error>
+                            
+                            <mat-error *ngIf="isControlHasError('landline_no','pattern')">
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.NUMBER_PATTERN' | translate }}</strong>
+                            </mat-error>
 
                             <mat-error *ngIf="isControlHasError('landline_no','maxlength')">
                                 <strong>{{ 'POPUPPRODUCT.VALIDATION.MAX_LENGTH_FIELD' | translate }} 15</strong>
                             </mat-error>
+
+                            <mat-error *ngIf="isControlHasError('landline_no','incorrect')">
+                                <strong>{{ saleForm.controls['landline_no'].errors.incorrect }} </strong>
+                            </mat-error>
+
                         </mat-form-field>
                     </div>
                 </div>

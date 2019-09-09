@@ -1,23 +1,22 @@
 <kt-portlet>
-    <!-- PORTLET LOADING | Binded to TABLE Datasource -->
-    <!-- See prop => '~/core/_crud/models/data-sources/_base.datasource.ts' (loading$) -->
-    <kt-portlet-header [viewLoading$]="dataSource.loading$">
-
-        <!-- <ng-container ktPortletTools>
+	<!-- PORTLET LOADING | Binded to TABLE Datasource -->
+	<!-- See prop => '~/core/_crud/models/data-sources/_base.datasource.ts' (loading$) -->
+	<kt-portlet-header [viewLoading$]="dataSource.loading$">
+		<!-- <ng-container ktPortletTools>
             <button (click)="addRole()" mat-raised-button matTooltip="Create new role" color="primary" type="button">
 				<span>New Role</span>
 			</button> -->
-        <!-- Buttons (Material Angular) | See off.documenations 'https://material.angular.io/components/button/overview' -->
-        <!-- mat-raised-button | Rectangular contained button w/ elevation  -->
-        <!-- </ng-container>-->
-    </kt-portlet-header>
-    <!-- end::Header -->
+		<!-- Buttons (Material Angular) | See off.documenations 'https://material.angular.io/components/button/overview' -->
+		<!-- mat-raised-button | Rectangular contained button w/ elevation  -->
+		<!-- </ng-container>-->
+	</kt-portlet-header>
+	<!-- end::Header -->
 
-    <kt-portlet-body>
-        <!-- start::FILTERS & GROUP ACTIONS -->
-        <!-- <div class="kt-form kt-margin-b-30"> -->
-        <!-- start::FILTERS -->
-        <!-- <div class="kt-form__filtration">
+	<kt-portlet-body>
+		<!-- start::FILTERS & GROUP ACTIONS -->
+		<!-- <div class="kt-form kt-margin-b-30"> -->
+		<!-- start::FILTERS -->
+		<!-- <div class="kt-form__filtration">
                 <div class="row align-items-center">
                     <div class="col-md-2 kt-margin-bottom-10-mobile">
                         <mat-form-field class="mat-form-field-fluid">
@@ -29,23 +28,23 @@
                     </div>
                 </div>
             </div> -->
-        <!-- end::FILTERS -->
+		<!-- end::FILTERS -->
 
-        <!-- start::GROUP ACTIONS -->
-        <!-- Group actions list: 'Delete selected' | 'Fetch selected' | 'Update status for selected' -->
-        <!-- Group actions are shared for all LISTS -->
-        <!-- <div class="row align-items-center collapse kt-form__group-actions kt-margin-top-20 kt-margin-bottom-20" [ngClass]="{'show' : selection.selected.length > 0}"> -->
-        <!-- We show 'Group Actions' div if smth are selected -->
-        <!-- <div class="col-xl-12">
+		<!-- start::GROUP ACTIONS -->
+		<!-- Group actions list: 'Delete selected' | 'Fetch selected' | 'Update status for selected' -->
+		<!-- Group actions are shared for all LISTS -->
+		<!-- <div class="row align-items-center collapse kt-form__group-actions kt-margin-top-20 kt-margin-bottom-20" [ngClass]="{'show' : selection.selected.length > 0}"> -->
+		<!-- We show 'Group Actions' div if smth are selected -->
+		<!-- <div class="col-xl-12">
                     <div class="kt-form__group kt-form__group--inline">
                         <div class="kt-form__label kt-form__label-no-wrap">
                             <label class="kt--font-bold kt-font-danger-">
 								<span translate="ECOMMERCE.COMMON.SELECTED_RECORDS_COUNT"></span> {{ selection.selected.length }}
 							</label> -->
-        <!-- selectedCountsTitle => function from codeBehind (roles-list.component.ts file) -->
-        <!-- selectedCountsTitle => just returns title of selected items count -->
-        <!-- for example: Selected records count: 4 -->
-        <!-- </div>
+		<!-- selectedCountsTitle => function from codeBehind (roles-list.component.ts file) -->
+		<!-- selectedCountsTitle => just returns title of selected items count -->
+		<!-- for example: Selected records count: 4 -->
+		<!-- </div>
                         <div class="kt-form__control kt-form__group--inline">
                             <button (click)="fetchRoles()" mat-raised-button matTooltip="Fetch selected distributorSale" class="mat-button-mt-4">
 								<mat-icon>clear_all</mat-icon>
@@ -54,169 +53,375 @@
                         </div>
                     </div>
                 </div> -->
-        <!-- </div> -->
-        <!-- end::GROUP ACTIONS -->
-        <!-- </div> -->
-        <!-- end::FILTERS & GROUP ACTIONS -->
+		<!-- </div> -->
+		<!-- end::GROUP ACTIONS -->
+		<!-- </div> -->
+		<!-- end::FILTERS & GROUP ACTIONS -->
 
-        <!-- MATERIAL TABLE | Binded to datasources -->
-        <!-- See off.documentations 'https://material.angular.io/components/table/overview' -->
+		<!-- MATERIAL TABLE | Binded to datasources -->
+		<!-- See off.documentations 'https://material.angular.io/components/table/overview' -->
 
-        <mat-card *ngIf="!(dataSource.isPreloadTextViewed$ | async)">
-            <!-- <mat-card-header> -->
-            <mat-card-subtitle>{{salesActiveSchemeDetail.scheme_name}}</mat-card-subtitle>
-            <mat-card-title>
-                <ng-container *ngIf="salesActiveSchemeDetail.bonus_type === 'percentage';else elseGift">
-                    You are getting {{salesActiveSchemeDetail.bonus_percentage}} points.
-                </ng-container>
+		<mat-card *ngIf="!(dataSource.isPreloadTextViewed$ | async)">
+			<!-- <mat-card-header> -->
+			<mat-card-subtitle>{{
+				salesActiveSchemeDetail.scheme_name
+			}}</mat-card-subtitle>
+			<mat-card-title>
+				<ng-container
+					*ngIf="
+						salesActiveSchemeDetail.bonus_type === 'percentage';
+						else elseGift
+					"
+				>
+					You are getting
+					{{ salesActiveSchemeDetail.bonus_percentage }} points.
+				</ng-container>
 
-                <ng-template #elseGift>
-                    <ng-container *ngIf="salesActiveSchemeDetail.bonus_type == 'gift';else elseValue">
-                        {{salesActiveSchemeDetail.bonus_gift}}
-                    </ng-container>
-                </ng-template>
+				<ng-template #elseGift>
+					<ng-container
+						*ngIf="
+							salesActiveSchemeDetail.bonus_type == 'gift';
+							else elseValue
+						"
+					>
+						{{ salesActiveSchemeDetail.bonus_gift }}
+					</ng-container>
+				</ng-template>
 
-                <ng-template #elseValue>
-                    {{salesActiveSchemeDetail.bonus_value}}
-                </ng-template>
+				<ng-template #elseValue>
+					{{ salesActiveSchemeDetail.bonus_value }}
+				</ng-template>
+			</mat-card-title>
+			<!-- </mat-card-header> -->
+			<mat-card-content>
+				<p>
+					<ngb-progressbar
+						value="{{ progressBarValue }}"
+						type="warning"
+					></ngb-progressbar>
+				</p>
+			</mat-card-content>
+			<!-- <mat-card-actions> -->
 
-            </mat-card-title>
-            <!-- </mat-card-header> -->
-            <mat-card-content>
-                <p>
-                    <ngb-progressbar value="{{progressBarValue}}" type="warning"></ngb-progressbar>
-                </p>
-            </mat-card-content>
-            <!-- <mat-card-actions> -->
-
-            <span class="pull-right">{{ salesActiveSchemeDetail.to | number : '1.2-2'}} Points</span>
-            <mat-card-subtitle>
-                <!-- <span>{{salesActiveSchemeDetail.from | number : '1.2-2'}} Points</span> -->
-                <span>{{ accumulated_points | number : '1.2-2'}} Points</span>
-            </mat-card-subtitle>
-            <!-- 
+			<span class="pull-right"
+				>{{ salesActiveSchemeDetail.to | number: "1.2-2" }} Points</span
+			>
+			<mat-card-subtitle>
+				<!-- <span>{{salesActiveSchemeDetail.from | number : '1.2-2'}} Points</span> -->
+				<span>{{ accumulated_points | number: "1.2-2" }} Points</span>
+			</mat-card-subtitle>
+			<!-- 
             </mat-card-actions> -->
-        </mat-card>
-        <h4 mat-line class="text-center mt-3">Distributor Sale List</h4>
+		</mat-card>
+		<h4 mat-line class="text-center mt-3">Sale List</h4>
 
-        <!-- start:: filter -->
-        <div class="kt-form__filtration around_border">
-            <div class="row align-items-center">
-                <div class="col-md-2 kt-margin-bottom-10-mobile">
-                    <table>
-                        <tr>
-                            <td colspan="2"> Filter</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <mat-form-field>
-                                    <input matInput [matDatepicker]="dp3" (focus)="dp3.open()" #startDateInput placeholder="Satrt Date" readonly>
-                                    <mat-datepicker-toggle matSuffix [for]="dp3">
-                                    </mat-datepicker-toggle>
-                                    <mat-datepicker touchUi #dp3 disabled="false"></mat-datepicker>
-                                </mat-form-field>
-                                <small *ngIf="hasDateError" class="alert-danger">Enter valid date</small>
-                            </td>
+		<!-- start:: filter -->
+		<div class="kt-form__filtration around_border">
+			<div class="row align-items-center">
+				<div class="col-md-2 kt-margin-bottom-10-mobile">
+					<table>
+						<tr>
+							<td colspan="2">Filter</td>
+						</tr>
+						<tr>
+							<td>
+								<mat-form-field>
+									<input
+										matInput
+										[matDatepicker]="dp3"
+										(focus)="dp3.open()"
+										#startDateInput
+										placeholder="Satrt Date"
+										readonly
+									/>
+									<mat-datepicker-toggle
+										matSuffix
+										[for]="dp3"
+									>
+									</mat-datepicker-toggle>
+									<mat-datepicker
+										touchUi
+										#dp3
+										disabled="false"
+									></mat-datepicker>
+								</mat-form-field>
+								<small *ngIf="hasDateError" class="alert-danger"
+									>Enter valid date</small
+								>
+							</td>
 
-                            <td>
-                                <mat-form-field>
-                                    <input matInput [matDatepicker]="dp4" (focus)="dp4.open()" #endDateInput placeholder="End Date" readonly>
-                                    <mat-datepicker-toggle matSuffix [for]="dp4">
-                                    </mat-datepicker-toggle>
-                                    <mat-datepicker touchUi #dp4 disabled="false"></mat-datepicker>
+							<td>
+								<mat-form-field>
+									<input
+										matInput
+										[matDatepicker]="dp4"
+										(focus)="dp4.open()"
+										#endDateInput
+										placeholder="End Date"
+										readonly
+									/>
+									<mat-datepicker-toggle
+										matSuffix
+										[for]="dp4"
+									>
+									</mat-datepicker-toggle>
+									<mat-datepicker
+										touchUi
+										#dp4
+										disabled="false"
+									></mat-datepicker>
+								</mat-form-field>
+							</td>
 
-                                </mat-form-field>
-                            </td>
-                            <td>
-                                <button (click)="loadDistributorSaleList()" mat-raised-button color="accent">Apply</button>
-                            </td>
-                        </tr>
-                    </table>
-                    <!-- <mat-form-field class="mat-form-field-fluid">
+							<td>
+								<mat-form-field class="mat-form-field-fluid">
+									<mat-select
+										#scheme_id
+										placeholder="Scheme ID"
+									>
+										<ng-template
+											#distributorSalesScheme_loading
+										>
+											<mat-option value="" >
+												Loading...
+											</mat-option>
+										</ng-template>
+
+										<ng-template #noDistributorSalesScheme>
+											<mat-option value="">
+												No Scheme available
+											</mat-option>
+										</ng-template>
+
+										<ng-container
+											*ngIf="
+												!(
+													viewDistributorSalesSchemeListLoading$
+													| async
+												);
+												else distributorSalesScheme_loading
+											"
+										>
+											<ng-container
+												*ngIf="
+													(
+														distributorSalesSchemeList$
+														| async
+													)?.length;
+													else noDistributorSalesScheme
+												"
+											>
+												<mat-option
+													*ngFor="
+														let distributorSalesSchemeListArray of distributorSalesSchemeList$
+															| async
+															| keyvalue
+													"
+													[value]="
+														distributorSalesSchemeListArray
+															.value.scheme_id
+													"
+												>
+													{{
+														distributorSalesSchemeListArray
+															.value.scheme_id
+													}}
+												</mat-option>
+											</ng-container>
+										</ng-container>
+									</mat-select>
+								</mat-form-field>
+							</td>
+							<td>
+								<button
+									(click)="loadDistributorSaleList()"
+									mat-raised-button
+									color="accent"
+								>
+									Apply
+								</button>
+							</td>
+						</tr>
+					</table>
+
+					<!-- <mat-form-field class="mat-form-field-fluid">
                                         <input matInput placeholder="Search user" #searchInput placeholder="Search">
                                         <mat-hint align="start">
                                             <strong>Search</strong> in all fields
                                         </mat-hint>
                                     </mat-form-field> -->
-                </div>
-            </div>
-        </div>
+				</div>
+			</div>
+		</div>
 
-        <!-- end::filter -->
+		<!-- end::filter -->
 
-        <div class="mat-table__wrapper">
+		<div class="mat-table__wrapper">
+			<mat-table
+				class="mat-elevation-z8"
+				#table
+				[dataSource]="dataSource"
+				matSort
+				#sort1="matSort"
+				matSortActive="id"
+				matSortDirection="asc"
+				matSortDisableClear
+			>
+				<!-- Checkbox Column -->
 
+				<!-- Table with selection -->
+				<!-- https://run.stackblitz.com/api/angular/v1?file=app%2Ftable-selection-example.ts -->
+				<ng-container matColumnDef="select">
+					<mat-header-cell
+						*matHeaderCellDef
+						class="mat-column-checkbox"
+					>
+						<mat-checkbox
+							(change)="$event ? masterToggle() : null"
+							[checked]="selection.hasValue() && isAllSelected()"
+							[indeterminate]="
+								selection.hasValue() && !isAllSelected()
+							"
+						>
+						</mat-checkbox>
+					</mat-header-cell>
+					<mat-cell *matCellDef="let row" class="mat-column-checkbox">
+						<mat-checkbox
+							(click)="$event.stopPropagation()"
+							(change)="$event ? selection.toggle(row) : null"
+							[checked]="selection.isSelected(row)"
+						>
+						</mat-checkbox>
+					</mat-cell>
+				</ng-container>
 
-            <mat-table class="mat-elevation-z8" #table [dataSource]="dataSource" matSort #sort1="matSort" matSortActive="id" matSortDirection="asc" matSortDisableClear>
-                <!-- Checkbox Column -->
+				<ng-container matColumnDef="date">
+					<!-- ATTRIBUTE mat-sort-header  for sorting | https://material.angular.io/components/sort/overview -->
+					<mat-header-cell *matHeaderCellDef>Date</mat-header-cell>
+					<mat-cell *matCellDef="let distributorSale">{{
+						distributorSale.date | date: "dd-MM-yyyy"
+					}}</mat-cell>
+				</ng-container>
 
-                <!-- Table with selection -->
-                <!-- https://run.stackblitz.com/api/angular/v1?file=app%2Ftable-selection-example.ts -->
-                <ng-container matColumnDef="select">
-                    <mat-header-cell *matHeaderCellDef class="mat-column-checkbox">
-                        <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()">
-                        </mat-checkbox>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row" class="mat-column-checkbox">
-                        <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)">
-                        </mat-checkbox>
-                    </mat-cell>
-                </ng-container>
+				<ng-container matColumnDef="invoice_id">
+					<mat-header-cell *matHeaderCellDef
+						>Invoice ID</mat-header-cell
+					>
+					<mat-cell *matCellDef="let distributorSale">{{
+						distributorSale.invoice_id
+					}}</mat-cell>
+				</ng-container>
 
-                <ng-container matColumnDef="date">
-                    <!-- ATTRIBUTE mat-sort-header  for sorting | https://material.angular.io/components/sort/overview -->
-                    <mat-header-cell *matHeaderCellDef>Date</mat-header-cell>
-                    <mat-cell *matCellDef="let distributorSale">{{distributorSale.date | date: 'dd-MM-yyyy'}}</mat-cell>
-                </ng-container>
+				<ng-container matColumnDef="retailer_name">
+					<mat-header-cell *matHeaderCellDef
+						>Retailer name</mat-header-cell
+					>
+					<mat-cell *matCellDef="let distributorSale">{{
+						distributorSale.Retailer_Name
+					}}</mat-cell>
+				</ng-container>
 
-                <ng-container matColumnDef="invoice_id">
-                    <mat-header-cell *matHeaderCellDef>Invoice ID</mat-header-cell>
-                    <mat-cell *matCellDef="let distributorSale">{{distributorSale.invoice_id}}</mat-cell>
-                </ng-container>
+				<ng-container matColumnDef="scheme_id">
+					<mat-header-cell *matHeaderCellDef
+						>Scheme ID</mat-header-cell
+					>
+					<mat-cell *matCellDef="let distributorSale">{{
+						distributorSale.scheme_id
+					}}</mat-cell>
+				</ng-container>
 
-                <ng-container matColumnDef="retailer_name">
-                    <mat-header-cell *matHeaderCellDef>Retailer name</mat-header-cell>
-                    <mat-cell *matCellDef="let distributorSale">{{distributorSale.Retailer_Name}}</mat-cell>
-                </ng-container>
+				<ng-container matColumnDef="total_quantity">
+					<mat-header-cell *matHeaderCellDef
+						>Total quantiry</mat-header-cell
+					>
+					<mat-cell *matCellDef="let distributorSale">{{
+						totalQuantity(distributorSale.product) | number: "1.2-2"
+					}}</mat-cell>
+				</ng-container>
 
-                <ng-container matColumnDef="scheme_id">
-                    <mat-header-cell *matHeaderCellDef>Scheme ID</mat-header-cell>
-                    <mat-cell *matCellDef="let distributorSale">{{distributorSale.scheme_id}}</mat-cell>
-                </ng-container>
+				<ng-container matColumnDef="total_amount">
+					<mat-header-cell *matHeaderCellDef
+						>Total amount</mat-header-cell
+					>
+					<mat-cell *matCellDef="let distributorSale">{{
+						totalAmount(distributorSale.product) | number: "1.2-2"
+					}}</mat-cell>
+				</ng-container>
 
-                <ng-container matColumnDef="total_quantity">
-                    <mat-header-cell *matHeaderCellDef>Total quantiry</mat-header-cell>
-                    <mat-cell *matCellDef="let distributorSale">{{totalQuantity(distributorSale.product) | number : '1.2-2' }}</mat-cell>
-                </ng-container>
+				<ng-container matColumnDef="total_loyalty_point">
+					<mat-header-cell *matHeaderCellDef
+						>Total loyalty point</mat-header-cell
+					>
+					<mat-cell *matCellDef="let distributorSale">{{
+						totalLoyaltyPoints(distributorSale.product)
+							| number: "1.2-2"
+					}}</mat-cell>
+				</ng-container>
 
-                <ng-container matColumnDef="total_amount">
-                    <mat-header-cell *matHeaderCellDef>Total amount</mat-header-cell>
-                    <mat-cell *matCellDef="let distributorSale">{{totalAmount(distributorSale.product) | number : '1.2-2' }}</mat-cell>
-                </ng-container>
+				<ng-container matColumnDef="total_loyalty_boost_point">
+					<mat-header-cell *matHeaderCellDef
+						>Total loyalty boost point</mat-header-cell
+					>
+					<mat-cell *matCellDef="let distributorSale">{{
+						totalBoostPoints(distributorSale.product)
+							| number: "1.2-2"
+					}}</mat-cell>
+				</ng-container>
 
-                <ng-container matColumnDef="total_loyalty_point">
-                    <mat-header-cell *matHeaderCellDef>Total loyalty point</mat-header-cell>
-                    <mat-cell *matCellDef="let distributorSale">{{totalLoyaltyPoints(distributorSale.product) | number : '1.2-2' }}</mat-cell>
-                </ng-container>
+				<!-- retrun point -->
+				<ng-container matColumnDef="total_return_loyalty_point">
+					<mat-header-cell *matHeaderCellDef
+						>Total return loyalty point</mat-header-cell
+					>
+					<mat-cell *matCellDef="let distributorSale">{{
+						totalReturnLoyaltyPoints(distributorSale.product)
+							| number: "1.2-2"
+					}}</mat-cell>
+				</ng-container>
 
-                <ng-container matColumnDef="total_loyalty_boost_point">
-                    <mat-header-cell *matHeaderCellDef>Total loyalty boost point</mat-header-cell>
-                    <mat-cell *matCellDef="let distributorSale">{{totalBoostPoints(distributorSale.product) | number : '1.2-2' }}</mat-cell>
-                </ng-container>
+				<ng-container matColumnDef="total_return_loyalty_boost_point">
+					<mat-header-cell *matHeaderCellDef
+						>Total return loyalty boost point</mat-header-cell
+					>
+					<mat-cell *matCellDef="let distributorSale">{{
+						totalReturnBoostPoints(distributorSale.product)
+							| number: "1.2-2"
+					}}</mat-cell>
+				</ng-container>
 
-                <ng-container matColumnDef="actions">
-                    <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
-                    <mat-cell *matCellDef="let distributorSale">
-                        <button mat-icon-button color="primary" matTooltip="View distributor Sale" (click)="viewDistributorSale(distributorSale.id, 'viewDistributorSale')">
+				<ng-container matColumnDef="actions">
+					<mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+					<mat-cell *matCellDef="let distributorSale">
+						<button
+							mat-icon-button
+							color="primary"
+							matTooltip="View distributor Sale"
+							(click)="
+								viewDistributorSale(
+									distributorSale.id,
+									'viewDistributorSale'
+								)
+							"
+						>
 							<mat-icon> visibility </mat-icon>
-                        </button>
-                        <button mat-icon-button color="warn" matTooltip="Return distributorSale" (click)="viewDistributorSale(distributorSale.id, 'distributorSaleReturn')">
+						</button>
+						<button
+							mat-icon-button
+							color="warn"
+							matTooltip="Return distributorSale"
+							(click)="
+								viewDistributorSale(
+									distributorSale.id,
+									'distributorSaleReturn'
+								)
+							"
+						>
 							<mat-icon> undo </mat-icon>
 						</button>
-                    </mat-cell>
-                </ng-container>
+					</mat-cell>
+				</ng-container>
 
-                <!-- <ng-container matColumnDef="actions">
+				<!-- <ng-container matColumnDef="actions">
                         <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
                         <mat-cell *matCellDef="let role">
                             <button mat-icon-button color="primary" matTooltip="{{ role.isCoreRole ? 'View' : 'Edit'}} role" (click)="editRole(role)">
@@ -230,25 +435,52 @@
                         </mat-cell>
                     </ng-container> -->
 
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+				<mat-header-row
+					*matHeaderRowDef="displayedColumns"
+				></mat-header-row>
 
-                <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-            </mat-table>
+				<mat-row
+					*matRowDef="let row; columns: displayedColumns"
+				></mat-row>
+			</mat-table>
 
-            <div class="mat-table__message" *ngIf="!(dataSource.isPreloadTextViewed$ | async) && !(dataSource.hasItems)">No records found</div>
-            <!-- Message for empty data  -->
-            <div class="mat-table__message" *ngIf="(dataSource.isPreloadTextViewed$ | async)">Please wait....</div>
-        </div>
+			<div
+				class="mat-table__message"
+				*ngIf="
+					!(dataSource.isPreloadTextViewed$ | async) &&
+					!dataSource.hasItems
+				"
+			>
+				No records found
+			</div>
+			<!-- Message for empty data  -->
+			<div
+				class="mat-table__message"
+				*ngIf="dataSource.isPreloadTextViewed$ | async"
+			>
+				Please wait....
+			</div>
+		</div>
 
-        <!-- start: BOTTOM -->
-        <div class="mat-table__bottom">
-            <!-- MATERIAL SPINNER | Url: 'https://material.angular.io/components/progress-spinner/overview' -->
-            <mat-spinner [hidden]="true" [diameter]="20" *ngIf="dataSource.loading$ | async"></mat-spinner>
-            <!-- MATERIAL PAGINATOR | Binded to dasources -->
-            <!-- See off.documentations 'https://material.angular.io/components/paginator/overview' -->
-            <mat-paginator [hidden]="true" [pageSize]="10" [pageSizeOptions]="[3, 5, 10]" [length]="dataSource.paginatorTotal$ | async" [showFirstLastButtons]="true"></mat-paginator>
-        </div>
-        <!-- end: BOTTOM -->
-    </kt-portlet-body>
-    <!-- end::Body -->
+		<!-- start: BOTTOM -->
+		<div class="mat-table__bottom">
+			<!-- MATERIAL SPINNER | Url: 'https://material.angular.io/components/progress-spinner/overview' -->
+			<mat-spinner
+				[hidden]="true"
+				[diameter]="20"
+				*ngIf="dataSource.loading$ | async"
+			></mat-spinner>
+			<!-- MATERIAL PAGINATOR | Binded to dasources -->
+			<!-- See off.documentations 'https://material.angular.io/components/paginator/overview' -->
+			<mat-paginator
+				[hidden]="true"
+				[pageSize]="10"
+				[pageSizeOptions]="[3, 5, 10]"
+				[length]="dataSource.paginatorTotal$ | async"
+				[showFirstLastButtons]="true"
+			></mat-paginator>
+		</div>
+		<!-- end: BOTTOM -->
+	</kt-portlet-body>
+	<!-- end::Body -->
 </kt-portlet>

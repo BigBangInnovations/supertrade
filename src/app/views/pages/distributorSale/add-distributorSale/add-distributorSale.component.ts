@@ -187,10 +187,10 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
 	 */
   initDistributorSale() {
     this.createForm();
-    this.subheaderService.setTitle('Add Distributor Sale');
+    this.subheaderService.setTitle('Add Sale');
     this.subheaderService.setBreadcrumbs([
       { title: 'Distributor Sale', page: `distributorSale` },
-      { title: 'Add Distributor Sale', page: `add-distributorSale` }
+      { title: '', page: `add-distributorSale` }
     ]);
   }
 

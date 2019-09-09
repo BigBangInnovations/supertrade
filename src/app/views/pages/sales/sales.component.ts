@@ -47,7 +47,7 @@ export class SalesListComponent implements OnInit, OnDestroy {
 	hasDateError: boolean = false;
 	// Table fields
 	dataSource: SalesDataSource;
-	displayedColumns = ["date", "customer_name", "invoice_id", "scheme_id", "total_quantity", "total_amount", "total_loyalty_point", "total_loyalty_boost_point", 'actions'];
+	displayedColumns = ["date", "customer_name", "invoice_id", "scheme_id", "total_quantity", "total_amount", "total_loyalty_point", "total_loyalty_boost_point", "total_return_loyalty_point", "total_return_loyalty_boost_point", 'actions'];
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 	@ViewChild('sort1', { static: true }) sort: MatSort;
 	// Filter fields
@@ -374,6 +374,15 @@ export class SalesListComponent implements OnInit, OnDestroy {
 		return totalQuantity;
 	}
 
+	//Calculate total return quantity
+	totalReturnQuantity(product) {
+		let totalQuantity = 0;
+		product.forEach(function (value) {
+			totalQuantity += value.ReturnQuantity;
+		});
+		return totalQuantity;
+	}
+
 	//Calculate totalLoyaltyPoints
 	totalLoyaltyPoints(product) {
 		let totalLoyaltyPoints = 0;
@@ -383,11 +392,29 @@ export class SalesListComponent implements OnInit, OnDestroy {
 		return totalLoyaltyPoints;
 	}
 
+	//Calculate totalLoyaltyPoints
+	totalReturnLoyaltyPoints(product) {
+		let totalLoyaltyPoints = 0;
+		product.forEach(function (value) {
+			totalLoyaltyPoints += value.return_points;
+		});
+		return totalLoyaltyPoints;
+	}
+
 	//Calculate totalBoostPoints
 	totalBoostPoints(product) {
 		let totalBoostPoints = 0;
 		product.forEach(function (value) {
 			totalBoostPoints += value.points_boost;
+		});
+		return totalBoostPoints;
+	}
+
+	//Calculate totalReturnBoostPoints
+	totalReturnBoostPoints(product) {
+		let totalBoostPoints = 0;
+		product.forEach(function (value) {
+			totalBoostPoints += value.return_points_boost;
 		});
 		return totalBoostPoints;
 	}

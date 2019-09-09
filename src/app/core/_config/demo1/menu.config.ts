@@ -442,7 +442,7 @@ export class MenuConfig {
 					]
 				},
 				{
-					title: 'Distributor Sales',
+					title: 'Sales',
 					root: true,
 					icon: 'flaticon2-bar-chart',
 					page: '/distributor-sales',
@@ -451,7 +451,7 @@ export class MenuConfig {
 					permission:'AccessDistributorSaleModule',
 					submenu: [
 						{
-							title: 'Distributor Sales',
+							title: 'Sales list',
 							root: true,
 							page: '/distributor-sales',
 							translate: 'MENU.DISTRIBUTOR_SALES_LIST',
@@ -480,7 +480,7 @@ export class MenuConfig {
 					permission:'AccessPurchaseModule',
 					submenu: [
 						{
-							title: 'Purchase',
+							title: 'Purchase list',
 							root: true,
 							page: '/purchase',
 							translate: 'MENU.PURCHASE_LIST',
@@ -500,18 +500,19 @@ export class MenuConfig {
 					]
 				},
 				{
-					title: 'Order',
+					title: 'Purchase Order',
 					root: true,
 					icon: 'flaticon-truck',
 					page: '/order',
-					translate: 'MENU.ORDER',
+					translate: 'MENU.PURCHASE_ORDER',
 					bullet: 'dot',
+					permission:'AccessRetailerPOModule',
 					submenu: [
 						{
 							title: 'Order',
 							root: true,
 							page: '/order',
-							translate: 'MENU.ORDER_LIST',
+							translate: 'MENU.PURCHASE_ORDER_LIST',
 							bullet: 'dot',
 						},
 						{
@@ -520,7 +521,34 @@ export class MenuConfig {
 							root: true,
 							alignment: 'left',
 							page: '/add-order',
-							translate: 'MENU.ADD_ORDER',
+							translate: 'MENU.ADD_PURCHASE_ORDER',
+						},
+						
+					]
+				},
+				{
+					title: 'Sales Order',
+					root: true,
+					icon: 'flaticon-truck',
+					page: '/order',
+					translate: 'MENU.SALES_ORDER',
+					bullet: 'dot',
+					permission:'AccessDistributorSOModule',
+					submenu: [
+						{
+							title: 'Order',
+							root: true,
+							page: '/order',
+							translate: 'MENU.SALES_ORDER_LIST',
+							bullet: 'dot',
+						},
+						{
+							bullet: 'dot',
+							title: 'Add Order',
+							root: true,
+							alignment: 'left',
+							page: '/add-order',
+							translate: 'MENU.ADD_SALES_ORDER',
 						},
 						
 					]

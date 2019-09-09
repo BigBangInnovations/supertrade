@@ -185,6 +185,11 @@
                     <mat-cell *matCellDef="let sales">{{totalQuantity(sales.product) | number : '1.2-2' }}</mat-cell>
                 </ng-container>
 
+                <ng-container matColumnDef="total_return_quantity">
+                    <mat-header-cell *matHeaderCellDef>Total returrn quantiry</mat-header-cell>
+                    <mat-cell *matCellDef="let sales">{{totalReturnQuantity(sales.product) | number : '1.2-2' }}</mat-cell>
+                </ng-container>
+
                 <ng-container matColumnDef="total_amount">
                     <mat-header-cell *matHeaderCellDef>Total amount</mat-header-cell>
                     <mat-cell *matCellDef="let sales">{{totalAmount(sales.product) | number : '1.2-2' }}</mat-cell>
@@ -198,6 +203,16 @@
                 <ng-container matColumnDef="total_loyalty_boost_point">
                     <mat-header-cell *matHeaderCellDef>Total loyalty boost point</mat-header-cell>
                     <mat-cell *matCellDef="let sales">{{totalBoostPoints(sales.product) | number : '1.2-2' }}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="total_return_loyalty_point">
+                    <mat-header-cell *matHeaderCellDef>Total return loyalty point</mat-header-cell>
+                    <mat-cell *matCellDef="let sales">{{totalReturnLoyaltyPoints(sales.product) | number : '1.2-2' }}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="total_return_loyalty_boost_point">
+                    <mat-header-cell *matHeaderCellDef>Total return loyalty boost point</mat-header-cell>
+                    <mat-cell *matCellDef="let sales">{{totalReturnBoostPoints(sales.product) | number : '1.2-2' }}</mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="actions">

@@ -28,5 +28,15 @@ export const APP_CONSTANTS = {
   NOTIFICATION_SELF: {
     IS_SELF_FALSE: 0,
     IS_SELF_TRUE: 1,
+  },
+  SCHEME:{
+    TYPE:{
+      DISTRIBUTOR_SCHEME: '2',
+      RETAILER_SCHEME: '1',
+    },
+    SCHEME_TYPE:{
+      PURCHASE:'purchase',
+      SALES:'sales'
+    }
   }
 };

@@ -93,11 +93,11 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     OptionalSetting.clear();
     OptionalSetting.displayDeleteButton = false;
     if (
-      this.data.action == 'saleReturn' ||
-      this.data.action == 'PurchaseReturn' ||
-      this.data.action == 'addOrder' ||
-      this.data.action == 'viewSale' ||
-      this.data.action == 'viewPurchase'
+      this.data.action == 'saleReturn'
+      || this.data.action == 'PurchaseReturn'
+      || this.data.action == 'addOrder'
+      // || this.data.action == 'viewSale'
+      // || this.data.action == 'viewPurchase'
     ) {
       OptionalSetting.displayPointCalculation = false;
     }
@@ -110,8 +110,6 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     if (this.data.saleId) {
       this.sale$ = this.store.pipe(select(selectSaleById(this.data.saleId)));
       this.sale$.subscribe(res => {
-
-
         this.createForm(res);
       });
     }
@@ -126,6 +124,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     else if (res.Tax_Type == 'IGST') this.isIGSTTax = true;
 
     this.saleForm = this.saleFB.group({
+      invoice_id: [res.invoice_id],
       scheme_id: [res.scheme_id],
       name: [res.name],
       mobile_no: [res.mobile_no],

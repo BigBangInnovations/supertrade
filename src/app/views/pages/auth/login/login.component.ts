@@ -117,14 +117,14 @@ export class LoginComponent implements OnInit, OnDestroy {
 		// }
 
 		this.loginForm = this.fb.group({
-			mobile_no: ['968741236', Validators.compose([
+			mobile_no: ['', Validators.compose([
 				Validators.required,
 				// Validators.pattern(/^[6-9]\d{9}$/),
 				Validators.minLength(6),
 				Validators.maxLength(15) // https://stackoverflow.com/questions/386294/what-is-the-maximum-length-of-a-valid-email-address
 			])
 			],
-			password: ['97280', Validators.compose([
+			password: ['', Validators.compose([
 				Validators.required,
 			])
 			]
@@ -168,21 +168,25 @@ export class LoginComponent implements OnInit, OnDestroy {
 						* Filter data
 						* Get active loyalty scheme
 						*/
+						let currentDate = new Date();
+						currentDate.setHours(5,30,0,0);
+
 						let purchaseActiveScheme = response.data[0].active_loyalty.filter((item: any) => {
-							return item.slab_on == 'purchase' && new Date(item.start_date).getTime() <= new Date().getTime() && new Date(item.end_date).getTime() >= new Date().getTime();
+							return item.slab_on == 'purchase' && new Date(item.start_date).getTime() <= currentDate.getTime() && new Date(item.end_date).getTime() >= currentDate.getTime();
 						});
 						let salesActiveScheme = response.data[0].active_loyalty.filter((item: any) => {
-							return item.slab_on == 'sales' && new Date(item.start_date).getTime() <= new Date().getTime() && new Date(item.end_date).getTime() >= new Date().getTime();
+							return item.slab_on == 'sales' && new Date(item.start_date).getTime() <= currentDate.getTime() && new Date(item.end_date).getTime() >= currentDate.getTime();
 						});
 
 						/** 
 						 * get active loyalty booster scheme
 						 */
+
 						let purchaseActiveSchemeBooster = response.data[0].active_loyalty_booster.filter((item: any) => {
-							return item.slab_on == 'purchase' && new Date(item.start_date).getTime() <= new Date().getTime() && new Date(item.end_date).getTime() >= new Date().getTime();
+							return item.slab_on == 'purchase' && new Date(item.start_date).getTime() <= currentDate.getTime() && new Date(item.end_date).getTime() >= currentDate.getTime();
 						});
 						let salesActiveSchemeBooster = response.data[0].active_loyalty_booster.filter((item: any) => {
-							return item.slab_on == 'sales' && new Date(item.start_date).getTime() <= new Date().getTime() && new Date(item.end_date).getTime() >= new Date().getTime();
+							return item.slab_on == 'sales' && new Date(item.start_date).getTime() <= currentDate.getTime() && new Date(item.end_date).getTime() >= currentDate.getTime();
 						});
 
 						if (purchaseActiveScheme.length < 1) {

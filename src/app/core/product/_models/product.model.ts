@@ -40,6 +40,7 @@ export class Product {
     expanded:boolean;
     FOCQuantity:number;
     IsPromotional:number;
+    subcategories:any;
 
     clear(): void {
         this.ProductID = 0;
@@ -83,5 +84,6 @@ export class Product {
         this.expanded = false;
         this.FOCQuantity = 0;
         this.IsPromotional = 0;
+        this.subcategories = [];
 	}
 }

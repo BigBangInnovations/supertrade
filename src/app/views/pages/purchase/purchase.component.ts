@@ -47,7 +47,7 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 	hasDateError: boolean = false;
 	// Table fields
 	dataSource: PurchaseDataSource;
-	displayedColumns = ["date", "invoice_id", "distributor_name", "scheme_id", "total_quantity", "total_amount", "total_loyalty_point", "total_loyalty_boost_point", 'actions'];
+	displayedColumns = ["date", "invoice_id", "distributor_name", "scheme_id", "total_quantity", "total_amount", "total_loyalty_point", "total_loyalty_boost_point", "total_return_loyalty_point", "total_return_loyalty_boost_point", 'actions'];
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 	@ViewChild('sort1', { static: true }) sort: MatSort;
 	// Filter fields
@@ -388,6 +388,24 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 		let totalBoostPoints = 0;
 		product.forEach(function (value) {
 			totalBoostPoints += value.points_boost;
+		});
+		return totalBoostPoints;
+	}
+
+	//Calculate totalReturnLoyaltyPoints
+	totalReturnLoyaltyPoints(product) {
+		let totalLoyaltyPoints = 0;
+		product.forEach(function (value) {
+			totalLoyaltyPoints += value.return_points;
+		});
+		return totalLoyaltyPoints;
+	}
+
+	//Calculate totalReturnBoostPoints
+	totalReturnBoostPoints(product) {
+		let totalBoostPoints = 0;
+		product.forEach(function (value) {
+			totalBoostPoints += value.return_points_boost;
 		});
 		return totalBoostPoints;
 	}

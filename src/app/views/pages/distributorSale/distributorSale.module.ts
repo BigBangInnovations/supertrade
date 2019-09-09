@@ -12,6 +12,7 @@ import { ProductEffects, productReducer, ProductService } from '../../../core/pr
 import { RetailerEffects, retailerReducer, RetailerService } from '../../../core/retailer'
 import { OrderselectEffects, orderselectReducer } from '../../../core/orderselect'
 import { OrderService } from '../../../core/order';
+import { distributorSalesSchemeListService, distributorSalesSchemeListReducer, DistributorSalesSchemeListEffects } from '../../../core/distributorSalesSchemeList';
 import { MetadataEffects, MetadataService, metadataReducer } from '../../../core/metadata'
 // Translate
 import { TranslateModule } from '@ngx-translate/core';
@@ -90,6 +91,9 @@ const routes: Routes = [
 		//orderSelect
 		EffectsModule.forFeature([OrderselectEffects]),
 		StoreModule.forFeature('orderselect', orderselectReducer),
+		//distributorSalesSchemeListService
+		EffectsModule.forFeature([DistributorSalesSchemeListEffects]),
+		StoreModule.forFeature('distributorSalesSchemeList', distributorSalesSchemeListReducer),
 
 		//metadata
 		EffectsModule.forFeature([MetadataEffects]),
@@ -140,6 +144,7 @@ const routes: Routes = [
 		RetailerService,
 		OrderService,
 		MetadataService,
+		distributorSalesSchemeListService,
 	],
 	entryComponents: [
 		ActionNotificationComponent,
@@ -162,6 +167,7 @@ export class DistributorSaleModule {
 				RetailerService,
 				OrderService,
 				MetadataService,
+				distributorSalesSchemeListService,
 			]
 		};
 	}

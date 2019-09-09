@@ -86,11 +86,14 @@
             <div class="kt-form__actions kt-form__actions--solid">
                 <div class="row text-right">
                     <div class="col-lg-12">
-                        <button type="button" mat-raised-button (click)="close()" matTooltip="Cancel">
+                        <button type="button" mat-raised-button color="warn" (click)="close()" matTooltip="Cancel">
                                     Cancel
                                 </button>&nbsp;
-                        <button type="button" mat-raised-button color="primary" (click)="onSubmit()" [disabled]="((viewLoading$) | async) || (!popupProductForm.valid)" matTooltip="Add product">
+                                <button type="button" mat-raised-button color="primary" (click)="onSubmit()" [disabled]="((viewLoading$) | async) || (!popupProductForm.valid)" matTooltip="Add product">
                                     Save
+                                </button>&nbsp;
+                                <button type="button" mat-raised-button *ngIf="(categories$ | async) as categories" (click)="resetProduct((categories))" [disabled]="((viewLoading$) | async)" matTooltip="Reset product">
+                                    Reset
                                 </button>
                     </div>
                 </div>

@@ -190,6 +190,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     this.userSession = JSON.parse(this.userSession)
 
     this.viewDistributorSaleForm = this.distributorSaleFB.group({
+      invoice_id: [''],
       scheme_id: [''],
       retailer_id: [''],
       retailer_name: [''],
@@ -264,6 +265,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     if (res.Tax_Type == 'SGST') this.isSGSTTax = true;
     else if (res.Tax_Type == 'IGST') this.isIGSTTax = true;
 
+    this.viewDistributorSaleForm.controls['invoice_id'].setValue(res.invoice_id);
     this.viewDistributorSaleForm.controls['scheme_id'].setValue(res.scheme_id);
     this.viewDistributorSaleForm.controls['retailer_id'].setValue(res.ss_retailer_id);
     this.viewDistributorSaleForm.controls['retailer_name'].setValue(res.Retailer_Name);

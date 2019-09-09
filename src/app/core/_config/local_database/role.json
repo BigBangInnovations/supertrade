@@ -1,13 +1,13 @@
 [{
         "id": 4,
         "title": "Retailer",
-        "permissions": [1, 2],
+        "permissions": [1, 2, 4],
         "isCoreRole": true
     },
     {
         "id": 5,
         "title": "Distributor",
-        "permissions": [3],
+        "permissions": [3,5],
         "isCoreRole": true
     }
 ]

@@ -6,6 +6,12 @@
             <div class="form-group kt-form__group row">
                 <div class="col-lg-12 kt-margin-bottom-20-mobile">
                     <mat-form-field class="mat-form-field-fluid">
+                        <input matInput placeholder="invoice ID" formControlName="invoice_id" readonly />
+                    </mat-form-field>
+                </div>
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
                         <input matInput placeholder="Scheme name" formControlName="scheme_id" readonly />
                     </mat-form-field>
                 </div>
@@ -69,6 +75,15 @@
                                                     Accept
                                                 </button> &nbsp;&nbsp;
             <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" mat-raised-button color="warn" (click)="rejectPartialAcceptedPurchaseReturn()" matTooltip="Reject sale return">
+                                                    Reject
+                                                </button>
+        </ng-container>
+
+        <ng-container *ngIf="pageAction == 'retailerPurchaseReturnApprovalByDistributor'">
+            <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" mat-raised-button color="primary" (click)="acceptPurchaseReturnByDistributor()" matTooltip="Accept purchase return request">
+                                                    Accept
+                                                </button> &nbsp;&nbsp;
+            <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" mat-raised-button color="warn" (click)="rejectPurchaseReturnByDistributor()" matTooltip="Reject purchase return request">
                                                     Reject
                                                 </button>
         </ng-container>

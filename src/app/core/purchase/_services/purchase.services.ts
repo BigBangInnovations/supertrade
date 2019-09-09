@@ -46,6 +46,11 @@ export class PurchaseService {
         return this.http.post(url, data)
     }
 
+    acceptRejectPurchaseReturnByDistributor(data: any): Observable<any> {
+		const url = `approve-retailer-purchase-return`;
+        return this.http.post(url, data)
+    }
+
     // UPDATE => PUT: update the purchase on the server
 	updatePurchase(purchase: Purchase): Observable<any> {
         const httpHeaders = new HttpHeaders();

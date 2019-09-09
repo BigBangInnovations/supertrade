@@ -156,13 +156,23 @@ export class AddSalesComponent implements OnInit, OnDestroy {
 	 * Create form
 	 */
   createForm() {
+    const numberPatern = "^[0-9.,]+$";
     this.saleForm = this.saleFB.group({
       scheme_id: [this.salesActiveScheme.scheme_id, Validators.required],
-      name: ['', Validators.required],
-      mobile_no: ['', Validators.required],
+      name: ['', [
+        Validators.required,
+        Validators.maxLength(60),
+      ]],
+      mobile_no: ['', [
+        Validators.pattern(numberPatern),
+        Validators.maxLength(10)
+      ]],
       address_line1: [''],
       address_line2: [''],
-      landline_no: [''],
+      landline_no: ['', [
+        Validators.pattern(numberPatern),
+        Validators.maxLength(10)
+      ]],
       city: [''],
       pincode: [''],
       state: [''],
@@ -264,6 +274,7 @@ export class AddSalesComponent implements OnInit, OnDestroy {
 	 * @param _sale: User
 	 */
   addEditSale(_sale: Sale) {
+    const controls = this.saleForm.controls;
     this.loading = true;
     let httpParams = new HttpParams();
     Object.keys(_sale).forEach(function (key) {
@@ -281,6 +292,26 @@ export class AddSalesComponent implements OnInit, OnDestroy {
           } else if (response.status == APP_CONSTANTS.response.ERROR) {
             const message = response.message;
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
+            if(response.errors){
+              Object.keys(response.errors).forEach(function (controlName) {
+                // controls[controlName].setErrors({'incorrect': response.errors[controlName]})
+                controls[controlName].setErrors({'incorrect': response.errors[controlName]})
+                console.log(controls[controlName]);
+                
+              });
+              // const mapped = Object.keys(response.errors).map(key => 
+              //   {
+
+              //   }
+              //   ({type: key, value: response.errors[key]})
+              //   );
+              // console.log(mapped);              
+              // console.log(response.errors);              
+              // let ErroArray = response.errors;
+              // ErroArray.forEach((key, value) => {
+              //   console.log('In');                
+              // });
+            }
           } else {
             const message = 'Invalid token! Please login again';
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
