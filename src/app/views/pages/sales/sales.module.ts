@@ -8,8 +8,9 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { CoreModule } from '../../../core/core.module';
 import { PartialsModule } from '../../partials/partials.module';
 import { SaleEffects, SalesService, salesReducer  } from '../../../core/sales'
-import { ProductEffects, productReducer } from '../../../core/product'
-import { ProductService } from '../../../core/product'
+import { ProductEffects, productReducer, ProductService } from '../../../core/product'
+import { retailerSalesSchemeListService, retailerSalesSchemeListReducer, RetailerSalesSchemeListEffects } from '../../../core/retailerSalesSchemeList';
+
 // Translate
 import { TranslateModule } from '@ngx-translate/core';
 // NGRX
@@ -78,7 +79,10 @@ const routes: Routes = [
 		//product
 		EffectsModule.forFeature([ProductEffects]),
 		StoreModule.forFeature('product', productReducer),
-
+		//scheme
+		EffectsModule.forFeature([RetailerSalesSchemeListEffects]),
+		StoreModule.forFeature('retailerSalesSchemeList', retailerSalesSchemeListReducer),
+		
 		MatIconModule,
 		MatListModule,
 		MatProgressSpinnerModule,
@@ -119,7 +123,8 @@ const routes: Routes = [
 		// },
 		
 		// SalesService,
-		ProductService
+		ProductService,
+		retailerSalesSchemeListService,
 	],
 	entryComponents: [
 		ActionNotificationComponent,
@@ -138,7 +143,8 @@ export class SalesModule {
 			ngModule: SalesModule,
 			providers: [
 				// SalesService,
-				ProductService
+				ProductService,
+				retailerSalesSchemeListService,
 			]
 		};
 	}

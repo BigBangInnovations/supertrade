@@ -25,7 +25,9 @@ import { environment } from '../../../../environments/environment';
 // Components
 import { ViewSaleComponent } from './view-sale/view-sale.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import * as fromRetailerSalesSchemeList from '../../../core/retailerSalesSchemeList';
+import { Scheme } from '../../../core/retailerSalesSchemeList/_models/scheme.model';
+import { APP_CONSTANTS } from '../../../../config/default/constants';
 // Table with EDIT item in MODAL
 // ARTICLE for table with sort/filter/paginator
 // https://blog.angular-university.io/angular-material-data-table/
@@ -54,6 +56,7 @@ export class SalesListComponent implements OnInit, OnDestroy {
 	// @ViewChild('searchInput', {static: true}) searchInput: ElementRef;
 	@ViewChild('startDateInput', { static: true }) startDateInput: ElementRef;
 	@ViewChild('endDateInput', { static: true }) endDateInput: ElementRef;
+	@ViewChild("scheme_id", { static: true }) scheme_id;
 	// @ViewChild('filterButton', {static: true}) filterButton: ElementRef;
 	// Selection
 	selection = new SelectionModel<Sale>(true, []);
@@ -65,6 +68,8 @@ export class SalesListComponent implements OnInit, OnDestroy {
 	private subscriptions: Subscription[] = [];
 	progressBarValue: number;
 	accumulated_points: number;
+	viewRetailerSalesSchemeListLoading$: Observable<boolean>;
+	retailerSalesSchemeList$: Observable<Scheme[]>;
 
 	/**
 	 * Component constructor
@@ -137,6 +142,34 @@ export class SalesListComponent implements OnInit, OnDestroy {
 		// )
 		// .subscribe();
 		// this.subscriptions.push(searchSubscription);
+
+		//start get all active retailer scheme
+		this.store
+			.select(fromRetailerSalesSchemeList.selectRetailerSalesSchemeListLoaded)
+			.pipe()
+			.subscribe(data => {
+				console.log('data');
+				console.log(data);
+				
+				if (data) {
+					this.retailerSalesSchemeList$ = this.store.pipe(
+						select(fromRetailerSalesSchemeList.selectAllRetailerSalesSchemeList)
+					);
+				} else {
+					let httpParamsScheme = new HttpParams();
+					httpParamsScheme = httpParamsScheme.append('scheme_type', APP_CONSTANTS.SCHEME.SCHEME_TYPE.SALES);
+					httpParamsScheme = httpParamsScheme.append('type', APP_CONSTANTS.SCHEME.TYPE.RETAILER_SCHEME);
+					this.store.dispatch(
+						new fromRetailerSalesSchemeList.LoadRetailerSalesSchemeList(httpParamsScheme)
+					);
+					this.retailerSalesSchemeList$ = this.store.pipe(
+						select(fromRetailerSalesSchemeList.selectAllRetailerSalesSchemeList)
+					);
+				}
+			});
+		this.viewRetailerSalesSchemeListLoading$ = this.store.pipe(
+			select(fromRetailerSalesSchemeList.selectRetailerSalesSchemeListLoading)
+		);
 
 		// Init DataSource
 		this.dataSource = new SalesDataSource(this.store);
@@ -235,6 +268,7 @@ export class SalesListComponent implements OnInit, OnDestroy {
 			this.hasDateError = false;
 			let startDate = this.startDateInput.nativeElement.value
 			let endDate = this.endDateInput.nativeElement.value
+			let scheme_id = this.scheme_id.value;
 
 			this.salesActiveScheme = data;
 			let httpParams = new HttpParams();
@@ -250,7 +284,12 @@ export class SalesListComponent implements OnInit, OnDestroy {
 					return;
 				}
 			}
-			httpParams = httpParams.append('scheme_id', this.salesActiveScheme);
+			if (scheme_id == "" || scheme_id == undefined || scheme_id == 'undefined')
+					httpParams = httpParams.append(
+						"scheme_id",
+						this.salesActiveScheme
+					);
+				else httpParams = httpParams.append("scheme_id", scheme_id);
 			// Call request from server
 			this.store.dispatch(new SalesPageRequested({ page: queryParams, body: httpParams }));
 			this.selection.clear();

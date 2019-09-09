@@ -124,6 +124,65 @@
                                 </mat-form-field>
                             </td>
                             <td>
+								<mat-form-field class="mat-form-field-fluid">
+									<mat-select
+										#scheme_id
+										placeholder="Scheme ID"
+									>
+										<ng-template
+											#distributorSalesScheme_loading
+										>
+											<mat-option value="" >
+												Loading...
+											</mat-option>
+										</ng-template>
+
+										<ng-template #noRetailerSalesScheme>
+											<mat-option value="">
+												No Scheme available
+											</mat-option>
+										</ng-template>
+
+										<ng-container
+											*ngIf="
+												!(
+													viewRetailerSalesSchemeListLoading$
+													| async
+												);
+												else distributorSalesScheme_loading
+											"
+										>
+											<ng-container
+												*ngIf="
+													(
+														retailerSalesSchemeList$
+														| async
+													)?.length;
+													else noRetailerSalesScheme
+												"
+											>
+												<mat-option
+													*ngFor="
+														let retailerSalesSchemeListArray of retailerSalesSchemeList$
+															| async
+															| keyvalue
+													"
+													[value]="
+														retailerSalesSchemeListArray
+															.value.scheme_id
+													"
+												>
+													{{
+														retailerSalesSchemeListArray
+															.value.scheme_id
+													}}
+												</mat-option>
+											</ng-container>
+										</ng-container>
+									</mat-select>
+								</mat-form-field>
+							</td>
+                            <td>
                                 <button (click)="loadSalesList()" mat-raised-button color="accent">Apply</button>
                             </td>
                         </tr>

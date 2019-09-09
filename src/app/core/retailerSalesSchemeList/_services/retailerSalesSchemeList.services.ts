@@ -12,10 +12,12 @@ const API_PERMISSION_URL = 'api/permissions';
 const API_ROLES_URL = 'api/order';
 
 @Injectable()
-export class distributorSalesSchemeListService {
+export class retailerSalesSchemeListService {
     constructor(private http: HttpClient) {}
 
-    getAllDistributorScheme(data: any): Observable<any> {
+    getAllRetailerScheme(data: any): Observable<any> {
+        console.log('getAllRetailerScheme');
+        
         const url = environment.apiEndpoint+`getAllSchemeFilter`;
         return this.http.post<Scheme[]>(url, data);
     }
