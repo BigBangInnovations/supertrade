@@ -82,7 +82,7 @@ export class PurchaseEffects {
             ofType<PurchasePageRequested>(PurchaseActionTypes.PurchasePageRequested),
             mergeMap(({ payload }) => {
                 this.store.dispatch(this.showPageLoadingDistpatcher);
-                const requestToServer = this.purchaseService.findPurchase(payload.body);
+                const requestToServer = this.purchaseService.findPurchase(payload.page, payload.body);
                 const lastQuery = of(payload.page);
                 return forkJoin(requestToServer, lastQuery);
             }),
@@ -96,7 +96,7 @@ export class PurchaseEffects {
                     return new PurchasePageLoaded({
                         purchase: result.data[0].purchase,
                         userPoints: result.data[0].userPointsStatus,
-                        totalCount: result.data[0].purchase.length,//result.totalCount,
+                        totalCount: result.data[0].totalRecords,//result.totalCount,
                         page: lastQuery
                     });
                 } else {

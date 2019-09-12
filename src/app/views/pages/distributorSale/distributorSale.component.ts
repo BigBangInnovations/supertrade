@@ -300,6 +300,11 @@ export class DistributorSaleListComponent implements OnInit, OnDestroy {
 		this.subscriptions.forEach(el => el.unsubscribe());
 	}
 
+	loadDistributorSaleListFromApplyBtn(){
+		this.paginator.pageIndex = 0;
+		this.loadDistributorSaleList();
+	}
+	
 	/**
 	 * Load DistributorSale List
 	 */

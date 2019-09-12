@@ -70,9 +70,9 @@ export class PurchaseService {
     }
 
     // Purchase
-    findPurchase(data: any): Observable<any> {
+    findPurchase(queryParams: any, data: any): Observable<any> {
         const url = `get-purchase`;
-        return this.http.post<Purchase[]>(url, data);
+        return this.http.post<Purchase[]>(url, data, { params: queryParams })
     }
 
     // Purchase

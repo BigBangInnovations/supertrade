@@ -17,7 +17,8 @@ import { EffectsModule } from '@ngrx/effects';
 // CRUD
 import { InterceptService } from '../../../../core/_base/crud/';
 import { PopupProductModule } from '../../popup-product/popup-product.module'
-
+import { DistributorService } from '../../../../core/distributor'
+import { NgSelectModule } from '@ng-select/ng-select';
 
 import { 
 	MatIconModule,
@@ -93,6 +94,7 @@ const routes: Routes = [
 		MatDialogModule,
 		FormsModule,
 		ReactiveFormsModule,
+		NgSelectModule
 	],
 	exports:[
 		AddPurchaseComponent,
@@ -105,6 +107,7 @@ const routes: Routes = [
 		// 	multi: true
 		// },
 		// PurchaseService
+		DistributorService,
 	],
 	declarations: [
 		AddPurchaseComponent,
@@ -123,6 +126,7 @@ export class AddPurchaseModule {
 			ngModule: AddPurchaseModule,
 			providers: [
 				// PurchaseService
+				DistributorService,
 			]
 		};
 	}

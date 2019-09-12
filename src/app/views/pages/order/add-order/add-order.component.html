@@ -46,7 +46,9 @@
 
                         <ng-container *ngIf="!isDistributor">
                             <mat-form-field class="mat-form-field-fluid">
-                                <mat-select formControlName="distributor_id" placeholder="Distributor">
+                                
+                                        <ng-container *ngIf="userData.companySettings.AllowMultipleDistributorInPurchaseSTrade == 1; else elseSingleDistributor">
+                                                <mat-select matInput formControlName="distributor_id" placeholder="Distributor">
                                     <ng-template #loading1>
                                         <mat-option value=''>
                                             Loading...
@@ -67,6 +69,15 @@
                                         </ng-container>
                                     </ng-container>
                                 </mat-select>
+                                </ng-container>
+                                <ng-template #elseSingleDistributor>
+                                        <mat-select matInput formControlName="distributor_id" placeholder="Distributor">
+                                        <mat-option value='{{ userData.Distributor_ID }}'>
+                                                {{ userData.Distributor_Name }}
+                                            </mat-option>
+                                        </mat-select>
+                                </ng-template>
+                                
                                 <mat-error *ngIf="isControlHasError('distributor_id','required')">
                                     <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Distributor'} }}</strong>
                                 </mat-error>

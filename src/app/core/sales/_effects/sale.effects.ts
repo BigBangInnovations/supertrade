@@ -61,7 +61,7 @@ export class SaleEffects {
             ofType<SalesPageRequested>(SaleActionTypes.SalesPageRequested),
             mergeMap(({ payload }) => {
                 this.store.dispatch(this.showPageLoadingDistpatcher);
-                const requestToServer = this.salesService.findSales(payload.body);
+                const requestToServer = this.salesService.findSales(payload.page, payload.body);
                 const lastQuery = of(payload.page);
                 return forkJoin(requestToServer, lastQuery);
             }),
@@ -73,7 +73,7 @@ export class SaleEffects {
                 return new SalesPageLoaded({
                     sales: result.data[0].sales,
                     userPoints: result.data[0].userPointsStatus,
-                    totalCount: result.data[0].sales.length,//result.totalCount,
+                    totalCount: result.data[0].totalRecords,//result.totalCount,
                     page: lastQuery
                 });
             } else {

@@ -24,6 +24,7 @@
     "@angular/platform-server": "^8.0.2",
     "@angular/router": "^8.0.2",
     "@ng-bootstrap/ng-bootstrap": "^4.2.1",
+    "@ng-select/ng-select": "^3.0.7",
     "@ngrx/effects": "^8.0.1",
     "@ngrx/entity": "^8.0.1",
     "@ngrx/router-store": "^8.0.1",

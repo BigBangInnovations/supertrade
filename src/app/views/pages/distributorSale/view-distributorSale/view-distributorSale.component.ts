@@ -39,6 +39,7 @@ import { FrightTerm, Godown, PaymentMode } from '../../../../core/metadata';
 import { Retailer } from '../../../../core/retailer/_models/retailer.model'
 import { EncrDecrServiceService } from '../../../../core/auth/_services/encr-decr-service.service'
 import { environment } from '../../../../../environments/environment';
+import { CustomValidator } from '../../../../core/_base/layout/validators/custom-validator'
 
 @Component({
   selector: 'kt-view-distributorSale',
@@ -360,7 +361,9 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
             Validators.min(0),
             Validators.max(element.Quantity - element.ReturnQuantity),
             Validators.pattern(numberPatern),
-            Validators.maxLength(5)
+            Validators.maxLength(5),
+            // Validators.min(1),
+            CustomValidator
           ]
         )],
         productOriginalQuantityCtrl: [element.Quantity],

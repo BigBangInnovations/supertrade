@@ -88,7 +88,7 @@
                 </p>
             </mat-card-content>
             <!-- <mat-card-actions> -->
-            <span class="pull-right">{{ purchaseActiveSchemeDetail.to | number : '1.2-2'}} Points</span>
+            <span class="pull-right" *ngIf="progressBarValue <= 100">{{ purchaseActiveSchemeDetail.to | number : '1.2-2'}} Points</span>
             <!-- <span>{{purchaseActiveSchemeDetail.from | number : '1.2-2'}} Points</span> -->
             <mat-card-subtitle><span>{{ accumulated_points | number : '1.2-2'}} Points</span></mat-card-subtitle>
             <!-- </mat-card-actions> -->
@@ -183,7 +183,7 @@
 								</mat-form-field>
 							</td>
                             <td>
-                                <button (click)="loadPurchaseList()" mat-raised-button color="accent">Apply</button>
+                                <button (click)="loadPurchaseListFromApplyBtn()" mat-raised-button color="accent">Apply</button>
                             </td>
                         </tr>
                     </table>
@@ -309,10 +309,10 @@
         <!-- start: BOTTOM -->
         <div class="mat-table__bottom">
             <!-- MATERIAL SPINNER | Url: 'https://material.angular.io/components/progress-spinner/overview' -->
-            <mat-spinner [hidden]="true" [diameter]="20" *ngIf="dataSource.loading$ | async"></mat-spinner>
+            <mat-spinner [diameter]="20" *ngIf="dataSource.loading$ | async"></mat-spinner>
             <!-- MATERIAL PAGINATOR | Binded to dasources -->
             <!-- See off.documentations 'https://material.angular.io/components/paginator/overview' -->
-            <mat-paginator [hidden]="true" [pageSize]="10" [pageSizeOptions]="[3, 5, 10]" [length]="dataSource.paginatorTotal$ | async" [showFirstLastButtons]="true"></mat-paginator>
+            <mat-paginator [pageSize]="10" [pageSizeOptions]="[3, 5, 10]" [length]="dataSource.paginatorTotal$ | async" [showFirstLastButtons]="true"></mat-paginator>
         </div>
         <!-- end: BOTTOM -->
     </kt-portlet-body>

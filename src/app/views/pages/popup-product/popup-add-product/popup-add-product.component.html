@@ -101,11 +101,17 @@ pageAction != 'addSale'
                         <strong>{{ 'POPUPPRODUCT.VALIDATION.NUMBER_PATTERN' | translate:{'name':'Quantity'} }}</strong>
                     </mat-error>
 
-                    <mat-error *ngIf="isControlHasError('email','minLength')">
+                    <mat-error *ngIf="isControlHasError('productQuantityCtrl','minLength')">
                         <strong>{{ 'POPUPPRODUCT.VALIDATION.MIN_LENGTH_FIELD' | translate }} 1</strong>
                     </mat-error>
-                    <mat-error *ngIf="isControlHasError('email','maxLength')">
+                    <mat-error *ngIf="isControlHasError('productQuantityCtrl','maxLength')">
                         <strong>{{ 'POPUPPRODUCT.VALIDATION.MAX_LENGTH_FIELD' | translate }} 5</strong>
+                    </mat-error>
+                    <mat-error *ngIf="isControlHasError('productQuantityCtrl','min')">
+                        <strong>{{ 'POPUPPRODUCT.VALIDATION.GREATER_THEN_ZERO' | translate:{'name':'Product quantity'} }}</strong>
+                    </mat-error>
+                    <mat-error *ngIf="isControlHasError('productQuantityCtrl','validQuantity')">
+                        <strong>{{ 'POPUPPRODUCT.VALIDATION.ONLY_INTEGER' | translate:{'name':'Product quantity'} }}</strong>
                     </mat-error>
                 </mat-form-field>
             </mat-list-item>

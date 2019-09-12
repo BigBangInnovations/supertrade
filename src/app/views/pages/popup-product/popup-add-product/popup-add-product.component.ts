@@ -75,20 +75,15 @@ export class PopupAddProductComponent {
 
 	ngAfterContentInit(): void {
     this.boost_point = 0;
-    console.log("this.pageAction");
-    console.log(this.pageAction);
 		if (
 			this.pageAction == "retailerPurchaseApproval"
 			|| this.pageAction == "addPurchase"
 			|| this.pageAction == "purchaseReturn"
 			|| this.pageAction == "distributorPartialAcceptPurchaseReturnApproval"
 		) {
-			console.log("get purchaseActiveSchemebooster");
-
 			if (this.purchaseActiveSchemebooster != undefined)
 				this.boost_point = this.purchaseActiveSchemebooster.boost_point;
 		} else {
-			console.log("get salesActiveSchemebooster");
 			if (this.salesActiveSchemebooster != undefined)
 				this.boost_point = this.salesActiveSchemebooster.boost_point;
 		}

@@ -66,9 +66,9 @@ export class SalesService {
     // }
     
     // Sales
-    findSales(data: any): Observable<any> {
+    findSales(queryParams: any, data: any): Observable<any> {
         const url = `get-sales`;
-        return this.http.post<Sale[]>(url, data);
+        return this.http.post<Sale[]>(url, data, { params: queryParams })
     }
 
  	/*

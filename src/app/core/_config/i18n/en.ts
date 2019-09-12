@@ -139,6 +139,8 @@ export const locale = {
 				NUMBER_PATTERN: '{{name}} has only numeric value allow',
 				MIN_LENGTH_FIELD: 'Minimum field length:',
 				MAX_LENGTH_FIELD: 'Maximum field length:',
+				GREATER_THEN_ZERO: '{{name}} is allow greater than 0 ',
+				ONLY_INTEGER: '{{name}} is allow only Integers',
 			},
 		}
 	}

@@ -14,8 +14,14 @@
 
                     <div class="col-lg-12 kt-margin-bottom-20-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <mat-select formControlName="distributor_id" placeholder="Distributor">
-                                <ng-template #loading1>
+                                <ng-container *ngIf="userData.companySettings.AllowMultipleDistributorInPurchaseSTrade == 1; else elseSingleDistributor">
+                                        <input type="hidden" formControlName="distributor_id" value="">
+                                        <input matInput placeholder="Distributor" [matAutocomplete]="auto" formControlName='distributor_name'>
+                                        
+                            <!-- <mat-select formControlName="distributor_id" placeholder="Distributor"> -->
+                                
+                                
+                                <!-- <ng-template #loading1>
                                     <mat-option value=''>
                                         Loading...
                                     </mat-option>
@@ -33,12 +39,39 @@
                                             {{distributorArray.value.Name}}
                                         </mat-option>
                                     </ng-container>
-                                </ng-container>
-                            </mat-select>
-                            <mat-error *ngIf="isControlHasError('distributor_id','required')">
-                                <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Distributor'} }}</strong>
-                            </mat-error>
+                                </ng-container> -->
+                                
+                            
+                            </ng-container> 
+                            
+                            <!-- </mat-select> -->
+                            <ng-template #elseSingleDistributor>
+                                    <mat-select matInput  formControlName="distributor_id" placeholder="Distributor">
+                                    <mat-option value='{{ userData.Distributor_ID }}' selected>
+                                            {{ userData.Distributor_Name }}
+                                        </mat-option>
+                                        </mat-select>
+                            </ng-template>
                         </mat-form-field>
+                        <mat-autocomplete [displayWith]="displayFn" #auto="matAutocomplete" >
+                                <mat-option *ngIf="isLoadingAutosearch" class="is-loading">
+                                    <mat-spinner diameter="20"></mat-spinner>
+                                </mat-option>
+                                <ng-container *ngIf="!isLoadingAutosearch">
+                                  <mat-option *ngFor="let distributor of filteredDistributors" [value]="distributor">
+                                    <span>{{ distributor.Name }} - {{ distributor.Mobile_No }} </span>
+                                  </mat-option>
+                                  <mat-option *ngIf="distributorCharacterLength >= 3 && (!filteredDistributors || !filteredDistributors.length)" disabled>
+                                        <span>No distributor available.</span>
+                                      </mat-option>
+                                      <mat-option *ngIf="distributorCharacterLength < 3" disabled>
+                                            <span>Please enter 3 or more characters</span>
+                                          </mat-option>
+                                </ng-container>
+                              </mat-autocomplete>
+                              <mat-error *ngIf="isControlHasError('distributor_id','required')">
+                                    <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Distributor'} }}</strong>
+                                </mat-error>
                     </div>
 
                     <div class="col-lg-12 kt-margin-bottom-20-mobile kt-margin-t-10">

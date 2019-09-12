@@ -56,6 +56,7 @@ import {
 	LayoutConfigService
 } from "../../../../core/_base/layout";
 import { LayoutUtilsService, MessageType } from "../../../../core/_base/crud";
+import { CustomValidator } from '../../../../core/_base/layout/validators/custom-validator'
 
 @Component({
 	selector: "kt-view-purchase",
@@ -261,7 +262,9 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 						Validators.min(0),
 						Validators.max(maxApproveQuantity),
 						Validators.pattern(numberPatern),
-						Validators.maxLength(5)
+						Validators.maxLength(5),
+						// Validators.min(1),
+						CustomValidator
 					])
 				],
 				productOriginalQuantityCtrl: [element.Quantity],

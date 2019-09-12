@@ -103,7 +103,7 @@
 			</mat-card-content>
 			<!-- <mat-card-actions> -->
 
-			<span class="pull-right"
+			<span class="pull-right"  *ngIf="progressBarValue <= 100"
 				>{{ salesActiveSchemeDetail.to | number: "1.2-2" }} Points</span
 			>
 			<mat-card-subtitle>
@@ -234,7 +234,7 @@
 							</td>
 							<td>
 								<button
-									(click)="loadDistributorSaleList()"
+									(click)="loadDistributorSaleListFromApplyBtn()"
 									mat-raised-button
 									color="accent"
 								>
@@ -466,14 +466,12 @@
 		<div class="mat-table__bottom">
 			<!-- MATERIAL SPINNER | Url: 'https://material.angular.io/components/progress-spinner/overview' -->
 			<mat-spinner
-				[hidden]="true"
 				[diameter]="20"
 				*ngIf="dataSource.loading$ | async"
 			></mat-spinner>
 			<!-- MATERIAL PAGINATOR | Binded to dasources -->
 			<!-- See off.documentations 'https://material.angular.io/components/paginator/overview' -->
 			<mat-paginator
-				[hidden]="true"
 				[pageSize]="10"
 				[pageSizeOptions]="[3, 5, 10]"
 				[length]="dataSource.paginatorTotal$ | async"

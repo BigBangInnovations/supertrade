@@ -242,6 +242,20 @@ export class OrderListComponent implements OnInit, OnDestroy {
 			httpParams = httpParams.append('CompanyID', JSON.parse(userSession).Company_ID);
 			httpParams = httpParams.append('UserID', JSON.parse(userSession).Tagged_To);
 			httpParams = httpParams.append('getsalesordersjson', JSON.stringify(getsalesordersArray));
+			
+			/** 
+			 * TEST  starrt
+			 */
+			// getsalesordersArray = {};
+			// getsalesordersArray['CreatedBy'] = '9536';
+			// getsalesordersArray['CompanyID'] = '1259';
+			// httpParams = new HttpParams();
+			// httpParams = httpParams.append('TokenID', 'D835BE21BE23EB400008F030012ED25C');
+			// httpParams = httpParams.append('CompanyID', '1259');
+			// httpParams = httpParams.append('UserID', '9536');
+			// httpParams = httpParams.append('PageNo', '1');
+			// httpParams = httpParams.append('PageSize', '2000');
+			// httpParams = httpParams.append('getsalesordersjson', JSON.stringify(getsalesordersArray));
 		}
 		// Call request from server
 		this.store.dispatch(new OrderPageRequested({ page: queryParams, body: httpParams }));

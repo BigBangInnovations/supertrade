@@ -65,9 +65,9 @@ export class DistributorSaleService {
     }
 
     // DistributorSale
-    findDistributorSale(data: any): Observable<any> {
+    findDistributorSale(queryParams: any, data: any): Observable<any> {
         const url = `get-distributor-sales`;
-        return this.http.post<DistributorSale[]>(url, data);
+        return this.http.post<DistributorSale[]>(url, data, { params: queryParams })
     }
 
         /**

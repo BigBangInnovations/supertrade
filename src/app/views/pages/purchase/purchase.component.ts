@@ -249,6 +249,10 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 		this.subscriptions.forEach(el => el.unsubscribe());
 	}
 
+	loadPurchaseListFromApplyBtn(){
+		this.paginator.pageIndex = 0;
+		this.loadPurchaseList();
+	}
 	/**
 	 * Load Purchase List
 	 */
@@ -326,7 +330,7 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 
 			this.store.dispatch(new PurchaseDeleted({ id: _item.id }));
 			this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete);
-			this.loadPurchaseList();
+			this.loadPurchaseListFromApplyBtn();
 		});
 	}
 
@@ -458,7 +462,7 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 		});
 		dialogRef.afterClosed().subscribe(res => {
 			if (action == 'purchaseReturn' && res == 'reload')
-				this.loadPurchaseList();
+				this.loadPurchaseListFromApplyBtn();
 		});
 	}
 }

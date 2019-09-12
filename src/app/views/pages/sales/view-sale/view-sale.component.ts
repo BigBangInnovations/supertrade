@@ -28,6 +28,7 @@ import { Logout } from '../../../../core/auth';
 // Layout
 import { SubheaderService, LayoutConfigService } from '../../../../core/_base/layout';
 import { LayoutUtilsService, MessageType } from '../../../../core/_base/crud';
+import { CustomValidator } from '../../../../core/_base/layout/validators/custom-validator'
 
 @Component({
   selector: 'kt-view-sale',
@@ -163,7 +164,9 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
             Validators.min(0),
             Validators.max(element.Quantity - element.ReturnQuantity),
             Validators.pattern(numberPatern),
-            Validators.maxLength(5)
+            Validators.maxLength(5),
+            // Validators.min(1),
+            CustomValidator
           ]
         )],
         productOriginalQuantityCtrl: [element.Quantity],

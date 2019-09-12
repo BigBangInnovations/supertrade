@@ -31,6 +31,7 @@ import * as fromProduct from "../../../core/product";
 import { async } from "@angular/core/testing";
 import { LayoutUtilsService, MessageType } from "../../../core/_base/crud";
 // import { filter } from 'minimatch';
+import { CustomValidator } from '../../../core/_base/layout/validators/custom-validator'
 
 @Component({
 	selector: "kt-popup-product",
@@ -124,7 +125,9 @@ export class PopupProductComponent implements OnInit {
 					Validators.required,
 					Validators.pattern(numberPatern),
 					Validators.minLength(1),
-					Validators.maxLength(5)
+					Validators.maxLength(5),
+					Validators.min(1),
+					CustomValidator
 				]
 			],
 			productDiscountCtrl: [""],
@@ -196,7 +199,9 @@ export class PopupProductComponent implements OnInit {
 					Validators.required,
 					Validators.pattern(numberPatern),
 					Validators.minLength(1),
-					Validators.maxLength(5)
+					Validators.maxLength(5),
+					Validators.min(1),
+					CustomValidator
 				])
 			],
 			productDiscountCtrl: [
@@ -366,6 +371,7 @@ export class PopupProductComponent implements OnInit {
 	 */
 	isControlHasError(controlName: string, validationType: string): boolean {
 		const control = this.popupProductForm.controls[controlName];
+		
 		if (!control) {
 			return false;
 		}

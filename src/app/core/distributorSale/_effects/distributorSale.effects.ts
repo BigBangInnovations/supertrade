@@ -106,7 +106,7 @@ export class DistributorSaleEffects {
             ofType<DistributorSalePageRequested>(DistributorSaleActionTypes.DistributorSalePageRequested),
             mergeMap(({ payload }) => {
                 this.store.dispatch(this.showPageLoadingDistpatcher);
-                const requestToServer = this.distributorSaleService.findDistributorSale(payload.body);
+                const requestToServer = this.distributorSaleService.findDistributorSale(payload.page, payload.body);
                 const lastQuery = of(payload.page);
                 return forkJoin(requestToServer, lastQuery);
             }),
@@ -118,7 +118,7 @@ export class DistributorSaleEffects {
                     return new DistributorSalePageLoaded({
                         distributorSale: result.data[0].distributorSales,
                         userPoints: result.data[0].userPointsStatus,
-                        totalCount: result.data[0].distributorSales.length,//result.totalCount,
+                        totalCount: result.data[0].totalRecords,//result.totalCount,
                         page: lastQuery
                     });
                 } else {

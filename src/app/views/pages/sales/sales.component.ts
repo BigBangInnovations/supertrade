@@ -248,6 +248,11 @@ export class SalesListComponent implements OnInit, OnDestroy {
 		this.subscriptions.forEach(el => el.unsubscribe());
 	}
 
+	loadSalesListFromApplyBtn(){
+		this.paginator.pageIndex = 0;
+		this.loadSalesList();
+	}
+
 	/**
 	 * Load Sales List
 	 */

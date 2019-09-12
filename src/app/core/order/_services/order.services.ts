@@ -56,8 +56,12 @@ export class OrderService {
     }
 
     // Order
-    findOrder(data: any): Observable<any> {
+    findOrder(data: any): Observable<any> { 
         const url = environment.superSALESApi+`getSTSyncSalesOrders`;
+        // const url = environment.superSALESApi+`getsalesorders`;
+        // const url = environment.superSALESApiLiveTest+`getsalesorders`;
+        // const url = `http://supersales.co:8080/salesproprod/getsalesorders?getsalesordersjson={"CreatedBy":9536,"CompanyID":1259}&UserID=9536&TokenID=D835BE21BE23EB400008F030012ED25C&PageNo=1&PageSize=20000000`;
+        // const url = `http://supersales.co:8080/salesproprod/getsalesorders?getsalesordersjson=%7B%22CreatedBy%22%3A9536%2C%22CompanyID%22%3A1259%2C%22FilterUser%22%3A0%2C%22FilterProduct%22%3A0%2C%22CustomerID%22%3A0%2C%22FilterCategoryID%22%3A0%2C%22SortType%22%3A0%2C%22FilterType%22%3A0%7D&UserID=9536&TokenID=D835BE21BE23EB400008F030012ED25C&PageNo=1&PageSize=20000000`;
         return this.http.get<Order[]>(url, {params:data});
     }
 
