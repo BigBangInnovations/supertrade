@@ -54,7 +54,7 @@
                             </ng-template>
                         </mat-form-field>
                         <mat-autocomplete [displayWith]="displayFn" #auto="matAutocomplete" >
-                                <mat-option *ngIf="isLoadingAutosearch" class="is-loading">
+                                <mat-option *ngIf="isLoadingAutosearch" class="is-loading" disabled>
                                     <mat-spinner diameter="20"></mat-spinner>
                                 </mat-option>
                                 <ng-container *ngIf="!isLoadingAutosearch">

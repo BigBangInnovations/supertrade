@@ -54,6 +54,14 @@ const routes: Routes = [
 				loadChildren: () => import('../../../../app/views/pages/order/add-order/add-order.module').then(m => m.AddOrderModule)
 			},
 			{
+				path: 'distributor-purchase-order',
+				loadChildren: () => import('../../../../app/views/pages/distributorPurchaseOrder/distributorPurchaseOrder.module').then(m => m.DistributorPurchaseOrderModule)
+			},
+			{
+				path: 'add-distributor-purchase-order',
+				loadChildren: () => import('../../../../app/views/pages/distributorPurchaseOrder/add-distributorPurchaseOrder/add-distributorPurchaseOrder.module').then(m => m.AddDistributorPurchaseOrderModule)
+			},
+			{
 				path: 'notification',
 				loadChildren: () => import('../../../../app/views/pages/notification/notification.module').then(m => m.NotificationModule)
 			},

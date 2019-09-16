@@ -31,7 +31,7 @@ import * as fromProduct from "../../../core/product";
 import { async } from "@angular/core/testing";
 import { LayoutUtilsService, MessageType } from "../../../core/_base/crud";
 // import { filter } from 'minimatch';
-import { CustomValidator } from '../../../core/_base/layout/validators/custom-validator'
+import { CustomValidator } from "../../../core/_base/layout/validators/custom-validator";
 
 @Component({
 	selector: "kt-popup-product",
@@ -295,19 +295,16 @@ export class PopupProductComponent implements OnInit {
 		let allProducts = this.productArray;
 		allProducts.filter((data: any) => {
 			if (data.ID == productID) {
+				this.popupProductForm.controls["productCategoryCtrl"].setValue(
+					data.Product_Cat_ID
+				);
+				this.changeCategory(data.Product_Cat_ID);
 
-        this.popupProductForm.controls[
-          "productCategoryCtrl"
-        ].setValue(data.Product_Cat_ID);
-        this.changeCategory(data.Product_Cat_ID);
+				this.popupProductForm.controls[
+					"productSubCategoryCtrl"
+				].setValue(data.Product_Sub_Cat_ID);
 
-        
-        this.popupProductForm.controls[
-          "productSubCategoryCtrl"
-        ].setValue(data.Product_Sub_Cat_ID);
-        
-        this.changeSubCategory(data.Product_Sub_Cat_ID);
-
+				this.changeSubCategory(data.Product_Sub_Cat_ID);
 
 				if (this.data.isDiscount)
 					this.popupProductForm.controls[
@@ -337,22 +334,13 @@ export class PopupProductComponent implements OnInit {
 	}
 
 	resetProduct(categoryDataArray) {
+		this.popupProductForm.controls["productCategoryCtrl"].setValue(0);
 
-    this.popupProductForm.controls[
-      "productCategoryCtrl"
-    ].setValue(0);
+		this.popupProductForm.controls["productSubCategoryCtrl"].setValue(0);
 
-    this.popupProductForm.controls[
-      "productSubCategoryCtrl"
-    ].setValue(0);
+		this.popupProductForm.controls["productCtrl"].setValue(0);
 
-    this.popupProductForm.controls[
-      "productCtrl"
-    ].setValue(0);
-
-
-
-    this.subCategoryArray = [];
+		this.subCategoryArray = [];
 		this.productArray = [];
 		categoryDataArray.forEach(categoryDataRow => {
 			categoryDataRow.subcategories.forEach(subcategoriesArray => {
@@ -371,7 +359,7 @@ export class PopupProductComponent implements OnInit {
 	 */
 	isControlHasError(controlName: string, validationType: string): boolean {
 		const control = this.popupProductForm.controls[controlName];
-		
+
 		if (!control) {
 			return false;
 		}

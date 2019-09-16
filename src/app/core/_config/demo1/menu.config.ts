@@ -527,6 +527,33 @@ export class MenuConfig {
 					]
 				},
 				{
+					title: 'Purchase Order',
+					root: true,
+					icon: 'flaticon-truck',
+					page: '/distributor-purchase-order',
+					translate: 'MENU.PURCHASE_ORDER',
+					bullet: 'dot',
+					permission:'AccessDistributorPOModule',
+					submenu: [
+						{
+							title: 'Purchase Order listing',
+							root: true,
+							page: '/distributor-purchase-order',
+							translate: 'MENU.PURCHASE_ORDER_LIST',
+							bullet: 'dot',
+						},
+						{
+							bullet: 'dot',
+							title: 'Add purchase Order',
+							root: true,
+							alignment: 'left',
+							page: '/add-distributor-purchase-order',
+							translate: 'MENU.ADD_PURCHASE_ORDER',
+						},
+						
+					]
+				},
+				{
 					title: 'Sales Order',
 					root: true,
 					icon: 'flaticon-truck',

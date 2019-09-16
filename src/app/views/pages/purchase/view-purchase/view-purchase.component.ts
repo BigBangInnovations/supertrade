@@ -161,7 +161,8 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 				select(selectPurchaseById(this.data.purchaseId))
 			);
 			this.purchase$.subscribe(res => {
-				this.sl_distributor_sales_id = res.sl_distributor_sales_id;
+				if(typeof(res.sl_distributor_sales_id) != undefined)
+					this.sl_distributor_sales_id = res.sl_distributor_sales_id;
 				this.createForm(res);
 			});
 		} else if (this.data.transactionID) {
@@ -188,9 +189,11 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 				if (res && res != "") {
 					if (this.data.Type == 171) {
 						this.data.purchaseId = res.sl_purchase_id;
+						if(res.sl_distributor_sales_id)
 						this.sl_distributor_sales_id = res.sl_distributor_sales_id;
 					} else {
 						this.data.purchaseId = res.id;
+						if(res.sl_distributor_sales_id)
 						this.sl_distributor_sales_id =
 							res.sl_distributor_sales_id;
 					}

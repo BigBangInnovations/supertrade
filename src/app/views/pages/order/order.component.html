@@ -148,7 +148,7 @@
                 </ng-container>
 
                 <ng-container matColumnDef="totalNetAmount">
-                    <mat-header-cell *matHeaderCellDef>Total net amount</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef>Total amount</mat-header-cell>
                     <mat-cell *matCellDef="let order">{{order.totalNetAmount | number : '1.2-2' }}</mat-cell>
                 </ng-container>
 
@@ -168,7 +168,7 @@
                 </ng-container>
 
                 <ng-container matColumnDef="finalSalesAmount">
-                    <mat-header-cell *matHeaderCellDef>Final sale amount</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef>Total net amount</mat-header-cell>
                     <mat-cell *matCellDef="let order">{{order.finalSalesAmount | number : '1.2-2' }}</mat-cell>
                 </ng-container>
 

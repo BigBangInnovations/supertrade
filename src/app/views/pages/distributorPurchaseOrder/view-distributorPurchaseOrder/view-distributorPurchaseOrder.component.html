@@ -1,0 +1,66 @@
+<h2 mat-dialog-title>{{ getTitle() }}</h2>
+<form focusFirstInvalidField (ngModelChange)="changeExpansionpanel($event)" [formGroup]="distributorPurchaseOrderForm" class="kt-form kt-form--group-seperator-dashed">
+    <mat-dialog-content>
+            <div [ngClass]="{'kt-hidden':(distributorPurchaseOrder$ | async)?.length === 0}">
+        <div class="kt-form__section kt-form__section--first">
+            <div class="form-group kt-form__group row">
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <input matInput placeholder="invoice ID" formControlName="invoice_id" readonly />
+                    </mat-form-field>
+                </div>
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <input matInput placeholder="Vendor name" formControlName="vendor_name" readonly />
+                    </mat-form-field>
+                </div>
+
+                <div class="col-lg-12 kt-margin-bottom-20-mobile">
+                    <div class="kt-form__heading">
+                        <h3 class="kt-form__heading-title pointer-cursor">Product detail</h3>
+                    </div>
+                    <div formArrayName="products">
+                        <mat-accordion>
+                            <div *ngFor="let product of distributorPurchaseOrderForm['controls'].products['controls']; let i=index">
+                                <div [formGroupName]="i">
+                                    <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="distributorPurchaseOrderForm.controls.products.controls[i]" [parantGroup]="distributorPurchaseOrderForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction" [isSGSTTax]="isSGSTTax" [isIGSTTax]="isIGSTTax"
+                                        [step]="step"></kt-popup-add-product>
+                                </div>
+                            </div>
+                        </mat-accordion>
+                    </div>
+                    <ng-template #popupProductCalculation></ng-template>
+                    <mat-error *ngIf="isControlHasError('products','required')">
+                        <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Products'} }}</strong>
+                    </mat-error>
+                </div>
+            </div>
+        </div>
+            </div>
+        <div style="margin-left: 50%;" [ngClass]="{'kt-hidden':(distributorPurchaseOrder$ | async)?.length != 0}" class=" kt-form kt-form--group-seperator-dashed">
+            <mat-spinner color="warn" diameter="30" strokeWidth="2"></mat-spinner>
+            <div style="position:relative;">
+                Loading...
+            </div>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" [ngClass]="{'kt-hidden':(distributorPurchaseOrder$ | async)?.length === 0}">
+        <button type="button" (click)="close()" mat-raised-button matTooltip="Close">
+                                            Cancel
+                                        </button>&nbsp;
+                                        <ng-container *ngIf="pageAction == 'distributorPurchaseOrderReturn'">
+                                            <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" mat-raised-button color="primary" (click)="ReuturnDistributorPurchaseOrder()" matTooltip="Return Distributor Purchase Order">
+                                                                            Return
+                                                                        </button>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="pageAction == 'distributorPurchaseOrderEdit'">
+                                            <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" mat-raised-button color="primary" (click)="updateDistributorPurchaseOrder()" matTooltip="Update Distributor Purchase Order">
+                                                                            Update
+                                                                        </button>
+                                        </ng-container>
+
+
+    </mat-dialog-actions>
+</form>

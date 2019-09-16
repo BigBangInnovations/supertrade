@@ -74,6 +74,10 @@ import { NotificationService } from './core/notification'
 import { DistributorSaleModule } from './views/pages/distributorSale/distributorSale.module'
 import { DistributorSaleService } from './core/distributorSale'
 
+//Distributor Sale
+import { DistributorPurchaseOrderModule } from './views/pages/distributorPurchaseOrder/distributorPurchaseOrder.module'
+import { DistributorPurchaseOrderService } from './core/distributorPurchaseOrder'
+
 // CRUD
 import { HttpUtilsService, LayoutUtilsService, TypesUtilsService } from './core/_base/crud';
 // Config
@@ -140,6 +144,7 @@ export function hljsLanguages(): HighlightLanguage[] {
 		OrderModule.forRoot(),
 		NotificationModule.forRoot(),
 		DistributorSaleModule.forRoot(),
+		DistributorPurchaseOrderModule.forRoot(),
 		TranslateModule.forRoot(),
 		MatProgressSpinnerModule,
 		InlineSVGModule.forRoot(),
@@ -153,6 +158,7 @@ export function hljsLanguages(): HighlightLanguage[] {
 		OrderService,
 		NotificationService,
 		DistributorSaleService,
+		DistributorPurchaseOrderService,
 		LayoutConfigService,
 		LayoutRefService,
 		MenuConfigService,

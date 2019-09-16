@@ -47,8 +47,7 @@ import {
 } from "../../../../core/_base/layout";
 import { LayoutUtilsService, MessageType } from "../../../../core/_base/crud";
 // Services and Models
-import { Purchase } from "../../../../core/purchase/_models/purchase.model";
-import { getPurchaseActiveScheme } from "../../../../core/auth/_selectors/auth.selectors";
+import { DistributorPurchaseOrder } from "../../../../core/distributorPurchaseOrder/_models/distributorPurchaseOrder.model";
 import { EncrDecrServiceService } from "../../../../core/auth/_services/encr-decr-service.service";
 import { environment } from "../../../../../environments/environment";
 // Components
@@ -56,30 +55,32 @@ import { PopupProductComponent } from "../../popup-product/popup-product.compone
 import { PopupAddProductComponent } from "../../popup-product/popup-add-product/popup-add-product.component";
 import { Product } from "../../../../core/product/_models/product.model";
 import { Distributor } from "../../../../core/distributor/_models/distributor.model";
-import { PurchaseService } from "../../../../core/purchase/_services/index";
+import { Vendor } from "../../../../core/vendor/_models/vendor.model";
+import { DistributorPurchaseOrderService } from "../../../../core/distributorPurchaseOrder/_services/index";
+import { Order, AddEditOrder } from '../../../../core/order/_models/order.model';
 import { APP_CONSTANTS } from "../../../../../config/default/constants";
 import { Logout } from "../../../../core/auth";
 import { PopupProductTotalCalculationComponent } from "../../popup-product/popup-add-product/popup-product-total-calculation/popup-product-total-calculation.component";
 import { dynamicProductTemplateSetting } from "../../../../core/common/common.model";
 import * as fromDistributor from "../../../../core/distributor";
+import * as fromVendor from "../../../../core/vendor";
 import { DistributorService } from "../../../../core/distributor/_services/distributor.services";
+import { VendorService } from "../../../../core/vendor/_services/vendor.services";
 import { isInteger } from 'lodash';
 
 @Component({
-	selector: "kt-add-purchase",
-	templateUrl: "./add-purchase.component.html",
+	selector: "kt-add-distributorPurchaseOrder",
+	templateUrl: "./add-distributorPurchaseOrder.component.html",
 	providers: [DatePipe],
 	encapsulation: ViewEncapsulation.None
-	// styleUrls: ['./add-purchase.component.scss'],
+	// styleUrls: ['./add-distributorPurchaseOrder.component.scss'],
 	// changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AddPurchaseComponent implements OnInit, OnDestroy {
+export class AddDistributorPurchaseOrderComponent implements OnInit, OnDestroy {
 	// Public properties
-	purchase: Purchase;
-	purchaseForm: FormGroup;
+	distributorPurchaseOrder: DistributorPurchaseOrder;
+	distributorPurchaseOrderForm: FormGroup;
 	hasFormErrors: boolean = false;
-	purchaseActiveScheme: any;
-	purchaseActiveSchemebooster: any;
 	userData: any;
 	componentRef: any;
 	loading = false;
@@ -89,12 +90,12 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 	/** 
 	 * Autocomplate distributor
 	 */
-	distributor$: Observable<Distributor[]>;
-	filteredDistributors: Distributor[] = [];
+	vendor$: Observable<Vendor[]>;
+	filteredVendors: Vendor[] = [];
 	isLoadingAutosearch = false;
-	distributorCharacterLength: Number = 0;
-	selectedDistributor = "";
-	distributorInput$ = new Subject<string>();
+	vendorCharacterLength: Number = 0;
+	selectedVendor = "";
+	vendorInput$ = new Subject<string>();
 	// Private properties
 	private subscriptions: Subscription[] = [];
 	@ViewChild("popupProductCalculation", {
@@ -115,7 +116,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 	 *
 	 * @param activatedRoute: ActivatedRoute
 	 * @param router: Router
-	 * @param purchaseFB: FormBuilder
+	 * @param distributorPurchaseOrderFB: FormBuilder
 	 * @param subheaderService: SubheaderService
 	 * @param layoutUtilsService: LayoutUtilsService
 	 * @param store: Store<AppState>
@@ -123,14 +124,14 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 	 * @param EncrDecr: EncrDecrServiceService
 	 * @param dialog: MatDialog
 	 * @param datePipe: DatePipe
-	 * @param purchaseService: PurchaseService,
-	 * @param distributorService: DistributorService,
+	 * @param distributorPurchaseOrderService: DistributorPurchaseOrderService,
+	 * @param vendorService: VendorService,
 	 * @param cdr
 	 */
 	constructor(
 		private activatedRoute: ActivatedRoute,
 		private router: Router,
-		private purchaseFB: FormBuilder,
+		private distributorPurchaseOrderFB: FormBuilder,
 		private subheaderService: SubheaderService,
 		private layoutUtilsService: LayoutUtilsService,
 		private store: Store<AppState>,
@@ -138,8 +139,8 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 		private EncrDecr: EncrDecrServiceService,
 		public dialog: MatDialog,
 		private datePipe: DatePipe,
-		private purchaseService: PurchaseService,
-		private distributorService: DistributorService,
+		private distributorPurchaseOrderService: DistributorPurchaseOrderService,
+		private vendorService: VendorService,
 		private cdr: ChangeDetectorRef,
 		private resolver: ComponentFactoryResolver
 	) {
@@ -147,7 +148,8 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 		const OptionalSetting = new dynamicProductTemplateSetting();
 		OptionalSetting.clear();
 		this.OptionalSetting = OptionalSetting;
-		this.pageAction = "addPurchase";
+		this.OptionalSetting.displayPointCalculation = false;
+		this.pageAction = "addDistributorPurchaseOrder";
 	}
 
 	/**
@@ -171,41 +173,9 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 					if (this.userData.Tax_Type == "CST") this.isIGSTTax = true;
 				}
 
-				this.purchaseActiveScheme = this.userData.purchaseActiveScheme[0];
-				this.purchaseActiveSchemebooster = this.userData.purchaseActiveSchemeBooster[0];
-
-				this.purchase = new Purchase();
-				this.purchase.clear();
-				this.initPurchase();
-				// if (
-				// 	this.userData.companySettings
-				// 		.AllowMultipleDistributorInPurchaseSTrade == 1
-				// ) {
-				// 	//Load distribiutor
-				// 	this.store
-				// 		.select(fromDistributor.selectDistributorLoaded)
-				// 		.pipe()
-				// 		.subscribe(data => {
-				// 			if (data) {
-				// 				this.distributor$ = this.store.pipe(
-				// 					select(fromDistributor.selectAllDistributor)
-				// 				);
-				// 			} else {
-				// 				let httpParams = new HttpParams();
-				// 				this.store.dispatch(
-				// 					new fromDistributor.LoadDistributor(
-				// 						httpParams
-				// 					)
-				// 				);
-				// 				this.distributor$ = this.store.pipe(
-				// 					select(fromDistributor.selectAllDistributor)
-				// 				);
-				// 			}
-				// 		});
-				// 	this.viewLoading$ = this.store.pipe(
-				// 		select(fromDistributor.selectDistributorLoading)
-				// 	);
-				// }
+				this.distributorPurchaseOrder = new DistributorPurchaseOrder();
+				this.distributorPurchaseOrder.clear();
+				this.initDistributorPurchaseOrder();
 			}
 		);
 		this.subscriptions.push(routeSubscription);
@@ -230,29 +200,29 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 		httpParams = httpParams.append("pageSize", "20");
 		httpParams = httpParams.append("Filter", "");
 
-		this.purchaseForm
-			.get("distributor_name")
+		this.distributorPurchaseOrderForm
+			.get("vendor_name")
 			.valueChanges.pipe(
 				debounceTime(300),
 				tap(value => {
 					if(!value.ID){
-						this.purchaseForm.controls["distributor_id"].setValue(null);
+						this.distributorPurchaseOrderForm.controls["vendor_id"].setValue(null);
 					}else{
-						this.purchaseForm.controls["distributor_id"].setValue(value.ID);
+						this.distributorPurchaseOrderForm.controls["vendor_id"].setValue(value.ID);
 					}
 					if (value != null) {
-						this.distributorCharacterLength = value.length;
+						this.vendorCharacterLength = value.length;
 						if (value.length > 2) {
 							this.isLoadingAutosearch = true;
 						}
 					} else {
-						this.distributorCharacterLength = 0;
+						this.vendorCharacterLength = 0;
 					}
 				}),
 				switchMap((value: string) => {
 					if (value != null && value.length > 2) {
 						httpParams = httpParams.set("Filter", value);
-						return this.distributorService
+						return this.vendorService
 							.search(httpParams)
 							.pipe(
 								finalize(
@@ -264,13 +234,13 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 					}
 				})
 			)
-			.subscribe(distribiutors => {
-				this.filteredDistributors = distribiutors.map;
+			.subscribe(vendors => {
+				this.filteredVendors = vendors.map;
 			});
 	}
-	displayFn(distribiutor?: any): string | undefined {
-		this.selectedDistributor = distribiutor ? distribiutor.ID : "";
-		return distribiutor ? distribiutor.Name : undefined;
+	displayFn(vendor?: any): string | undefined {
+		this.selectedVendor = vendor ? vendor.ID : "";
+		return vendor ? vendor.Name : undefined;
 	}
 
 	ngOnDestroy() {
@@ -283,12 +253,12 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 	/**
 	 * Init user
 	 */
-	initPurchase() {
+	initDistributorPurchaseOrder() {
 		this.createForm();
-		this.subheaderService.setTitle("Add Purchase");
+		this.subheaderService.setTitle("Add Distributor Purchase Order");
 		this.subheaderService.setBreadcrumbs([
-			{ title: "Purchase", page: `purchase` },
-			{ title: "Add Purchase", page: `add-purchase` }
+			{ title: "Distributor PurchaseOrder", page: `distributorPurchaseOrder` },
+			{ title: "Add Distributor PurchaseOrder", page: `add-distributorPurchaseOrder` }
 		]);
 	}
 
@@ -296,14 +266,11 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 	 * Create form
 	 */
 	createForm() {
-		this.purchaseForm = this.purchaseFB.group({
-			scheme_id: [
-				this.purchaseActiveScheme.scheme_id,
-				Validators.required
-			],
-			distributor_id: ["", Validators.required],
-			distributor_name: [""],
-			products: this.purchaseFB.array([], Validators.required)
+		this.distributorPurchaseOrderForm = this.distributorPurchaseOrderFB.group({
+			vendor_id: ["", Validators.required],
+			vendor_name: [""],
+			Description: [''],
+			products: this.distributorPurchaseOrderFB.array([], Validators.required)
 		});
 	}
 
@@ -314,9 +281,9 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 	 */
 	submit() {
 		this.hasFormErrors = false;
-		const controls = this.purchaseForm.controls;
+		const controls = this.distributorPurchaseOrderForm.controls;
 		/** check form */
-		if (this.purchaseForm.invalid) {
+		if (this.distributorPurchaseOrderForm.invalid) {
 			Object.keys(controls).forEach(controlName => {
 				return controls[controlName].markAsTouched();
 			});
@@ -325,40 +292,114 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		const addEditPurchase = this.preparePurchase();
-		this.addEditPurchase(addEditPurchase);
+		const addEditDistributorPurchaseOrder = this.prepareDistributorPurchaseOrder();
+		this.addEditDistributorPurchaseOrder(addEditDistributorPurchaseOrder);
 	}
 
 	/**
 	 * Returns prepared data for save
 	 */
-	preparePurchase(): Purchase {
-		const controls = this.purchaseForm.controls;
-		const _purchase = new Purchase();
-		_purchase.clear();
-		_purchase.loyalty_id = this.purchaseActiveScheme.id;
-		_purchase.scheme_id = controls["scheme_id"].value;
-		_purchase.distributor_id = controls["distributor_id"].value;
-		_purchase.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
-		_purchase.Tax_Type = this.isSGSTTax
+	prepareDistributorPurchaseOrder(): DistributorPurchaseOrder {
+		const controls = this.distributorPurchaseOrderForm.controls;
+		const _distributorPurchaseOrder = new DistributorPurchaseOrder();
+		_distributorPurchaseOrder.clear();
+		_distributorPurchaseOrder.vendor_Name = controls["vendor_name"].value;
+		_distributorPurchaseOrder.ss_vendor_id = controls["vendor_id"].value;
+		_distributorPurchaseOrder.ss_distributor_id = this.userData.ID;
+		_distributorPurchaseOrder.remarks = controls["Description"].value;
+		_distributorPurchaseOrder.date = this.datePipe.transform(new Date(), "yyyy-MM-dd");
+		_distributorPurchaseOrder.Tax_Type = this.isSGSTTax
 			? "SGST"
 			: this.isIGSTTax
 			? "IGST"
 			: "";
-		_purchase.products_json = JSON.stringify(this.prepareProduct());
-		return _purchase;
+		_distributorPurchaseOrder.products_json = JSON.stringify(this.prepareProduct());
+		_distributorPurchaseOrder.addsalesorderjson = JSON.stringify(this.prepareOrder())
+		return _distributorPurchaseOrder;
 	}
 
+	
+  /**
+	 * Returns prepared data for save
+	 */
+	prepareOrder(): Order {
+		const controls = this.distributorPurchaseOrderForm.controls;
+		const _order = new Order();
+		_order.clear();
+		_order.SOMadeBy = 'Distributor'
+		_order.AssignedTo = this.userData.Tagged_To;
+		_order.CreatedBy = this.userData.Tagged_To;
+		_order.CompanyID = this.userData.Company_ID;
+		_order.CustomerID = controls['vendor_id'].value
+		_order.FulfilledByID = this.userData.ID;
+		_order.Description = controls['Description'].value;
+		_order.SeriesPrefix = _order.SeriesPrefix + '' + this.userData.companySettings.SalesOrderFormat;
+		let productDataCalculation = this.productDataCalculation();
+		
+		_order.NetAmount = productDataCalculation['totalProductNetAmount'];
+		_order.GrossAmount = productDataCalculation['totalGrossAmount'];
+		_order.LocalTaxValue = productDataCalculation['totalLocalTaxValue'];
+		return _order;
+	  }
+	
+	  /**
+		 * Returns prepared data for product
+		 */
+	  productDataCalculation(): any[] {
+		const controls = this.distributorPurchaseOrderForm.controls['products'].value;;
+		let totalProduct = new Array();
+		let _totalProductAmount = 0;
+		let _totalProductDiscountAmount = 0;
+		let _totalGrossAmount = 0;
+		let _totalLocalTaxValue = 0;
+		let _totalProductNetAmount = 0;
+	
+		controls.forEach(data => {
+		  let productAmount = 0
+		  let productDiscount = 0
+		  let productGrossAmount = 0
+		  let productSGSTTaxAmount = 0
+		  let productCGSTTaxAmount = 0
+		  let productIGSTTaxAmount = 0
+		  let productTaxAmount = 0;
+		  let productNetAmount = 0;
+	
+		  productAmount = data.productPriceCtrl * data.productQuantityCtrl;
+		  productDiscount = (productAmount * data.productDiscountCtrl)/100;
+		  productGrossAmount = productAmount - productDiscount;
+		  productSGSTTaxAmount = (productGrossAmount * data.productTaxSGSTCtrl)/100;
+		  productCGSTTaxAmount = (productGrossAmount * data.productTaxCGSTCtrl)/100;
+		  productIGSTTaxAmount = (productGrossAmount * data.productTaxIGSTCtrl)/100;
+		  _totalProductAmount += productAmount;
+		  _totalProductDiscountAmount += productDiscount;
+		  _totalGrossAmount += productGrossAmount;
+	
+		  if(this.isSGSTTax){
+			productTaxAmount = (productSGSTTaxAmount + productCGSTTaxAmount);
+		  } else if(this.isIGSTTax){
+			productTaxAmount = productIGSTTaxAmount;
+			}
+		  _totalLocalTaxValue += productTaxAmount;
+	
+		  productNetAmount = productGrossAmount + productTaxAmount;
+		  _totalProductNetAmount  += productNetAmount;
+	
+		});
+		totalProduct['totalProductAmount'] = _totalProductAmount;
+		totalProduct['totalProductDiscountAmount'] = _totalProductDiscountAmount;
+		totalProduct['totalGrossAmount'] = _totalGrossAmount;
+		totalProduct['totalLocalTaxValue'] = _totalLocalTaxValue;
+		totalProduct['totalProductNetAmount'] = _totalProductNetAmount;
+		
+		return totalProduct;
+	  }
 	/**
 	 * Returns prepared data for product
 	 */
 	prepareProduct(): Product[] {
-		const controls = this.purchaseForm.controls["products"].value;
+		const controls = this.distributorPurchaseOrderForm.controls["products"].value;
 		const _products = [];
 
-		let boost_point = 0;
-		if (this.purchaseActiveSchemebooster != undefined)
-			boost_point = this.purchaseActiveSchemebooster.boost_point;
 		controls.forEach(data => {
 			//Clear Product and set default value
 			const product = new Product();
@@ -369,8 +410,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 			product.ProductAmount =
 				data.productPriceCtrl * data.productQuantityCtrl; //Product Amount:: Product prive * Quantity
 			product.Price = data.productPriceCtrl; //Product original price
-			product.points = data.productLoyaltyPointCtrl; //Product original point
-			product.Quantity = data.productQuantityCtrl; //product original purchase quantity
+			product.Quantity = data.productQuantityCtrl; //product original distributorPurchaseOrder quantity
 			product.Discount = data.productDiscountCtrl; //product original discount(%)
 			product.SGSTTax = data.productTaxSGSTCtrl; //Product original SGST Tax(%)
 			product.SGSTSurcharges = data.productTaxSGSTSurchargesCtrl; //Product original SGST Surcharges Tax(%)
@@ -381,9 +421,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 			product.VATPercentage = data.productVATPercentage; //Product original Vat perchantage(%)
 			product.InclusiveExclusive = data.InclusiveExclusiveTax; //Product TAX inclusive or exclusive:: no any effect of this field
 			product.VATFrom = data.productVATFrom; //Product vat from customer OR Other side
-			product.tot_points =
-				data.productLoyaltyPointCtrl * data.productQuantityCtrl; //Total Point:: Product Org.Point * Quantity
-			product.tot_points_boost = (product.tot_points * boost_point) / 100; //Total Point boost:: Product Org.boostPoint * Quantity
+			
 			_products.push(product);
 		});
 		return _products;
@@ -392,21 +430,21 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 	/**
 	 * Add User
 	 *
-	 * @param _purchase: User
+	 * @param _distributorPurchaseOrder: User
 	 */
-	addEditPurchase(_purchase: Purchase) {
+	addEditDistributorPurchaseOrder(_distributorPurchaseOrder: DistributorPurchaseOrder) {
 		this.loading = true;
 		let httpParams = new HttpParams();
-		Object.keys(_purchase).forEach(function(key) {
-			httpParams = httpParams.append(key, _purchase[key]);
+		Object.keys(_distributorPurchaseOrder).forEach(function(key) {
+			httpParams = httpParams.append(key, _distributorPurchaseOrder[key]);
 		});
 
-		this.purchaseService
-			.createPurchase(httpParams)
+		this.distributorPurchaseOrderService
+			.createDistributorPurchaseOrder(httpParams)
 			.pipe(
 				tap(response => {
 					if (response.status == APP_CONSTANTS.response.SUCCESS) {
-						const message = `Purchase successfully has been added.`;
+						const message = `Distributor PurchaseOrder successfully has been added.`;
 						this.layoutUtilsService.showActionNotification(
 							message,
 							MessageType.Create,
@@ -414,7 +452,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 							false,
 							false
 						);
-						this.router.navigateByUrl("purchase"); // purchase listing page
+						this.router.navigateByUrl("distributor-purchase-order"); // distributorPurchaseOrder listing page
 					} else if (
 						response.status == APP_CONSTANTS.response.ERROR
 					) {
@@ -451,7 +489,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 	 * Returns component title
 	 */
 	getComponentTitle() {
-		let result = "Create Purchase";
+		let result = "Create DistributorPurchaseOrder";
 		return result;
 	}
 
@@ -504,9 +542,9 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 	 */
 	createProduct(res) {
 		const currentProductArray = <FormArray>(
-			this.purchaseForm.controls["products"]
+			this.distributorPurchaseOrderForm.controls["products"]
 		);
-		currentProductArray.push(this.purchaseFB.group(res));
+		currentProductArray.push(this.distributorPurchaseOrderFB.group(res));
 		this.commonCalculation();
 	}
 
@@ -521,7 +559,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 		const viewContainerRef = this.entry;
 		viewContainerRef.clear();
 		const componentRef = viewContainerRef.createComponent(componentFactory);
-		componentRef.instance.mainForm = this.purchaseForm;
+		componentRef.instance.mainForm = this.distributorPurchaseOrderForm;
 		componentRef.instance.isSGSTTax = this.isSGSTTax;
 		componentRef.instance.isIGSTTax = this.isIGSTTax;
 		const sub: Subscription = componentRef.instance.newAddedProductsIds.subscribe(
@@ -547,14 +585,14 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 	 * @param validationType: string => Equals to valitors name
 	 */
 	isControlHasError(controlName: string, validationType: string): boolean {
-		const control = this.purchaseForm.controls[controlName];
+		const control = this.distributorPurchaseOrderForm.controls[controlName];
 		if (!control) {
 			return false;
 		}
 		if (controlName == "products") {
 			const result = control.hasError(validationType);
 			return result;
-		}else if (controlName == "distributor_id") {
+		}else if (controlName == "vendor_id") {
 			const result = control.hasError(validationType)
 			return result;
 		} else {

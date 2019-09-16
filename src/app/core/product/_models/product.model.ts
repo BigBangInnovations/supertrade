@@ -79,6 +79,7 @@ export class Product {
         this.VATFrom = '';
         this.serial_no = '';
         this.DiscountType = 0;
+        
         //SO
         this.CustomerClass = 0;
         this.expanded = false;

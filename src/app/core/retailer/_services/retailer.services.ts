@@ -17,11 +17,12 @@ export class RetailerService {
             tap((response:any) => {
               response.map = response.data[0].retailers
                 .map(retailers => {
-                  let _distributor = new Retailer();
-                  _distributor.ID = retailers.ID,
-                  _distributor.Mobile_No = retailers.Mobile_No
-                  _distributor.Name = retailers.Name; 
-                  return _distributor
+                  return retailers;
+                  // let _distributor = new Retailer();
+                  // _distributor.ID = retailers.ID,
+                  // _distributor.Mobile_No = retailers.Mobile_No
+                  // _distributor.Name = retailers.Name; 
+                  // return _distributor
                 })
               return response;
             })

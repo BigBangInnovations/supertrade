@@ -74,12 +74,12 @@ export class PopupAddProductComponent {
 	}
 
 	ngAfterContentInit(): void {
-    this.boost_point = 0;
+		this.boost_point = 0;
 		if (
-			this.pageAction == "retailerPurchaseApproval"
-			|| this.pageAction == "addPurchase"
-			|| this.pageAction == "purchaseReturn"
-			|| this.pageAction == "distributorPartialAcceptPurchaseReturnApproval"
+			this.pageAction == "retailerPurchaseApproval" ||
+			this.pageAction == "addPurchase" ||
+			this.pageAction == "purchaseReturn" ||
+			this.pageAction == "distributorPartialAcceptPurchaseReturnApproval"
 		) {
 			if (this.purchaseActiveSchemebooster != undefined)
 				this.boost_point = this.purchaseActiveSchemebooster.boost_point;
@@ -117,10 +117,14 @@ export class PopupAddProductComponent {
 				100;
 			this.productNetAmount = this.productGrossAmount + this.productIGST;
 		}
-
-		this.coreProductLoyaltyPoint = this.productForm.controls[
-			"productLoyaltyPointCtrl"
-		].value;
+		if (
+			this.pageAction != "viewDistributorPurchaseOrder"  
+			&& this.pageAction != "distributorPurchaseOrderEdit"
+			) {
+			this.coreProductLoyaltyPoint = this.productForm.controls[
+				"productLoyaltyPointCtrl"
+			].value;
+		}
 		this.productLoyaltyPoint =
 			this.coreProductLoyaltyPoint * this.productQuantity;
 		this.productLoyaltyBoostPoint =
@@ -130,18 +134,23 @@ export class PopupAddProductComponent {
 		return this.productForm.controls[type].value;
 	}
 
-	getProductAmount(quantity) {
+	getProductAmount() {
+		let quantity = this.productForm.controls["productQuantityCtrl"].value;
 		let price = this.productForm.controls["productPriceCtrl"].value;
+		let discount = this.productForm.controls["productDiscountCtrl"].value;
+
 		if (quantity != "") {
 			this.productQuantity = quantity;
+			if (
+				this.pageAction != "viewDistributorPurchaseOrder"  
+				&& this.pageAction != "distributorPurchaseOrderEdit"
+				){
 			this.coreProductLoyaltyPoint = this.productForm.controls[
 				"productLoyaltyPointCtrl"
 			].value;
+		}
 			this.productAmount = price * quantity;
-			this.productDiscount =
-				(this.productAmount *
-					this.productForm.controls["productDiscountCtrl"].value) /
-				100;
+			this.productDiscount = (this.productAmount * discount) / 100;
 			this.productGrossAmount = this.productAmount - this.productDiscount;
 			if (this.isSGSTTax) {
 				this.productCGST =
@@ -172,9 +181,14 @@ export class PopupAddProductComponent {
 				(this.productLoyaltyPoint * this.boost_point) / 100;
 		} else {
 			this.productQuantity = 0;
+			if (
+				this.pageAction != "viewDistributorPurchaseOrder"  
+				&& this.pageAction != "distributorPurchaseOrderEdit"
+				){
 			this.coreProductLoyaltyPoint = this.productForm.controls[
 				"productLoyaltyPointCtrl"
 			].value;
+		}
 			this.productAmount = 0;
 			this.productDiscount = 0;
 			this.productGrossAmount = 0;

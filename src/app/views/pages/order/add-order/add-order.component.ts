@@ -7,7 +7,16 @@ import { MatDialog } from '@angular/material';
 import { HttpParams } from "@angular/common/http";
 // RxJS
 import { BehaviorSubject, Observable, of, Subscription, Subject } from 'rxjs';
-import { finalize, takeUntil, tap } from 'rxjs/operators';
+import {
+	finalize,
+	takeUntil,
+	tap,
+	debounceTime,
+	switchMap,
+	catchError,
+	distinctUntilChanged,
+	startWith
+} from "rxjs/operators";
 // NGRX
 import { Store, select } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
@@ -33,7 +42,8 @@ import * as fromDistributor from '../../../../core/distributor'
 import * as fromRetailer from '../../../../core/retailer'
 import { selectRetailerById } from '../../../../core/retailer'
 import { Retailer } from '../../../../core/retailer/_models/retailer.model';
-
+import { DistributorService } from "../../../../core/distributor/_services/distributor.services";
+import { RetailerService } from "../../../../core/retailer/_services/retailer.services";
 @Component({
   selector: 'kt-add-order',
   templateUrl: './add-order.component.html',
@@ -56,8 +66,23 @@ export class AddOrderComponent implements OnInit, OnDestroy {
   OptionalSetting: dynamicProductTemplateSetting;
   pageAction: string;
   viewLoading$: Observable<boolean>;
+  /** 
+	 * Autocomplate distributor
+	 */
   distributor$: Observable<Distributor[]>;
+	filteredDistributors: Distributor[] = [];
+	isLoadingAutosearch = false;
+	distributorCharacterLength: Number = 0;
+	selectedDistributor = "";
+  
+  /** 
+	 * Autocomplate retailer
+	 */
   retailers$: Observable<Retailer[]>;
+	filteredRetailers: Retailer[] = [];
+	retailerCharacterLength: Number = 0;
+	selectedRetailer = "";
+  
   // Private properties
   private subscriptions: Subscription[] = [];
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
@@ -81,6 +106,8 @@ export class AddOrderComponent implements OnInit, OnDestroy {
    * @param dialog: MatDialog
    * @param datePipe: DatePipe
    * @param orderService: OrderService,
+   * @param distributorService: DistributorService,
+   * @param retailerService: RetailerService,
    * @param cdr
 	 */
   constructor(
@@ -95,6 +122,8 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private datePipe: DatePipe,
     private orderService: OrderService,
+    private distributorService: DistributorService,
+    private retailerService: RetailerService,
     private cdr: ChangeDetectorRef,
     private resolver: ComponentFactoryResolver
   ) {
@@ -119,7 +148,6 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     const routeSubscription = this.activatedRoute.params.subscribe(params => {
       let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
       this.userData = JSON.parse(sessionStorage)
-      // console.log(this.userData.companySettings.SalesOrderFormat);      
       this.isDistributor = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.DISTRIBUTOR_TYPE) ? true : false;
       if (!this.isDistributor) {
         if (this.userData.companySettings.ManageSGST == '1') {
@@ -189,8 +217,10 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     });
     if (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.DISTRIBUTOR_TYPE) {
       this.orderForm.addControl('retailer_id', new FormControl('', Validators.required));
+      this.orderForm.addControl('retailer_name', new FormControl(''));
     } else {
       this.orderForm.addControl('distributor_id', new FormControl('', Validators.required));
+      this.orderForm.addControl('distributor_name', new FormControl(''));
     }
 
 
@@ -225,8 +255,8 @@ export class AddOrderComponent implements OnInit, OnDestroy {
   prepareAddEditOrder(): AddEditOrder {
     const _addEditOrder = new AddEditOrder();
     _addEditOrder.clear();
-    _addEditOrder.addsalesorderjson = JSON.stringify(this.prepareOrder())
     _addEditOrder.addsalesorderproductjson = JSON.stringify(this.prepareProduct())
+    _addEditOrder.addsalesorderjson = JSON.stringify(this.prepareOrder())
     _addEditOrder.CompanyID = this.userData.Company_ID;
     _addEditOrder.UserID = this.userData.ID;
     _addEditOrder.TokenID = this.userData.Security_Token;
@@ -248,13 +278,67 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     _order.FulfilledByID = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE) ? controls['distributor_id'].value : this.userData.ID;
     _order.Description = controls['Description'].value;
     _order.SeriesPrefix = _order.SeriesPrefix + '' + this.userData.companySettings.SalesOrderFormat;
-    _order.NetAmount = 0;
-    _order.GrossAmount = 0;
-    _order.LocalTaxValue = 0;
+    let productDataCalculation = this.productDataCalculation();
+    
+    _order.NetAmount = productDataCalculation['totalProductNetAmount'];
+    _order.GrossAmount = productDataCalculation['totalGrossAmount'];
+    _order.LocalTaxValue = productDataCalculation['totalLocalTaxValue'];
     return _order;
   }
 
   /**
+	 * Returns prepared data for product
+	 */
+  productDataCalculation(): any[] {
+    const controls = this.orderForm.controls['products'].value;;
+    let totalProduct = new Array();
+    let _totalProductAmount = 0;
+    let _totalProductDiscountAmount = 0;
+    let _totalGrossAmount = 0;
+    let _totalLocalTaxValue = 0;
+    let _totalProductNetAmount = 0;
+
+    controls.forEach(data => {
+      let productAmount = 0
+      let productDiscount = 0
+      let productGrossAmount = 0
+      let productSGSTTaxAmount = 0
+      let productCGSTTaxAmount = 0
+      let productIGSTTaxAmount = 0
+      let productTaxAmount = 0;
+      let productNetAmount = 0;
+
+      productAmount = data.productPriceCtrl * data.productQuantityCtrl;
+      productDiscount = (productAmount * data.productDiscountCtrl)/100;
+      productGrossAmount = productAmount - productDiscount;
+      productSGSTTaxAmount = (productGrossAmount * data.productTaxSGSTCtrl)/100;
+      productCGSTTaxAmount = (productGrossAmount * data.productTaxCGSTCtrl)/100;
+      productIGSTTaxAmount = (productGrossAmount * data.productTaxIGSTCtrl)/100;
+      _totalProductAmount += productAmount;
+      _totalProductDiscountAmount += productDiscount;
+      _totalGrossAmount += productGrossAmount;
+
+      if(this.isSGSTTax){
+        productTaxAmount = (productSGSTTaxAmount + productCGSTTaxAmount);
+      } else if(this.isIGSTTax){
+        productTaxAmount = productIGSTTaxAmount;
+        }
+      _totalLocalTaxValue += productTaxAmount;
+
+      productNetAmount = productGrossAmount + productTaxAmount;
+      _totalProductNetAmount  += productNetAmount;
+
+    });
+    totalProduct['totalProductAmount'] = _totalProductAmount;
+    totalProduct['totalProductDiscountAmount'] = _totalProductDiscountAmount;
+    totalProduct['totalGrossAmount'] = _totalGrossAmount;
+    totalProduct['totalLocalTaxValue'] = _totalLocalTaxValue;
+    totalProduct['totalProductNetAmount'] = _totalProductNetAmount;
+    
+    return totalProduct;
+  }
+
+    /**
 	 * Returns prepared data for product
 	 */
   prepareProduct(): Product[] {
@@ -392,7 +476,6 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     componentRef.instance.isIGSTTax = this.isIGSTTax;
     const sub: Subscription = componentRef.instance.newAddedProductsIds.subscribe(
       event => {
-        // console.log(event)
         this.newAddedProductsIdsUpdate(event)
       }
     );
@@ -404,13 +487,14 @@ export class AddOrderComponent implements OnInit, OnDestroy {
   }
 
   retailerChange(event) {
-    this.store.pipe(select(selectRetailerById(event.value))).subscribe((data: any) => {
+    let data = event.option.value;
+    // this.store.pipe(select(selectRetailerById(event.value))).subscribe((data: any) => {
       if (this.userData.companySettings.ManageSGST == '1') {
         if (data.Tax_Type == 'VAT') this.isSGSTTax = true;
       } else if (this.userData.companySettings.ManageIGST == '1') {
         if (data.Tax_Type == 'CST') this.isIGSTTax = true;
       }
-    })
+    // })
   }
 
   /**
@@ -427,7 +511,13 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     if (controlName == 'products') {
       const result = control.hasError(validationType);
       return result;
-    } else {
+    }else if (controlName == "distributor_id") {
+			const result = control.hasError(validationType)
+			return result;
+		}else if (controlName == "retailer_id") {
+			const result = control.hasError(validationType)
+			return result;
+		} else {
       const result = control.hasError(validationType) && (control.dirty || control.touched);
       return result;
     }
@@ -441,4 +531,133 @@ export class AddOrderComponent implements OnInit, OnDestroy {
       this.step = event;
     }, 10);
   }
+
+  /** 
+   * Distributor Autocomplate
+   */
+  ngAfterViewInit(): void {
+    if (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.DISTRIBUTOR_TYPE) {
+      this.loadRetailer();	
+    }else{
+      this.loadDistributor();	
+    }
+	}
+	loadDistributor() {
+		/**
+		 * Autosearch impliment
+		 */
+		let httpParams = new HttpParams();
+		// httpParams = httpParams.append("CompanyID", this.userData.Company_ID);
+		// httpParams = httpParams.append("UserID", this.userData.Tagged_To);
+		httpParams = httpParams.append("device_name", 'web');
+		httpParams = httpParams.append("token_id", this.userData.Security_Token);
+		httpParams = httpParams.append("company_id", this.userData.Company_ID);
+		httpParams = httpParams.append("user_id", this.userData.ID);
+		httpParams = httpParams.append("pageNumber", "0");
+		httpParams = httpParams.append("pageSize", "20");
+		httpParams = httpParams.append("Filter", "");
+
+		this.orderForm
+			.get("distributor_name")
+			.valueChanges.pipe(
+				debounceTime(300),
+				tap((value:any) => {
+					if(!value.ID){
+						this.orderForm.controls["distributor_id"].setValue(null);
+					}else{
+						this.orderForm.controls["distributor_id"].setValue(value.ID);
+					}
+					if (value != null) {
+						this.distributorCharacterLength = value.length;
+						if (value.length > 2) {
+							this.isLoadingAutosearch = true;
+						}
+					} else {
+						this.distributorCharacterLength = 0;
+					}
+				}),
+				switchMap((value: string) => {
+					if (value != null && value.length > 2) {
+						httpParams = httpParams.set("Filter", value);
+						return this.distributorService
+							.search(httpParams)
+							.pipe(
+								finalize(
+									() => (this.isLoadingAutosearch = false)
+								)
+							);
+					} else {
+						return [];
+					}
+				})
+			)
+			.subscribe(distribiutors => {
+				this.filteredDistributors = distribiutors.map;
+			});
+  }
+  
+	displayFn(distribiutor?: any): string | undefined {
+		this.selectedDistributor = distribiutor ? distribiutor.ID : "";
+		return distribiutor ? distribiutor.Name : undefined;
+	}
+  
+  loadRetailer() {
+		/**
+		 * Autosearch impliment
+		 */
+		let httpParams = new HttpParams();
+		// httpParams = httpParams.append("CompanyID", this.userData.Company_ID);
+		// httpParams = httpParams.append("UserID", this.userData.Tagged_To);
+		httpParams = httpParams.append("device_name", 'web');
+		httpParams = httpParams.append("token_id", this.userData.Security_Token);
+		httpParams = httpParams.append("company_id", this.userData.Company_ID);
+		httpParams = httpParams.append("user_id", this.userData.ID);
+		httpParams = httpParams.append("pageNumber", "0");
+		httpParams = httpParams.append("pageSize", "20");
+		httpParams = httpParams.append("Filter", "");
+
+		this.orderForm
+			.get("retailer_name")
+			.valueChanges.pipe(
+				debounceTime(300),
+				tap((value:any) => {
+					if(!value.ID){
+						this.orderForm.controls["retailer_id"].setValue(null);
+					}else{
+						this.orderForm.controls["retailer_id"].setValue(value.ID);
+					}
+					if (value != null) {
+						this.retailerCharacterLength = value.length;
+						if (value.length > 2) {
+							this.isLoadingAutosearch = true;
+						}
+					} else {
+						this.retailerCharacterLength = 0;
+					}
+				}),
+				switchMap((value: string) => {
+					if (value != null && value.length > 2) {
+						httpParams = httpParams.set("Filter", value);
+						return this.retailerService
+							.search(httpParams)
+							.pipe(
+								finalize(
+									() => (this.isLoadingAutosearch = false)
+								)
+							);
+					} else {
+						return [];
+					}
+				})
+			)
+			.subscribe(retailers => {
+				this.filteredRetailers = retailers.map;
+			});
+  }
+  
+  displayFnRetailer(retailers?: any): string | undefined {
+		this.selectedRetailer = retailers ? retailers.ID : "";
+		return retailers ? retailers.Name : undefined;
+  }
+
 }

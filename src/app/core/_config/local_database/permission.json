@@ -42,5 +42,23 @@
         "isSelected": false,
         "name": "AccessDistributorSOModule",
         "_children": []
+    },
+    {
+        "id": 6,
+        "title": "AccessDistributorPOModule",
+        "level": 1,
+        "parentId": 0,
+        "isSelected": false,
+        "name": "AccessDistributorPOModule",
+        "_children": []
+    },
+    {
+        "id": 7,
+        "title": "AccessDistributorPurchaseModule",
+        "level": 1,
+        "parentId": 0,
+        "isSelected": false,
+        "name": "AccessDistributorPurchaseModule",
+        "_children": []
     }
 ]

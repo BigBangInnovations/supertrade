@@ -57,7 +57,7 @@ export const selectQueryResult = createSelector(
     selectOrderState,
     orderState => {
         const items: Order[] = [];
-        each(orderState.entities, element => {
+        each(orderState.entities, element => { 
             items.push(element);
         });
         const httpExtension = new HttpExtenstionsModel();

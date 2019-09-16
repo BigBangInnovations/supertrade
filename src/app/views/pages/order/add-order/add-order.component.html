@@ -17,7 +17,10 @@
                     <div class="col-lg-12 kt-margin-bottom-20-mobile">
                         <ng-container *ngIf="isDistributor">
                             <mat-form-field class="mat-form-field-fluid">
-                                <mat-select formControlName="retailer_id" placeholder="Retailer" (selectionChange)="retailerChange($event)">
+                                    <input type="hidden" formControlName="retailer_id" value="">
+                                    <input matInput placeholder="Retailer" [matAutocomplete]="autoRetailer" formControlName='retailer_name' >
+
+                                <!-- <mat-select formControlName="retailer_id" placeholder="Retailer" (selectionChange)="retailerChange($event)">
                                     <ng-template #loading1>
                                         <mat-option value=''>
                                             Loading...
@@ -40,15 +43,37 @@
                                 </mat-select>
                                 <mat-error *ngIf="isControlHasError('retailer_id','required')">
                                     <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Retailer'} }}</strong>
-                                </mat-error>
+                                </mat-error> -->
                             </mat-form-field>
+                            <mat-autocomplete [displayWith]="displayFnRetailer" #autoRetailer="matAutocomplete" (optionSelected)="retailerChange($event)">
+                                    <mat-option *ngIf="isLoadingAutosearch" class="is-loading" disabled>
+                                        <mat-spinner diameter="20"></mat-spinner>
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoadingAutosearch">
+                                      <mat-option *ngFor="let retailer of filteredRetailers" [value]="retailer">
+                                        <span>{{ retailer.Name }} - {{ retailer.Mobile_No }} </span>
+                                      </mat-option>
+                                      <mat-option *ngIf="retailerCharacterLength >= 3 && (!filteredRetailers || !filteredRetailers.length)" disabled>
+                                            <span>No retailer available.</span>
+                                          </mat-option>
+                                          <mat-option *ngIf="retailerCharacterLength < 3" disabled>
+                                                <span>Please enter 3 or more characters</span>
+                                              </mat-option>
+                                    </ng-container>
+                                  </mat-autocomplete>
+                                  <mat-error *ngIf="isControlHasError('retailer_id','required')">
+                                        <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Retailer'} }}</strong>
+                                    </mat-error>
                         </ng-container>
 
                         <ng-container *ngIf="!isDistributor">
                             <mat-form-field class="mat-form-field-fluid">
                                 
                                         <ng-container *ngIf="userData.companySettings.AllowMultipleDistributorInPurchaseSTrade == 1; else elseSingleDistributor">
-                                                <mat-select matInput formControlName="distributor_id" placeholder="Distributor">
+                                                <input type="hidden" formControlName="distributor_id" value="">
+                                                <input matInput placeholder="Distributor" [matAutocomplete]="auto" formControlName='distributor_name'>
+
+                                                <!-- <mat-select matInput formControlName="distributor_id" placeholder="Distributor">
                                     <ng-template #loading1>
                                         <mat-option value=''>
                                             Loading...
@@ -68,7 +93,7 @@
                                             </mat-option>
                                         </ng-container>
                                     </ng-container>
-                                </mat-select>
+                                </mat-select> -->
                                 </ng-container>
                                 <ng-template #elseSingleDistributor>
                                         <mat-select matInput formControlName="distributor_id" placeholder="Distributor">
@@ -78,10 +103,26 @@
                                         </mat-select>
                                 </ng-template>
                                 
-                                <mat-error *ngIf="isControlHasError('distributor_id','required')">
-                                    <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Distributor'} }}</strong>
-                                </mat-error>
                             </mat-form-field>
+                            <mat-autocomplete [displayWith]="displayFn" #auto="matAutocomplete" >
+                                    <mat-option *ngIf="isLoadingAutosearch" class="is-loading" disabled>
+                                        <mat-spinner diameter="20"></mat-spinner>
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoadingAutosearch">
+                                      <mat-option *ngFor="let distributor of filteredDistributors" [value]="distributor">
+                                        <span>{{ distributor.Name }} - {{ distributor.Mobile_No }} </span>
+                                      </mat-option>
+                                      <mat-option *ngIf="distributorCharacterLength >= 3 && (!filteredDistributors || !filteredDistributors.length)" disabled>
+                                            <span>No distributor available.</span>
+                                          </mat-option>
+                                          <mat-option *ngIf="distributorCharacterLength < 3" disabled>
+                                                <span>Please enter 3 or more characters</span>
+                                              </mat-option>
+                                    </ng-container>
+                                  </mat-autocomplete>
+                                  <mat-error *ngIf="isControlHasError('distributor_id','required')">
+                                        <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Distributor'} }}</strong>
+                                    </mat-error>
                         </ng-container>
                     </div>
                     <div class="col-lg-12 kt-margin-bottom-20-mobile kt-margin-t-10">

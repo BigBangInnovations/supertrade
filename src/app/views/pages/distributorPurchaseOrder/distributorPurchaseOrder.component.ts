@@ -16,17 +16,14 @@ import { Store, select } from '@ngrx/store';
 import { LayoutUtilsService, MessageType } from '../../../core/_base/crud';
 import { EncrDecrServiceService } from '../../../core/auth/_services/encr-decr-service.service'
 // Models
-import { Purchase, PurchaseDataSource, PurchaseDeleted, PurchasePageRequested, UserPointsStatus } from '../../../core/purchase';
+import { DistributorPurchaseOrder, DistributorPurchaseOrderDataSource, DistributorPurchaseOrderDeleted, DistributorPurchaseOrderPageRequested } from '../../../core/distributorPurchaseOrder';
 import { AppState } from '../../../core/reducers';
 import { QueryParamsModel } from '../../../core/_base/crud';
 //
-import { getPurchaseActiveScheme } from '../../../core/auth/_selectors/auth.selectors';
 import { environment } from '../../../../environments/environment';
 // Components
-import { ViewPurchaseComponent } from './view-purchase/view-purchase.component';
+import { ViewDistributorPurchaseOrderComponent } from './view-distributorPurchaseOrder/view-distributorPurchaseOrder.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import * as fromRetailerPurchaseSchemeList from '../../../core/retailerPurchaseSchemeList';
-import { Scheme } from '../../../core/retailerPurchaseSchemeList/_models/scheme.model';
 import { APP_CONSTANTS } from '../../../../config/default/constants';
 
 // Table with EDIT item in MODAL
@@ -37,40 +34,36 @@ import { APP_CONSTANTS } from '../../../../config/default/constants';
 // https://v5.material.angular.io/components/table/overview#sorting
 // https://www.youtube.com/watch?v=NSt9CI3BXv4
 @Component({
-	selector: 'kt-purchase-list',
-	templateUrl: './purchase.component.html',
+	selector: 'kt-distributorPurchaseOrder-list',
+	templateUrl: './distributorPurchaseOrder.component.html',
 	// changeDetection: ChangeDetectionStrategy.OnPush,
-	styleUrls: ['purchase.component.scss'],
+	styleUrls: ['distributorPurchaseOrder.component.scss'],
 	providers: [DatePipe]
 })
-export class PurchaseListComponent implements OnInit, OnDestroy {
+export class DistributorPurchaseOrderListComponent implements OnInit, OnDestroy {
 
 	// Public params
 	filterForm: FormGroup;
 	hasDateError: boolean = false;
+	userData: any;
 	// Table fields
-	dataSource: PurchaseDataSource;
-	displayedColumns = ["date", "invoice_id", "distributor_name", "scheme_id", "total_quantity", "total_amount", "total_loyalty_point", "total_loyalty_boost_point", "total_return_loyalty_point", "total_return_loyalty_boost_point", 'actions'];
+	dataSource: DistributorPurchaseOrderDataSource;
+	displayedColumns = ["date", "invoice_id", "vendor_name",  "total_quantity", "total_amount", 'actions'];
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 	@ViewChild('sort1', { static: true }) sort: MatSort;
 	// Filter fields
 	// @ViewChild('searchInput', {static: true}) searchInput: ElementRef;
 	@ViewChild('startDateInput', { static: true }) startDateInput: ElementRef;
 	@ViewChild('endDateInput', { static: true }) endDateInput: ElementRef;
-	@ViewChild("scheme_id", { static: true }) scheme_id;
 	// @ViewChild('filterButton', {static: true}) filterButton: ElementRef;
 	// Selection
-	selection = new SelectionModel<Purchase>(true, []);
-	purchaseResult: Purchase[] = [];
-	userPointsResult: UserPointsStatus[] = [];
-	purchaseActiveScheme: string;
-	purchaseActiveSchemeDetail: any[] = [];
+	selection = new SelectionModel<DistributorPurchaseOrder>(true, []);
+	distributorPurchaseOrderResult: DistributorPurchaseOrder[] = [];
+	distributorPurchaseOrderActiveScheme: string;
+	distributorPurchaseOrderActiveSchemeDetail: any[] = [];
 	// Subscriptions
 	private subscriptions: Subscription[] = [];
 	progressBarValue: number;
-	accumulated_points: number;
-	viewRetailerPurchaseSchemeListLoading$: Observable<boolean>;
-	retailerPurchaseSchemeList$: Observable<Scheme[]>;
 
 	/**
 	 * Component constructor
@@ -101,7 +94,10 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 	 */
 	ngOnInit() {
 		// this.initFilterForm();
-
+		let sessionStorage = this.EncrDecr.getLocalStorage(
+			environment.localStorageKey
+		);
+		this.userData = JSON.parse(sessionStorage);
 		// If the user changes the sort order, reset back to the first page.
 		const sortSubscription = this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 		this.subscriptions.push(sortSubscription);
@@ -112,7 +108,7 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 		**/
 		const paginatorSubscriptions = merge(this.sort.sortChange, this.paginator.page).pipe(
 			tap(() => {
-				this.loadPurchaseList();
+				this.loadDistributorPurchaseOrderList();
 			})
 		)
 			.subscribe();
@@ -125,7 +121,7 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 		// 	distinctUntilChanged(), // This operator will eliminate duplicate values
 		// 	tap(() => {
 		// 		this.paginator.pageIndex = 0;
-		// 		this.loadPurchaseList();
+		// 		this.loadDistributorPurchaseOrderList();
 		// 	})
 		// )
 		// .subscribe();
@@ -138,77 +134,26 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 		// 	distinctUntilChanged(), // This operator will eliminate duplicate values
 		// 	tap(() => {
 		// 		this.paginator.pageIndex = 0;
-		// 		this.loadPurchaseList();
+		// 		this.loadDistributorPurchaseOrderList();
 		// 	})
 		// )
 		// .subscribe();
 		// this.subscriptions.push(searchSubscription);
 
-		//start get all active retailer scheme
-		this.store
-			.select(fromRetailerPurchaseSchemeList.selectRetailerPurchaseSchemeListLoaded)
-			.pipe()
-			.subscribe(data => {
-				if (data) {
-					this.retailerPurchaseSchemeList$ = this.store.pipe(
-						select(fromRetailerPurchaseSchemeList.selectAllRetailerPurchaseSchemeList)
-					);
-				} else {
-					let httpParamsScheme = new HttpParams();
-					httpParamsScheme = httpParamsScheme.append('scheme_type', APP_CONSTANTS.SCHEME.SCHEME_TYPE.SALES);
-					httpParamsScheme = httpParamsScheme.append('type', APP_CONSTANTS.SCHEME.TYPE.RETAILER_SCHEME);
-					this.store.dispatch(
-						new fromRetailerPurchaseSchemeList.LoadRetailerPurchaseSchemeList(httpParamsScheme)
-					);
-					this.retailerPurchaseSchemeList$ = this.store.pipe(
-						select(fromRetailerPurchaseSchemeList.selectAllRetailerPurchaseSchemeList)
-					);
-				}
-			});
-		this.viewRetailerPurchaseSchemeListLoading$ = this.store.pipe(
-			select(fromRetailerPurchaseSchemeList.selectRetailerPurchaseSchemeListLoading)
-		);
-
 		// Init DataSource
-		this.dataSource = new PurchaseDataSource(this.store);
+		this.dataSource = new DistributorPurchaseOrderDataSource(this.store);
 
 		const entitiesSubscription = this.dataSource.entitySubject.pipe(
 			skip(1),
 			distinctUntilChanged()
 		).subscribe(res => {
-			this.purchaseResult = res;
+			this.distributorPurchaseOrderResult = res;
 		});
 		this.subscriptions.push(entitiesSubscription);
 
-		//user points START
-		const userPointsSubscription = this.dataSource.userPointsSubject.pipe(
-			skip(1),
-			distinctUntilChanged()
-		).subscribe(res => {
-
-			if (res.accumulated_points !== undefined) {
-				this.userPointsResult = res;
-				let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
-				sessionStorage = JSON.parse(sessionStorage)
-				let purchaseActiveScheme = sessionStorage.purchaseActiveScheme.filter((item: any) => {
-					return item.from <= res.accumulated_points && item.to >= res.accumulated_points;
-				});
-				if (purchaseActiveScheme.length <= 0) {
-					purchaseActiveScheme = sessionStorage.purchaseActiveScheme[0];
-				} else {
-					purchaseActiveScheme = purchaseActiveScheme[0];
-				}
-				this.accumulated_points = res.accumulated_points;
-				this.progressBarValue = (res.accumulated_points * 100) / purchaseActiveScheme.to
-				this.purchaseActiveSchemeDetail = purchaseActiveScheme
-			}
-		});
-		this.subscriptions.push(userPointsSubscription);
-		//user points END
-
 		// First load
 		// of(undefined).pipe(take(1), delay(1000)).subscribe(() => { // Remove this line, just loading imitation
-		this.loadPurchaseList();
+		this.loadDistributorPurchaseOrderList();
 		// });
 	}
 
@@ -249,14 +194,14 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 		this.subscriptions.forEach(el => el.unsubscribe());
 	}
 
-	loadPurchaseListFromApplyBtn(){
+	loadDistributorPurchaseOrderListFromApplyBtn(){
 		this.paginator.pageIndex = 0;
-		this.loadPurchaseList();
+		this.loadDistributorPurchaseOrderList();
 	}
 	/**
-	 * Load Purchase List
+	 * Load DistributorPurchaseOrder List
 	 */
-	loadPurchaseList() {
+	loadDistributorPurchaseOrderList() {
 		this.selection.clear();
 		const queryParams = new QueryParamsModel(
 			this.filterConfiguration(),
@@ -266,14 +211,12 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 			this.paginator.pageSize
 		);
 
-		this.store.select(getPurchaseActiveScheme).pipe(take(1)).subscribe(data => {
 			this.hasDateError = false;
 			let startDate = this.startDateInput.nativeElement.value
 			let endDate = this.endDateInput.nativeElement.value
-			let scheme_id = this.scheme_id.value;
 
-			this.purchaseActiveScheme = data;
 			let httpParams = new HttpParams();
+			httpParams = httpParams.append('ss_distributor_id', this.userData.ID);
 			//filter
 			if (startDate != '' || endDate != '') {
 				if (startDate != '' && endDate != '' && new Date(startDate) <= new Date(endDate)) {
@@ -286,17 +229,10 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 					return;
 				}
 			}
-			if (scheme_id == "" || scheme_id == undefined || scheme_id == 'undefined')
-					httpParams = httpParams.append(
-						"scheme_id",
-						this.purchaseActiveScheme
-					);
-				else httpParams = httpParams.append("scheme_id", scheme_id);
 
 			// Call request from server
-			this.store.dispatch(new PurchasePageRequested({ page: queryParams, body: httpParams }));
+			this.store.dispatch(new DistributorPurchaseOrderPageRequested({ page: queryParams, body: httpParams }));
 			this.selection.clear();
-		});
 
 	}
 
@@ -312,15 +248,15 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 
 	/** ACTIONS */
 	/**
-	 * Delete purchase
+	 * Delete distributorPurchaseOrder
 	 *
-	 * @param _item: Purchase
+	 * @param _item: DistributorPurchaseOrder
 	 */
-	deletePurchase(_item: Purchase) {
-		const _title: string = 'User Purchase';
-		const _description: string = 'Are you sure to permanently delete this purchase?';
-		const _waitDesciption: string = 'Purchase is deleting...';
-		const _deleteMessage = `Purchase has been deleted`;
+	deleteDistributorPurchaseOrder(_item: DistributorPurchaseOrder) {
+		const _title: string = 'User DistributorPurchaseOrder';
+		const _description: string = 'Are you sure to permanently delete this distributorPurchaseOrder?';
+		const _waitDesciption: string = 'DistributorPurchaseOrder is deleting...';
+		const _deleteMessage = `DistributorPurchaseOrder has been deleted`;
 
 		const dialogRef = this.layoutUtilsService.deleteElement(_title, _description, _waitDesciption);
 		dialogRef.afterClosed().subscribe(res => {
@@ -328,9 +264,9 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 				return;
 			}
 
-			this.store.dispatch(new PurchaseDeleted({ id: _item.id }));
+			this.store.dispatch(new DistributorPurchaseOrderDeleted({ id: _item.id }));
 			this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete);
-			this.loadPurchaseListFromApplyBtn();
+			this.loadDistributorPurchaseOrderListFromApplyBtn();
 		});
 	}
 
@@ -338,7 +274,7 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 	/**
 	 * Fetch selected rows
 	 */
-	// fetchPurchase() {
+	// fetchDistributorPurchaseOrder() {
 	// 	const messages = [];
 	// 	this.selection.selected.forEach(elem => {
 	// 		messages.push({
@@ -351,30 +287,30 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 	// }
 
 	/**
-	 * Add purchase
+	 * Add distributorPurchaseOrder
 	 */
-	addPurchase() {
-		const newPurchase = new Purchase();
-		newPurchase.clear(); // Set all defaults fields
-		this.editPurchase(newPurchase);
+	addDistributorPurchaseOrder() {
+		const newDistributorPurchaseOrder = new DistributorPurchaseOrder();
+		newDistributorPurchaseOrder.clear(); // Set all defaults fields
+		this.editDistributorPurchaseOrder(newDistributorPurchaseOrder);
 	}
 
 	/**
-	 * Edit purchase
+	 * Edit distributorPurchaseOrder
 	 *
-	 * @param purchase: Purchase
+	 * @param distributorPurchaseOrder: DistributorPurchaseOrder
 	 */
-	editPurchase(purchase: Purchase) {
-		const _saveMessage = `Purchase successfully has been saved.`;
-		const _messageType = purchase.id ? MessageType.Update : MessageType.Create;
-		// const dialogRef = this.dialog.open(PurchaseEditDialogComponent, { data: { purchaseId: purchase.id } });
+	editDistributorPurchaseOrder(distributorPurchaseOrder: DistributorPurchaseOrder) {
+		const _saveMessage = `DistributorPurchaseOrder successfully has been saved.`;
+		const _messageType = distributorPurchaseOrder.id ? MessageType.Update : MessageType.Create;
+		// const dialogRef = this.dialog.open(DistributorPurchaseOrderEditDialogComponent, { data: { distributorPurchaseOrderId: distributorPurchaseOrder.id } });
 		// dialogRef.afterClosed().subscribe(res => {
 		// 	if (!res) {
 		// 		return;
 		// 	}
 
 		// 	this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 10000, true, true);
-		// 	this.loadPurchaseList();
+		// 	this.loadDistributorPurchaseOrderList();
 		// });
 	}
 
@@ -383,7 +319,7 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 	 */
 	isAllSelected(): boolean {
 		const numSelected = this.selection.selected.length;
-		const numRows = this.purchaseResult.length;
+		const numRows = this.distributorPurchaseOrderResult.length;
 		return numSelected === numRows;
 	}
 
@@ -391,10 +327,10 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 	 * Toggle selection
 	 */
 	masterToggle() {
-		if (this.selection.selected.length === this.purchaseResult.length) {
+		if (this.selection.selected.length === this.distributorPurchaseOrderResult.length) {
 			this.selection.clear();
 		} else {
-			this.purchaseResult.forEach(row => this.selection.select(row));
+			this.distributorPurchaseOrderResult.forEach(row => this.selection.select(row));
 		}
 	}
 
@@ -416,41 +352,6 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 		return totalQuantity;
 	}
 
-	//Calculate totalLoyaltyPoints
-	totalLoyaltyPoints(product) {
-		let totalLoyaltyPoints = 0;
-		product.forEach(function (value) {
-			totalLoyaltyPoints += value.points;
-		});
-		return totalLoyaltyPoints;
-	}
-
-	//Calculate totalBoostPoints
-	totalBoostPoints(product) {
-		let totalBoostPoints = 0;
-		product.forEach(function (value) {
-			totalBoostPoints += value.points_boost;
-		});
-		return totalBoostPoints;
-	}
-
-	//Calculate totalReturnLoyaltyPoints
-	totalReturnLoyaltyPoints(product) {
-		let totalLoyaltyPoints = 0;
-		product.forEach(function (value) {
-			totalLoyaltyPoints += value.return_points;
-		});
-		return totalLoyaltyPoints;
-	}
-
-	//Calculate totalReturnBoostPoints
-	totalReturnBoostPoints(product) {
-		let totalBoostPoints = 0;
-		product.forEach(function (value) {
-			totalBoostPoints += value.return_points_boost;
-		});
-		return totalBoostPoints;
-	}
 
 	displayProduct(product){
 		let produtString = '';
@@ -461,16 +362,16 @@ export class PurchaseListComponent implements OnInit, OnDestroy {
 	}
 
 	/** 
-	 * View purchase in popup
+	 * View distributorPurchaseOrder in popup
 	 */
-	viewPurchase(purchaseId, action) {
-		const dialogRef = this.dialog.open(ViewPurchaseComponent, {
-			data: { purchaseId: purchaseId, action: action },
+	viewDistributorPurchaseOrder(distributorPurchaseOrderId, action) {
+		const dialogRef = this.dialog.open(ViewDistributorPurchaseOrderComponent, {
+			data: { distributorPurchaseOrderId: distributorPurchaseOrderId, action: action },
 			width: '600px',
 		});
 		dialogRef.afterClosed().subscribe(res => {
-			if (action == 'purchaseReturn' && res == 'reload')
-				this.loadPurchaseListFromApplyBtn();
+			if (action == 'distributorPurchaseOrderReturn' && res == 'reload')
+				this.loadDistributorPurchaseOrderListFromApplyBtn();
 		});
 	}
 }
