@@ -319,8 +319,9 @@ export class PopupProductComponent implements OnInit {
 				 console.log('data.Purchase_Discount: =>'+data.Purchase_Discount);
 				 
 				 if(
-					 (this.data.pageAction == 'addOrder' && APP_CONSTANTS.USER_ROLE.RETAILER_TYPE)
+					 this.data.pageAction == 'addOrder'
 					 || this.data.pageAction == 'addPurchase'
+					 || this.data.pageAction == 'addDistributorSale'
 					 ){
 						eligibleDiscount = data.Sales_Discount;
 					// if(this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE){

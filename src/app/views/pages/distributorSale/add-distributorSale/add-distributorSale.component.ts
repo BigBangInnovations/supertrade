@@ -516,6 +516,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
 
           ],
           productDiscountCtrl: [orderProduct.Discount],
+          productDistributorMaxDiscountCtrl: [orderProduct.DistributorMaxDiscount],
           productLoyaltyPointCtrl: [orderProduct.LoyaltyPoint],
           productBarCodeCtrl: [''],
           productProductCodeCtrl: [''],

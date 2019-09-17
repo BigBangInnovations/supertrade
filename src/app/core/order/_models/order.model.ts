@@ -88,6 +88,7 @@ export class orderProduct {
     CategoryType = undefined;
     CustomerClass = undefined;
     Discount = undefined;
+    DistributorMaxDiscount = undefined;
     DiscountA = undefined;
     DiscountB = undefined;
     DiscountC = undefined;
@@ -130,6 +131,7 @@ export class orderProduct {
         this.CategoryType = undefined;
         this.CustomerClass = undefined;
         this.Discount = undefined;
+        this.DistributorMaxDiscount = undefined;
         this.DiscountA = undefined;
         this.DiscountB = undefined;
         this.DiscountC = undefined;

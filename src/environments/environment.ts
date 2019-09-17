@@ -18,8 +18,8 @@ export const environment = {
 	commonServiceApiLiveTest: 'http://bigbangcommonservice.info:8080/commonServicesTestProduction/',
 	commonServiceApi: 'http://bigbangcommonservice.info:8080/commonServices10/',
 	
-	// apiEndpoint: 'http://34.219.152.38/superloyaldevapi/',
-	apiEndpoint: 'http://localhost/superloyalapi/superloyalapi/',
+	apiEndpoint: 'http://34.219.152.38/superloyaldevapi/',
+	// apiEndpoint: 'http://localhost/superloyalapi/superloyalapi/',
 	encKey: '$bigang_Secure@production',
 	localStorageKey:'_K'
 };
