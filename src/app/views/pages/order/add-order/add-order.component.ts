@@ -148,7 +148,19 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     const routeSubscription = this.activatedRoute.params.subscribe(params => {
       let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
       this.userData = JSON.parse(sessionStorage)
+
+      //Price editable settings is on or not check
+      if(this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE && this.userData.companySettings.PriceEditableRetailerPOSTrade == '1'){
+        this.OptionalSetting.isPriceEditable = true;
+      }
+
+      // if(this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.DISTRIBUTOR_TYPE && this.userData.companySettings.PriceEditableDistributorPOSTrade == '1'){
+      if(this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.DISTRIBUTOR_TYPE){
+          this.OptionalSetting.isDiscountEditable = true;
+      }
+
       this.isDistributor = (this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.DISTRIBUTOR_TYPE) ? true : false;
+
       if (!this.isDistributor) {
         if (this.userData.companySettings.ManageSGST == '1') {
           if (this.userData.Tax_Type == 'VAT') this.isSGSTTax = true;
@@ -434,7 +446,7 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     const _messageType = MessageType.Read;
 
     const dialogRef = this.dialog.open(PopupProductComponent, {
-      data: { addedProductsIds: this.addedProductsIds, isDiscount: true },
+      data: { addedProductsIds: this.addedProductsIds, isDiscount: true,pageAction:this.pageAction, OptionalSetting:this.OptionalSetting },
       // data: { addedProductsIds: [] },
       width: '600px',
     });

@@ -86,10 +86,16 @@ export class dynamicProductTemplateSetting {
     //To display accept reject button
     displayApproveRejectButton: boolean;
 
+    isPriceEditable: boolean;
+
+    isDiscountEditable: boolean;
+
     clear(): void {
         this.displayDeleteButton = true;
         this.displayPointCalculation = true;
         this.displayApproveRejectButton = false;
+        this.isPriceEditable = false;
+        this.isDiscountEditable = false;
     }
 }
 

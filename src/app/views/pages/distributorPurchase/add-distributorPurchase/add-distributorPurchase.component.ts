@@ -409,7 +409,7 @@ export class AddDistributorPurchaseComponent implements OnInit, OnDestroy {
     const _messageType = MessageType.Read;
 
     const dialogRef = this.dialog.open(PopupProductComponent, {
-      data: { addedProductsIds: this.addedProductsIds, isDiscount: true },
+      data: { addedProductsIds: this.addedProductsIds, isDiscount: true,pageAction:this.pageAction, OptionalSetting:this.OptionalSetting },
       // data: { addedProductsIds: [] },
       width: '600px',
     });

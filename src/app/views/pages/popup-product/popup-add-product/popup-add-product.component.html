@@ -8,20 +8,25 @@
         </mat-expansion-panel-header>
 
         <mat-list role="list">
-            <mat-list-item role="listitem">
-                <h3 mat-line>Price: {{ getControlLabel('productPriceCtrl') }} </h3>
-                <button mat-icon-button (click)="deleteProduct(index)" *ngIf="OptionalSetting.displayDeleteButton">
-                            <mat-icon class="mat-24 kt-font-danger">delete</mat-icon>
-                          </button>
-            </mat-list-item>
-            <!-- <mat-list-item role="listitem" style="margin-left: -11px; margin-top: 20px;">
-                    <mat-form-field class="col-lg-12">
-                            <input  matInput formControlName="productPriceCtrl" placeholder="Price" (input)="getProductAmount();">
-                        </mat-form-field>
-                        <button mat-icon-button (click)="deleteProduct(index)" *ngIf="OptionalSetting.displayDeleteButton">
-                                <mat-icon class="mat-24 kt-font-danger">delete</mat-icon>
-                              </button>
-            </mat-list-item> -->
+                <ng-container *ngIf="OptionalSetting.isPriceEditable == 1; else elsePriceNotEditable">
+                        
+                        <mat-list-item role="listitem" style="margin-left: -11px; margin-top: 20px;">
+                                <mat-form-field class="col-lg-12">
+                                        <input  matInput formControlName="productPriceCtrl" placeholder="Price" (input)="getProductAmount();">
+                                    </mat-form-field>
+                                    <button mat-icon-button (click)="deleteProduct(index)" *ngIf="OptionalSetting.displayDeleteButton">
+                                            <mat-icon class="mat-24 kt-font-danger">delete</mat-icon>
+                                          </button>
+                        </mat-list-item>
+                        </ng-container>
+                        <ng-template #elsePriceNotEditable>
+                                <mat-list-item role="listitem">
+                                        <h3 mat-line>Price: {{ getControlLabel('productPriceCtrl') }} </h3>
+                                        <button mat-icon-button (click)="deleteProduct(index)" *ngIf="OptionalSetting.displayDeleteButton">
+                                                    <mat-icon class="mat-24 kt-font-danger">delete</mat-icon>
+                                                  </button>
+                                    </mat-list-item>
+                    </ng-template>
             <ng-container *ngIf="
 pageAction != 'addSale'
 && pageAction != 'addOrder' 
@@ -149,17 +154,21 @@ pageAction != 'addSale'
                 <span matLine>Product Amount </span>
                 <div class="kt-align-right">{{ productAmount | number:'1.2-2' }}</div>
             </mat-list-item>
-            
-            <!-- <mat-list-item role="listitem" style="margin-left: -11px; margin-top: 20px;">
-                    <mat-form-field class="col-lg-12">
-                            <input  matInput formControlName="productDiscountCtrl" placeholder="Discount(%)" (input)="getProductAmount();">
-                        </mat-form-field>
-            </mat-list-item> -->
-            
-            <mat-list-item role="listitem">
-                <span matLine>Discount @{{getControlLabel('productDiscountCtrl')}}% </span>
-                <div class="kt-align-right">{{ productDiscount | number:'1.2-2' }}</div>
-            </mat-list-item>
+
+            <ng-container *ngIf="OptionalSetting.isDiscountEditable == 1; else elseDiscountNotEditable">
+                    <mat-list-item role="listitem" style="margin-left: -11px; margin-top: 20px;">
+                            <mat-form-field class="col-lg-12">
+                                    <input  matInput formControlName="productDiscountCtrl" placeholder="Discount(%)" (input)="getProductAmount();">
+                                </mat-form-field>
+                    </mat-list-item>
+                </ng-container>
+                <ng-template #elseDiscountNotEditable>
+                    <mat-list-item role="listitem">
+                        <span matLine>Discount @{{getControlLabel('productDiscountCtrl')}}% </span>
+                        <div class="kt-align-right">{{ productDiscount | number:'1.2-2' }}</div>
+                    </mat-list-item>
+                </ng-template>
+
             <mat-divider></mat-divider>
             <mat-list-item role="listitem">
                 <span matLine>Gross Amount </span>

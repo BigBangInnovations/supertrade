@@ -26,7 +26,8 @@ import { ProductService } from "../../../core/product/_services";
 import { HttpParams } from "@angular/common/http";
 import { APP_CONSTANTS } from "../../../../config/default/constants";
 import { CommonResponse } from "../../../core/common/common.model";
-
+import { EncrDecrServiceService } from '../../../core/auth/_services/encr-decr-service.service'
+import { environment } from '../../../../environments/environment';
 import * as fromProduct from "../../../core/product";
 import { async } from "@angular/core/testing";
 import { LayoutUtilsService, MessageType } from "../../../core/_base/crud";
@@ -44,6 +45,7 @@ export class PopupProductComponent implements OnInit {
 	// viewLoading: boolean = false;
 	categoryLoading: boolean = false;
 	loadingAfterSubmit: boolean = false;
+	userData: any;
 	errors: any = [];
 	isProductloaded$: Observable<boolean>;
 	viewLoading$: Observable<boolean>;
@@ -61,6 +63,7 @@ export class PopupProductComponent implements OnInit {
 	 * @param fb: FormBuilder
 	 * @param cdr
 	 * @param layoutUtilsService: LayoutUtilsService
+	 * @param EncrDecr: EncrDecrServiceService
 	 */
 	constructor(
 		public dialogRef: MatDialogRef<PopupProductComponent>,
@@ -70,9 +73,12 @@ export class PopupProductComponent implements OnInit {
 		private fb: FormBuilder,
 		private cdr: ChangeDetectorRef,
 		private ProductSer: ProductService,
-		private layoutUtilsService: LayoutUtilsService
+		private layoutUtilsService: LayoutUtilsService,
+		private EncrDecr: EncrDecrServiceService,
 	) {
 		this.unsubscribe = new Subject();
+		let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
+      	this.userData = JSON.parse(sessionStorage)
 	}
 
 	ngOnInit(): void {
@@ -131,6 +137,7 @@ export class PopupProductComponent implements OnInit {
 				]
 			],
 			productDiscountCtrl: [""],
+			productDistributorMaxDiscountCtrl: [""],
 			productLoyaltyPointCtrl: [""],
 			productBarCodeCtrl: [""],
 			productProductCodeCtrl: [""],
@@ -206,6 +213,9 @@ export class PopupProductComponent implements OnInit {
 			],
 			productDiscountCtrl: [
 				this.popupProductForm.controls["productDiscountCtrl"].value
+			],
+			productDistributorMaxDiscountCtrl: [
+				this.popupProductForm.controls["productDistributorMaxDiscountCtrl"].value
 			],
 			productLoyaltyPointCtrl: [
 				this.popupProductForm.controls["productLoyaltyPointCtrl"].value
@@ -295,6 +305,37 @@ export class PopupProductComponent implements OnInit {
 		let allProducts = this.productArray;
 		allProducts.filter((data: any) => {
 			if (data.ID == productID) {
+				let eligibleDiscount = 0;
+				/** 
+				 * Discount calculation
+				 */
+					
+				 console.log(data);
+				 console.log('this.data.pageAction: =>'+this.data.pageAction);
+				 console.log(this.data.OptionalSetting);
+				 console.log('data.DistributorMaxDiscount: =>'+data.DistributorMaxDiscount);
+				 console.log('data.MaxDiscount: =>'+data.MaxDiscount);
+				 console.log('data.Sales_Discount: =>'+data.Sales_Discount);
+				 console.log('data.Purchase_Discount: =>'+data.Purchase_Discount);
+				 
+				 if(
+					 (this.data.pageAction == 'addOrder' && APP_CONSTANTS.USER_ROLE.RETAILER_TYPE)
+					 || this.data.pageAction == 'addPurchase'
+					 ){
+						eligibleDiscount = data.Sales_Discount;
+					// if(this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE){
+					// 	eligibleDiscount = data.Sales_Discount;
+					// }
+					// else if(this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.DISTRIBUTOR_TYPE){
+					// 	eligibleDiscount = data.Purchase_Discount;
+					// }
+					
+				 }else if(this.data.pageAction == 'addDistributorPurchaseOrder' || this.data.pageAction == 'addDistributorPurchase'
+				 
+				 ){
+					eligibleDiscount = data.Purchase_Discount;
+				 }
+
 				this.popupProductForm.controls["productCategoryCtrl"].setValue(
 					data.Product_Cat_ID
 				);
@@ -306,14 +347,22 @@ export class PopupProductComponent implements OnInit {
 
 				this.changeSubCategory(data.Product_Sub_Cat_ID);
 
-				if (this.data.isDiscount)
+				// if (this.data.isDiscount){
 					this.popupProductForm.controls[
 						"productDiscountCtrl"
-					].setValue(data.MaxDiscount);
-				else
+					].setValue(eligibleDiscount);
+					
 					this.popupProductForm.controls[
-						"productDiscountCtrl"
-					].setValue(0);
+						"productDistributorMaxDiscountCtrl"
+					].setValue(data.DistributorMaxDiscount);
+					
+				// }
+					
+				// else
+				// 	this.popupProductForm.controls[
+				// 		"productDiscountCtrl"
+				// 	].setValue(0);
+
 				this.popupProductForm.controls[
 					"productLoyaltyPointCtrl"
 				].setValue(data.loyalty_point);

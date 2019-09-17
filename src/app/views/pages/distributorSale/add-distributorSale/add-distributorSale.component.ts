@@ -119,6 +119,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     const OptionalSetting = new dynamicProductTemplateSetting();
     OptionalSetting.clear();
     this.OptionalSetting = OptionalSetting;
+    this.OptionalSetting.isDiscountEditable = true;
     this.pageAction = 'addDistributorSale'
   }
 
@@ -398,7 +399,7 @@ export class AddDistributorSaleComponent implements OnInit, OnDestroy {
     const _messageType = MessageType.Read;
 
     const dialogRef = this.dialog.open(PopupProductComponent, {
-      data: { addedProductsIds: this.addedProductsIds, isDiscount: true },
+      data: { addedProductsIds: this.addedProductsIds, isDiscount: true,pageAction:this.pageAction, OptionalSetting:this.OptionalSetting },
       // data: { addedProductsIds: [] },
       width: '600px',
     });

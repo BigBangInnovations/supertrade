@@ -167,6 +167,10 @@ export class AddDistributorPurchaseOrderComponent implements OnInit, OnDestroy {
 				);
 				this.userData = JSON.parse(sessionStorage);
 
+				if(this.userData.companySettings.PriceEditableDistributorPOSTrade == '1'){
+						this.OptionalSetting.isPriceEditable = true;
+					}
+
 				if (this.userData.companySettings.ManageSGST == "1") {
 					if (this.userData.Tax_Type == "VAT") this.isSGSTTax = true;
 				} else if (this.userData.companySettings.ManageIGST == "1") {
@@ -513,7 +517,9 @@ export class AddDistributorPurchaseOrderComponent implements OnInit, OnDestroy {
 		const dialogRef = this.dialog.open(PopupProductComponent, {
 			data: {
 				addedProductsIds: this.addedProductsIds,
-				isDiscount: false
+				isDiscount: false,
+				pageAction:this.pageAction, 
+				OptionalSetting:this.OptionalSetting
 			},
 			// data: { addedProductsIds: [] },
 			width: "600px"

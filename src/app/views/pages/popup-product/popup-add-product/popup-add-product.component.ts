@@ -8,6 +8,7 @@ import {
 import { FormGroup, FormArray } from "@angular/forms";
 import { EncrDecrServiceService } from "../../../../core/auth/_services/encr-decr-service.service";
 import { environment } from "../../../../../environments/environment";
+import { APP_CONSTANTS } from "../../../../../config/default/constants";
 
 @Component({
 	selector: "kt-popup-add-product",
@@ -53,6 +54,8 @@ export class PopupAddProductComponent {
 	boost_point: number;
 	coreProductLoyaltyPoint: number;
 	productQuantity: number;
+	productOrgPrice: number;
+	productOrgDiscount: number;
 
 	/**
 	 * @param EncrDecr: EncrDecrServiceService
@@ -102,6 +105,12 @@ export class PopupAddProductComponent {
 		this.productQuantity = this.productForm.controls[
 			"productQuantityCtrl"
 		].value;
+		this.productOrgPrice = this.productForm.controls[
+			"productPriceCtrl"
+		].value;
+		this.productOrgDiscount = this.productForm.controls[
+			"productDiscountCtrl"
+		].value;
 		this.productAmount =
 			this.productForm.controls["productPriceCtrl"].value *
 			this.productQuantity;
@@ -149,6 +158,28 @@ export class PopupAddProductComponent {
 		let quantity = this.productForm.controls["productQuantityCtrl"].value;
 		let price = this.productForm.controls["productPriceCtrl"].value;
 		let discount = this.productForm.controls["productDiscountCtrl"].value;
+		let distributorMaxDiscount = this.productForm.controls["productDistributorMaxDiscountCtrl"].value;
+
+		if( (
+			(this.pageAction == 'addOrder' && APP_CONSTANTS.USER_ROLE.RETAILER_TYPE)
+			|| this.pageAction == 'addPurchase'
+			|| this.pageAction == 'addDistributorPurchase'
+			)
+			&& this.OptionalSetting.isPriceEditable){
+			let discount = (price*this.productOrgDiscount)/this.productOrgPrice
+			this.productForm.controls["productDiscountCtrl"].setValue(
+				discount
+			);
+		}	
+		if((
+			(this.pageAction == 'addOrder' || this.pageAction == 'addDistributorSale')
+			 && APP_CONSTANTS.USER_ROLE.DISTRIBUTOR_TYPE)){
+			if(discount > distributorMaxDiscount){
+				this.productForm.controls["productDiscountCtrl"].setValue(
+					distributorMaxDiscount
+				);
+			}
+		}
 
 		if (quantity != "") {
 			this.productQuantity = quantity;

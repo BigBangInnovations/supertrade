@@ -165,6 +165,11 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 				);
 				this.userData = JSON.parse(sessionStorage);
 
+				//Price editable settings is on or not check
+				if(this.userData.Company_Type_ID == APP_CONSTANTS.USER_ROLE.RETAILER_TYPE && this.userData.companySettings.PriceEditableRetailerPOSTrade == '1'){
+					this.OptionalSetting.isPriceEditable = true;
+				  }
+				  
 				if (this.userData.companySettings.ManageSGST == "1") {
 					if (this.userData.Tax_Type == "VAT") this.isSGSTTax = true;
 				} else if (this.userData.companySettings.ManageIGST == "1") {
@@ -475,7 +480,9 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 		const dialogRef = this.dialog.open(PopupProductComponent, {
 			data: {
 				addedProductsIds: this.addedProductsIds,
-				isDiscount: false
+				isDiscount: false,
+				pageAction:this.pageAction, 
+				OptionalSetting:this.OptionalSetting
 			},
 			// data: { addedProductsIds: [] },
 			width: "600px"
