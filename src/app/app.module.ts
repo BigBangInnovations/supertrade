@@ -74,6 +74,10 @@ import { NotificationService } from './core/notification'
 import { DistributorSaleModule } from './views/pages/distributorSale/distributorSale.module'
 import { DistributorSaleService } from './core/distributorSale'
 
+//Distributor Purchase
+import { DistributorPurchaseModule } from './views/pages/distributorPurchase/distributorPurchase.module'
+import { DistributorPurchaseService } from './core/distributorPurchase'
+
 //Distributor Sale
 import { DistributorPurchaseOrderModule } from './views/pages/distributorPurchaseOrder/distributorPurchaseOrder.module'
 import { DistributorPurchaseOrderService } from './core/distributorPurchaseOrder'
@@ -144,6 +148,7 @@ export function hljsLanguages(): HighlightLanguage[] {
 		OrderModule.forRoot(),
 		NotificationModule.forRoot(),
 		DistributorSaleModule.forRoot(),
+		DistributorPurchaseModule.forRoot(),
 		DistributorPurchaseOrderModule.forRoot(),
 		TranslateModule.forRoot(),
 		MatProgressSpinnerModule,
@@ -158,6 +163,7 @@ export function hljsLanguages(): HighlightLanguage[] {
 		OrderService,
 		NotificationService,
 		DistributorSaleService,
+		DistributorPurchaseService,
 		DistributorPurchaseOrderService,
 		LayoutConfigService,
 		LayoutRefService,

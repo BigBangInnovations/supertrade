@@ -32,6 +32,9 @@ export const locale = {
 			DISTRIBUTOR_SALES: 'Sales',
 			DISTRIBUTOR_SALES_LIST: 'Sales List',
 			ADD_DISTRIBUTOR_SALES: 'Sales',
+			DISTRIBUTOR_PURCHASE: 'Purchase',
+			DISTRIBUTOR_PURCHASE_LIST: 'Purchase List',
+			ADD_DISTRIBUTOR_PURCHASE: 'Purchase',
 		},
 		AUTH: {
 			GENERAL: {

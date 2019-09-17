@@ -77,6 +77,18 @@ const routes: Routes = [
 				data: { moduleName: 'distributorSale' },
 				loadChildren: () => import('../../../../app/views/pages/distributorSale/add-distributorSale/add-distributorSale.module').then(m => m.AddDistributorSaleModule)
 			},
+			{
+				path: 'distributor-purchase',
+				canActivate: [ModuleGuard],
+				data: { moduleName: 'distributorPurchase' },
+				loadChildren: () => import('../../../../app/views/pages/distributorPurchase/distributorPurchase.module').then(m => m.DistributorPurchaseModule)
+			},
+			{
+				path: 'add-distributor-purchase',
+				canActivate: [ModuleGuard],
+				data: { moduleName: 'distributorPurchase' },
+				loadChildren: () => import('../../../../app/views/pages/distributorPurchase/add-distributorPurchase/add-distributorPurchase.module').then(m => m.AddDistributorPurchaseModule)
+			},
 			{ path: 'error/:type', component: ErrorPageComponent },
 			{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 			{path: '**', redirectTo: 'dashboard', pathMatch: 'full'}

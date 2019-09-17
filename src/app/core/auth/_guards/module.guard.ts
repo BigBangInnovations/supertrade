@@ -32,8 +32,11 @@ export class ModuleGuard implements CanActivate {
                 select(currentUserRoleIds),
                 map((currentUserRoleIdMap) => {
                     roleJson.forEach(role => {
+                        
                         if (role.id == currentUserRoleIdMap) {
+                            
                             role.permissions.forEach(permission => {
+                                
                                 permissionJson.forEach(permissions => {
                                     if (permissions.id == permission) {
                                         if (!hasAccess && permissions.title.toLocaleLowerCase() === moduleName.toLocaleLowerCase()) {

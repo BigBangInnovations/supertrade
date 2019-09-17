@@ -11,7 +11,8 @@ export {
     selectAllVendor,
     selectVendorLoaded,
     selectVendorState,
-    selectVendorLoading
+    selectVendorLoading,
+    selectVendorById
  } from './_selectors/vendor.selectors'
  //ACTION
  export { 

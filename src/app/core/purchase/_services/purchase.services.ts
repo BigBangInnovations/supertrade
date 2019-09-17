@@ -86,7 +86,7 @@ export class PurchaseService {
      * Get distributor sale for approval 
      */
     findDistributorSaleAsPurchase(data: any): Observable<any> {
-        const url = `get-distributor-sales`;
+        const url = `get-distributor-purchase`;
         return this.http.post<Purchase[]>(url, data);
     }
  	/*

@@ -6,9 +6,14 @@ import * as fromVendor from '../_reducers/vendor.reducers';
 
 export const selectVendorState = createFeatureSelector<VendorState>('vendor');
 
+export const selectVendorById = (vendorId: number) => createSelector(
+    selectVendorState,
+    VendorState => VendorState.entities[vendorId]
+);
+
 export const selectAllVendor = createSelector(
     selectVendorState,
-    (state: VendorState) => state.vendor
+    fromVendor.selectAll
 );
 
 export const selectVendorLoading = createSelector(

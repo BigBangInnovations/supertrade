@@ -7,7 +7,7 @@
     {
         "id": 5,
         "title": "Distributor",
-        "permissions": [3,5,6,7],
+        "permissions": [3, 5, 6, 7],
         "isCoreRole": true
     }
 ]

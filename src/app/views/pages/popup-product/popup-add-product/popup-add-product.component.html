@@ -27,16 +27,17 @@ pageAction != 'addSale'
 && pageAction != 'addOrder' 
 && pageAction != 'addPurchase' 
 && pageAction != 'retailerPurchaseApproval' 
-&& pageAction != 'addDistributorSale'
+&& pageAction != 'addDistributorSale'   
 && pageAction != 'retailerPurchaseReturnApproval'
 && pageAction != 'distributorPartialAcceptPurchaseReturnApproval'
 && pageAction != 'retailerPurchaseReturnApprovalByDistributor'
 && pageAction != 'viewDistributorPurchaseOrder'
 && pageAction != 'distributorPurchaseOrderEdit'
+&& pageAction != 'addDistributorPurchase'
 ">
 
                 <mat-list-item role="listitem">
-                    <span matLine>Original sale quantity </span>
+                    <span matLine>Original quantity </span>
                     <div class="kt-align-right">{{getControlLabel('productOriginalQuantityCtrl')}}</div>
                 </mat-list-item>
                 <mat-divider></mat-divider>
@@ -97,6 +98,7 @@ pageAction != 'addSale'
 && pageAction != 'retailerPurchaseReturnApprovalByDistributor'
 && pageAction != 'viewDistributorPurchaseOrder'
 && pageAction != 'distributorPurchaseOrderEdit'
+&& pageAction != 'addDistributorPurchase'
 ">
                 <mat-list-item role="listitem">
                     <span matLine>Total return quantity </span>
@@ -114,6 +116,8 @@ pageAction != 'addSale'
                 || pageAction == 'retailerPurchaseReturnApproval' 
                 || pageAction == 'distributorSaleReturn' 
                 || pageAction == 'distributorPurchaseOrderEdit' 
+                || pageAction == 'distributorPurchaseReturn' 
+                || pageAction == 'addDistributorPurchase' 
                 ">
                 <mat-form-field class="col-lg-12" style="margin-left: -11px;">
                     <input maxlength="5" matInput formControlName="productQuantityCtrl" placeholder="Quantity" (input)="getProductAmount();">

@@ -120,6 +120,7 @@ export class orderProduct {
     VATPercentage = undefined;
     VATSurcharge = undefined;
     LoyaltyPoint = undefined;
+    points = undefined;
 
     clear(): void {
         this.CGSTSurcharges = undefined;
@@ -161,5 +162,6 @@ export class orderProduct {
         this.VATPercentage = undefined;
         this.VATSurcharge = undefined;
         this.LoyaltyPoint = 0;
+        this.points = 0;
     }
 }

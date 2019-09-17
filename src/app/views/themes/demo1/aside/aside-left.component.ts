@@ -117,8 +117,9 @@ export class AsideLeftComponent implements OnInit, AfterViewInit {
 		if (!item.page) {
 			return false;
 		}
+		// return this.currentRouteUrl.indexOf(item.page) !== -1;
+		return (this.currentRouteUrl == item.page)
 
-		return this.currentRouteUrl.indexOf(item.page) !== -1;
 	}
 
 	/**

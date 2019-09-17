@@ -158,31 +158,31 @@ export class AddOrderComponent implements OnInit, OnDestroy {
       }
       this.initOrder();
 
-      if (this.isDistributor) {
-        //Load retailer
-        this.store.select(fromRetailer.selectRetailerLoaded).pipe().subscribe(data => {
-          if (data) {
-            this.retailers$ = this.store.pipe(select(fromRetailer.selectAllRetailer));
-          } else {
-            let httpParams = new HttpParams();
-            this.store.dispatch(new fromRetailer.LoadRetailer(httpParams))
-            this.retailers$ = this.store.pipe(select(fromRetailer.selectAllRetailer));
-          }
-        });
-        this.viewLoading$ = this.store.pipe(select(fromRetailer.selectRetailerLoading));
-      } else {
-        //Load distribiutor
-        this.store.select(fromDistributor.selectDistributorLoaded).pipe().subscribe(data => {
-          if (data) {
-            this.distributor$ = this.store.pipe(select(fromDistributor.selectAllDistributor));
-          } else {
-            let httpParams = new HttpParams();
-            this.store.dispatch(new fromDistributor.LoadDistributor(httpParams))
-            this.distributor$ = this.store.pipe(select(fromDistributor.selectAllDistributor));
-          }
-        });
-        this.viewLoading$ = this.store.pipe(select(fromDistributor.selectDistributorLoading));
-      }
+      // if (this.isDistributor) {
+      //   //Load retailer
+      //   this.store.select(fromRetailer.selectRetailerLoaded).pipe().subscribe(data => {
+      //     if (data) {
+      //       this.retailers$ = this.store.pipe(select(fromRetailer.selectAllRetailer));
+      //     } else {
+      //       let httpParams = new HttpParams();
+      //       this.store.dispatch(new fromRetailer.LoadRetailer(httpParams))
+      //       this.retailers$ = this.store.pipe(select(fromRetailer.selectAllRetailer));
+      //     }
+      //   });
+      //   this.viewLoading$ = this.store.pipe(select(fromRetailer.selectRetailerLoading));
+      // } else {
+      //   //Load distribiutor
+      //   this.store.select(fromDistributor.selectDistributorLoaded).pipe().subscribe(data => {
+      //     if (data) {
+      //       this.distributor$ = this.store.pipe(select(fromDistributor.selectAllDistributor));
+      //     } else {
+      //       let httpParams = new HttpParams();
+      //       this.store.dispatch(new fromDistributor.LoadDistributor(httpParams))
+      //       this.distributor$ = this.store.pipe(select(fromDistributor.selectAllDistributor));
+      //     }
+      //   });
+      //   this.viewLoading$ = this.store.pipe(select(fromDistributor.selectDistributorLoading));
+      // }
     });
     this.subscriptions.push(routeSubscription);
 

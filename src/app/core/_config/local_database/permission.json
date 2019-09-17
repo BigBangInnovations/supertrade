@@ -27,7 +27,7 @@
     },
     {
         "id": 4,
-        "title": "AccessRetailerPOModule",
+        "title": "order",
         "level": 1,
         "parentId": 0,
         "isSelected": false,
@@ -36,7 +36,7 @@
     },
     {
         "id": 5,
-        "title": "AccessDistributorSOModule",
+        "title": "order",
         "level": 1,
         "parentId": 0,
         "isSelected": false,
@@ -45,7 +45,7 @@
     },
     {
         "id": 6,
-        "title": "AccessDistributorPOModule",
+        "title": "distributorPurchaseOrder",
         "level": 1,
         "parentId": 0,
         "isSelected": false,
@@ -54,7 +54,7 @@
     },
     {
         "id": 7,
-        "title": "AccessDistributorPurchaseModule",
+        "title": "distributorPurchase",
         "level": 1,
         "parentId": 0,
         "isSelected": false,

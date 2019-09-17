@@ -427,7 +427,6 @@ export class MenuConfig {
 							page: '/sales',
 							translate: 'MENU.SALES_LIST',
 							bullet: 'dot',
-							permission:'AccessSaleModule',
 						},
 						{
 							bullet: 'dot',
@@ -436,7 +435,6 @@ export class MenuConfig {
 							alignment: 'left',
 							page: '/add-sale',
 							translate: 'MENU.ADD_SALES',
-							permission:'AccessSaleModule',
 						},
 						
 					]
@@ -456,7 +454,6 @@ export class MenuConfig {
 							page: '/distributor-sales',
 							translate: 'MENU.DISTRIBUTOR_SALES_LIST',
 							bullet: 'dot',
-							permission:'AccessDistributorSaleModule',
 						},
 						{
 							bullet: 'dot',
@@ -465,7 +462,32 @@ export class MenuConfig {
 							alignment: 'left',
 							page: '/add-distributor-sale',
 							translate: 'MENU.ADD_DISTRIBUTOR_SALES',
-							permission:'AccessDistributorSaleModule',
+						},
+						
+					]
+				},{
+					title: 'Purchase',
+					root: true,
+					icon: 'flaticon2-bar-chart',
+					page: '/distributor-purchase',
+					translate: 'MENU.DISTRIBUTOR_PURCHASE',
+					bullet: 'dot',
+					permission:'AccessDistributorPurchaseModule',
+					submenu: [
+						{
+							title: 'Purchase list',
+							root: true,
+							page: '/distributor-purchase',
+							translate: 'MENU.DISTRIBUTOR_PURCHASE_LIST',
+							bullet: 'dot',
+						},
+						{
+							bullet: 'dot',
+							title: 'Add Purchase',
+							root: true,
+							alignment: 'left',
+							page: '/add-distributor-purchase',
+							translate: 'MENU.ADD_DISTRIBUTOR_PURCHASE',
 						},
 						
 					]
@@ -485,7 +507,6 @@ export class MenuConfig {
 							page: '/purchase',
 							translate: 'MENU.PURCHASE_LIST',
 							bullet: 'dot',
-							permission:'AccessPurchaseModule',
 						},
 						{
 							bullet: 'dot',
@@ -494,7 +515,6 @@ export class MenuConfig {
 							alignment: 'left',
 							page: '/add-purchase',
 							translate: 'MENU.ADD_PURCHASE',
-							permission:'AccessPurchaseModule',
 						},
 						
 					]

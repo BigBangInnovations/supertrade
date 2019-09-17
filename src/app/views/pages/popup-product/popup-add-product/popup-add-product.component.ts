@@ -74,16 +74,26 @@ export class PopupAddProductComponent {
 	}
 
 	ngAfterContentInit(): void {
+		console.log('this.pageAction:=> '+this.pageAction);
+		
 		this.boost_point = 0;
 		if (
 			this.pageAction == "retailerPurchaseApproval" ||
 			this.pageAction == "addPurchase" ||
+			this.pageAction == "viewPurchase" ||
 			this.pageAction == "purchaseReturn" ||
-			this.pageAction == "distributorPartialAcceptPurchaseReturnApproval"
+			this.pageAction == "viewDistributorPurchase" ||
+			this.pageAction == "distributorPurchaseReturn" ||
+			this.pageAction == "distributorPartialAcceptPurchaseReturnApproval" || 
+			this.pageAction == "addDistributorPurchase"
 		) {
+			console.log('purchaseActiveSchemebooster');
+			
 			if (this.purchaseActiveSchemebooster != undefined)
 				this.boost_point = this.purchaseActiveSchemebooster.boost_point;
 		} else {
+			console.log('salesActiveSchemebooster');
+			
 			if (this.salesActiveSchemebooster != undefined)
 				this.boost_point = this.salesActiveSchemebooster.boost_point;
 		}

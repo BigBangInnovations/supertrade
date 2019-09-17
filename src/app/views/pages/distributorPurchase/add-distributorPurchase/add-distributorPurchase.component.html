@@ -1,0 +1,310 @@
+<kt-portlet>
+    <!-- <kt-portlet-header [title]="getComponentTitle()" [class]="'kt-portlet__head--lg'" [viewLoading$]="loading$">
+    </kt-portlet-header> -->
+
+    <kt-portlet-body>
+        <!--begin::Form-->
+        <form focusFirstInvalidField (ngModelChange)="changeExpansionpanel($event)" [formGroup]="addDistributorPurchaseForm" class="kt-form kt-form--group-seperator-dashed">
+
+            <kt-alert *ngIf="hasFormErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+                Oh snap! Change a few things up and try submitting again.
+            </kt-alert>
+            <div class="kt-form__section kt-form__section--first">
+                <div class="form-group kt-form__group row">
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile kt-margin-t-5 kt-margin-b-5">
+                        <h6 class="kt-portlet__head-title ng-star-inserted"> Scheme name: <strong>{{ purchaseActiveScheme.scheme_name }}</strong></h6>
+                        <!-- <h6 class="kt-portlet__head-title ng-star-inserted"> Scheme name: <strong>{{ purchaseActiveScheme | json }}</strong></h6> -->
+                        <input [hidden]="true" [value]="purchaseActiveScheme.scheme_id" formControlName="scheme_id">
+                    </div>
+
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile kt-margin-t-5 kt-margin-b-5">
+                        <mat-slide-toggle color="warn" [disabled]="viewOrderSelectLoading$  | async" (change)="is_direct_purchase_toggle($event)" formControlName="is_direct_purchase" aria-label="Do you want to do direct purchase?">Do you want to do direct purchase?</mat-slide-toggle>
+                    </div>
+
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile kt-margin-top-20 kt-margin-b-5" *ngIf="viewOrderSelect">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <mat-select formControlName="poID" placeholder="Purchase Order" (selectionChange)="purchaseOrderChange($event)">
+                                <ng-template #so_loading>
+                                    <mat-option value=''>
+                                        Loading...
+                                    </mat-option>
+                                </ng-template>
+
+                                <ng-template #noSalesOrder>
+                                    <mat-option value=''>
+                                        No Purchase order available
+                                    </mat-option>
+                                </ng-template>
+
+                                <ng-container *ngIf="!(viewOrderSelectLoading$  | async); else so_loading">
+                                    <ng-container *ngIf="(orderSelect$ | async)?.length; else noSalesOrder">
+                                        <mat-option *ngFor="let purchaseOrderArray of ((orderSelect$ | async) | keyvalue)" [value]="purchaseOrderArray.value.id">
+                                            {{purchaseOrderArray.value.invoice_id}} | {{purchaseOrderArray.value.Vendor_Name}} | {{purchaseOrderArray.value.created_time | date}}
+                                        </mat-option>
+                                    </ng-container>
+                                </ng-container>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile  kt-margin-t-5 kt-margin-b-5">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <mat-select formControlName="vendor_id" placeholder="Vendor" (selectionChange)="vendorChange($event)">
+                                <ng-template #loading1>
+                                    <mat-option value=''>
+                                        Loading...
+                                    </mat-option>
+                                </ng-template>
+
+                                <ng-template #noVendor>
+                                    <mat-option value=''>
+                                        No vendor
+                                    </mat-option>
+                                </ng-template>
+
+                                <ng-container *ngIf="!(viewLoading$  | async); else loading1">
+                                    <ng-container *ngIf="(vendors$ | async)?.length; else noVendor">
+                                        <mat-option *ngFor="let vendorArray of ((vendors$ | async) | keyvalue)" [value]="vendorArray.value.ID">
+                                            {{vendorArray.value.Name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </ng-container>
+                            </mat-select>
+                        </mat-form-field>
+                        <div class="font-weight-bold wrapper">
+                            <label>Vendor Address</label><br> {{vendorAddressString}}
+                        </div>
+                    </div>
+                    <input [hidden]="true" [value]="" formControlName="Address_Master_ID">
+                    <input [hidden]="true" [value]="" formControlName="vendor_Address_Master_ID">
+                    <input [hidden]="true" [value]="" formControlName="vendor_name">
+
+                    <div class="font-weight-bold wrapper">
+                        <label>Your Address</label><br> {{userAddressString}}
+                    </div>
+
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile  kt-margin-t-5 kt-margin-b-5">
+                        <mat-slide-toggle color="primary" (change)="isShippingAddressSameAsDispatch_toggle($event)" formControlName="isShippingAddressSameAsDispatch" aria-label="Shipping address as your address?">Shipping address as your address?</mat-slide-toggle>
+                    </div>
+
+                    <ng-container *ngIf="viewShippingAddress">
+
+                        <div class="kt-form__heading col-lg-12 ">
+                            <h3 class="kt-form__heading-title pointer-cursor">Shipping Address</h3>
+                        </div>
+                        <div class="col-lg-6 kt-margin-bottom-20-mobile">
+                            <mat-form-field class="mat-form-field-fluid">
+                                <input type="text" matInput placeholder="Enter address line 1" formControlName="AddressLine1" maxlength="100" />
+                                <mat-error>Address line 1 is <strong>required</strong></mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-lg-6 kt-margin-bottom-20-mobile">
+                            <mat-form-field class="mat-form-field-fluid">
+                                <input matInput placeholder="Enter address line 2" formControlName="AddressLine2" maxlength="100" />
+                                <mat-error>Address line 2 is <strong>required</strong></mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-lg-6 kt-margin-bottom-20-mobile">
+                            <mat-form-field class="mat-form-field-fluid">
+                                <input matInput placeholder="Enter city" formControlName="City" maxlength="30" />
+                                <mat-error>City is <strong>required</strong></mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-lg-6 kt-margin-bottom-20-mobile">
+                            <mat-form-field class="mat-form-field-fluid">
+                                <input matInput placeholder="Enter pincode" formControlName="Pincode" maxlength="10" />
+                                <mat-error>Pincode is <strong>required</strong></mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-lg-6 kt-margin-bottom-20-mobile">
+                            <mat-form-field class="mat-form-field-fluid">
+                                <input matInput placeholder="Enter state" formControlName="State" maxlength="10" />
+                                <mat-error>State is <strong>required</strong></mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-lg-6 kt-margin-bottom-20-mobile">
+                            <mat-form-field class="mat-form-field-fluid">
+                                <input matInput placeholder="Enter country" formControlName="Country" maxlength="10" />
+                                <mat-error>country is <strong>required</strong></mat-error>
+                            </mat-form-field>
+                        </div>
+                    </ng-container>
+
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile kt-margin-top-20 kt-margin-b-5">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <mat-select formControlName="godownID" placeholder="Godown">
+                                <ng-template #godown_loading>
+                                    <mat-option value=''>
+                                        Loading...
+                                    </mat-option>
+                                </ng-template>
+                                <ng-template #noGodown>
+                                    <mat-option value=''>
+                                        No godown available
+                                    </mat-option>
+                                </ng-template>
+
+                                <ng-container *ngIf="!(viewMetadataLoading$  | async); else godown_loading">
+                                    <ng-container *ngIf="(godown$ | async)?.length; else noGodown">
+                                        <mat-option *ngFor="let godownArray of ((godown$ | async) | keyvalue)" [value]="godownArray.value.ID">
+                                            {{ godownArray.value.name }}
+                                        </mat-option>
+                                    </ng-container>
+                                </ng-container>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile  kt-margin-t-5 kt-margin-b-5">
+                        <div class="kt-form__heading">
+                            <h3 class="kt-form__heading-title pointer-cursor">Product detail (<span matTooltip="Add new product" (click)="addProduct()" class="kt-portlet__head-icon">
+                                <i class="la la-plus"></i>
+                            </span>)</h3>
+                        </div>
+                        <div formArrayName="products">
+                            <mat-accordion>
+                                <div *ngFor="let product of addDistributorPurchaseForm['controls'].products['controls']; let i=index">
+                                    <div [formGroupName]="i">
+                                        <kt-popup-add-product (quantityChange)="commonCalculation($event)" [group]="addDistributorPurchaseForm.controls.products.controls[i]" [parantGroup]="addDistributorPurchaseForm" [index]="i" [OptionalSetting]="OptionalSetting" [pageAction]="pageAction" [isSGSTTax]="isSGSTTax"
+                                            [isIGSTTax]="isIGSTTax" [step]="step"></kt-popup-add-product>
+                                    </div>
+                                </div>
+                            </mat-accordion>
+                        </div>
+                        <ng-template #popupProductCalculation></ng-template>
+
+                        <mat-error *ngIf="isControlHasError('products','required')">
+                            <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Products'} }}</strong>
+                        </mat-error>
+                    </div>
+
+                    <div class="kt-form__heading col-lg-12 ">
+                        <h3 class="kt-form__heading-title pointer-cursor">Payment Detailer</h3>
+                    </div>
+
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile kt-margin-top-20 kt-margin-b-5">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <mat-select formControlName="paymentMode" placeholder="Payment term">
+                                <ng-template #paymentMode_loading>
+                                    <mat-option value=''>
+                                        Loading...
+                                    </mat-option>
+                                </ng-template>
+                                <ng-template #noPaymentMode>
+                                    <mat-option value=''>
+                                        No payment term available
+                                    </mat-option>
+                                </ng-template>
+
+                                <ng-container *ngIf="!(viewMetadataLoading$  | async); else paymentMode_loading">
+                                    <ng-container *ngIf="(paymentMode$ | async)?.length; else noPaymentMode">
+                                        <mat-option *ngFor="let paymentModeArray of ((paymentMode$ | async) | keyvalue)" [value]="paymentModeArray.value.ID">
+                                            {{ paymentModeArray.value.Description }}
+                                        </mat-option>
+                                    </ng-container>
+                                </ng-container>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-lg-6 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input type="text" matInput placeholder="Enter bank name" formControlName="bankName" maxlength="100" />
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-lg-6 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input type="text" matInput placeholder="Enter Ref. no" formControlName="cheqNo" maxlength="100" />
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-lg-6 kt-margin-bottom-20-mobile">
+
+                        <mat-form-field>
+                            <input matInput [matDatepicker]="dp3" (focus)="dp3.open()" formControlName="cheqDate" placeholder="Enter Ref. date" readonly>
+                            <mat-datepicker-toggle matSuffix [for]="dp3">
+                            </mat-datepicker-toggle>
+                            <mat-datepicker touchUi #dp3 disabled="false"></mat-datepicker>
+                        </mat-form-field>
+
+                    </div>
+
+                    <div class="kt-form__heading col-lg-12 ">
+                        <h3 class="kt-form__heading-title pointer-cursor">Transport Detailer</h3>
+                    </div>
+
+                    <div class="col-lg-12 kt-margin-bottom-20-mobile kt-margin-top-20 kt-margin-b-5">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <mat-select formControlName="frightTerm" placeholder="Freight term">
+                                <ng-template #frightTerm_loading>
+                                    <mat-option value=''>
+                                        Loading...
+                                    </mat-option>
+                                </ng-template>
+                                <ng-template #nofrightTerm>
+                                    <mat-option value=''>
+                                        No freight term available
+                                    </mat-option>
+                                </ng-template>
+
+                                <ng-container *ngIf="!(viewMetadataLoading$  | async); else frightTerm_loading">
+                                    <ng-container *ngIf="(frightTerm$ | async)?.length; else nofrightTerm">
+                                        <mat-option *ngFor="let frightTermArray of ((frightTerm$ | async) | keyvalue)" [value]="frightTermArray.value.ID">
+                                            {{ frightTermArray.value.Description }}
+                                        </mat-option>
+                                    </ng-container>
+                                </ng-container>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-lg-6 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input type="text" matInput placeholder="Enter DC.No" formControlName="dcNo" maxlength="100" />
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-lg-6 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input type="text" matInput placeholder="Enter GR.No" formControlName="grNo" maxlength="100" />
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-lg-6 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input type="text" matInput placeholder="Enter transporter" formControlName="transporter" maxlength="100" />
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-lg-6 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input type="text" matInput placeholder="Enter delivery days" formControlName="deliveryDays" maxlength="100" />
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-lg-6 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input type="text" matInput placeholder="Enter remarks" formControlName="remarks" maxlength="100" />
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-lg-6 kt-margin-bottom-20-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input type="text" matInput placeholder="Enter ERP Invoice No" formControlName="erpInvoiceNo" maxlength="100" />
+                        </mat-form-field>
+                    </div>
+
+
+                </div>
+            </div>
+            <!-- <button (click)="submit()" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!addDistributorPurchaseForm.valid" id="kt_login_signin_submit" class="btn btn-primary btn-elevate kt-login__btn-primary">Add DistributorPurchase</button> -->
+            <!-- <button (click)="submit()" focusFirstInvalidField [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" id="kt_login_signin_submit" class="btn btn-primary btn-elevate kt-login__btn-primary">Add DistributorPurchase</button> -->
+            <button (click)="submit()" type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" id="kt_login_signin_submit" class="btn btn-primary btn-elevate kt-login__btn-primary">Add DistributorPurchase</button>
+        </form>
+        <!--end::Form-->
+    </kt-portlet-body>
+</kt-portlet>
