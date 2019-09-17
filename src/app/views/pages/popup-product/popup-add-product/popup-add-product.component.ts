@@ -85,7 +85,8 @@ export class PopupAddProductComponent {
 			this.pageAction == "viewDistributorPurchase" ||
 			this.pageAction == "distributorPurchaseReturn" ||
 			this.pageAction == "distributorPartialAcceptPurchaseReturnApproval" || 
-			this.pageAction == "addDistributorPurchase"
+			this.pageAction == "addDistributorPurchase" ||
+			this.pageAction == "distributorPurchaseEdit"
 		) {
 			console.log('purchaseActiveSchemebooster');
 			

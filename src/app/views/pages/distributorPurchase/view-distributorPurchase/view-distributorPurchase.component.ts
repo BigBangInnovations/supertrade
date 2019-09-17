@@ -134,6 +134,7 @@ export class ViewDistributorPurchaseComponent implements OnInit, OnDestroy {
 
     if (
       this.data.action == 'vendorPurchaseApproval'
+      || this.data.action == 'distributorPurchaseEdit'
     ) {
       OptionalSetting.displayDeleteButton = true;
     }
@@ -189,15 +190,17 @@ export class ViewDistributorPurchaseComponent implements OnInit, OnDestroy {
     this.userSession = JSON.parse(this.userSession)
 
     this.viewDistributorPurchaseForm = this.distributorPurchaseFB.group({
+      id: [''],
       invoice_id: [''],
       scheme_id: [''],
       vendor_id: [''],
       vendor_name: [''],
-      soID: [''],
+      poID: [''],
       is_direct_purchase: [false],
       isShippingAddressSameAsDispatch: [false],
       godownID: [''],
       Address_Master_ID: [''],
+      vendor_Address_Master_ID: [''],
       AddressLine1: [''],
       AddressLine2: [''],
       landline_no: [''],
@@ -264,14 +267,16 @@ export class ViewDistributorPurchaseComponent implements OnInit, OnDestroy {
     if (res.Tax_Type == 'SGST') this.isSGSTTax = true;
     else if (res.Tax_Type == 'IGST') this.isIGSTTax = true;
 
+    this.viewDistributorPurchaseForm.controls['id'].setValue(res.id);
     this.viewDistributorPurchaseForm.controls['invoice_id'].setValue(res.invoice_id);
     this.viewDistributorPurchaseForm.controls['scheme_id'].setValue(res.scheme_id);
     this.viewDistributorPurchaseForm.controls['vendor_id'].setValue(res.ss_vendor_id);
     this.viewDistributorPurchaseForm.controls['vendor_name'].setValue(res.Vendor_Name);
-    this.viewDistributorPurchaseForm.controls['soID'].setValue(res.soID);
-    this.viewDistributorPurchaseForm.controls['is_direct_purchase'].setValue((res.soID > 0) ? false : true);
+    this.viewDistributorPurchaseForm.controls['poID'].setValue(res.poID);
+    this.viewDistributorPurchaseForm.controls['is_direct_purchase'].setValue((res.poID > 0) ? false : true);
     this.viewDistributorPurchaseForm.controls['isShippingAddressSameAsDispatch'].setValue((res.isShippingAddressSameAsDispatch > 0) ? true : false);
     this.viewDistributorPurchaseForm.controls['godownID'].setValue(res.godownID);
+    this.viewDistributorPurchaseForm.controls['vendor_Address_Master_ID'].setValue(res.vendor_Address_Master_ID);
     this.viewDistributorPurchaseForm.controls['Address_Master_ID'].setValue(res.Address_Master_ID);
     this.viewDistributorPurchaseForm.controls['AddressLine1'].setValue(res.AddressLine1);
     this.viewDistributorPurchaseForm.controls['AddressLine2'].setValue(res.AddressLine2);
@@ -295,8 +300,8 @@ export class ViewDistributorPurchaseComponent implements OnInit, OnDestroy {
     // scheme_id: [res.scheme_id],
     // vendor_id: [{ value: res.ss_vendor_id, disabled: true }],
     // vendor_name: [''],
-    // soID: [res.soID],
-    // is_direct_purchase: [{ value: (res.soID > 0) ? false : true, disabled: true }],
+    // poID: [res.poID],
+    // is_direct_purchase: [{ value: (res.poID > 0) ? false : true, disabled: true }],
     // isShippingAddressSameAsDispatch: [{ value: (res.isShippingAddressSameAsDispatch > 0) ? true : false, disabled: true }],
     // godownID: [{ value: res.godownID, disabled: true }],
     // Address_Master_ID: [res.Address_Master_ID],
@@ -417,7 +422,9 @@ export class ViewDistributorPurchaseComponent implements OnInit, OnDestroy {
     // tslint:disable-next-line:no-string-throw
     if (this.pageAction == 'distributorPurchaseReturn') {
       return 'Distributor purchase return'
-    } else if (this.pageAction == 'vendorPurchaseApproval') {
+    } else if (this.pageAction == 'distributorPurchaseEdit') {
+      return 'Update distributor purchase'
+    }else if (this.pageAction == 'vendorPurchaseApproval') {
       return 'Purchase confirmation'
     } else if (this.pageAction == 'vendorPartialPurchaseAcceptApproval') {
       return 'Vendor accepted partial purchase confirmation'
@@ -479,9 +486,9 @@ export class ViewDistributorPurchaseComponent implements OnInit, OnDestroy {
     this.viewDistributorPurchaseForm.controls['frightTerm'].disable();
   }
   /**  
-     * acceptPurchase
+     * editPurchase
     */
-  acceptPurchase() {
+  editPurchase() {
     this.enableAttributes();
     const controls = this.viewDistributorPurchaseForm.controls;
 
@@ -493,32 +500,8 @@ export class ViewDistributorPurchaseComponent implements OnInit, OnDestroy {
       );
       return;
     }
-    this.data.notificationData[0].Status = 2;
     const returnDistributorPurchase = this.prepareDistributorPurchase();
-    this.acceptRejectPurchase(returnDistributorPurchase);
-
-  }
-
-  /**  
-     * acceptPurchase
-    */
-  rejectPurchase() { 
-    this.enableAttributes();
-    const controls = this.viewDistributorPurchaseForm.controls;
-
-    /** check form */
-    if (this.viewDistributorPurchaseForm.invalid) {
-      Object.keys(controls).forEach(controlName => {
-        controls[controlName].markAsTouched()
-      }
-
-      );
-      return;
-    }
-
-    this.data.notificationData[0].Status = 3;
-    const returnDistributorPurchase = this.prepareDistributorPurchase();
-    this.acceptRejectPurchase(returnDistributorPurchase);
+    this.editDistributorPurchase(returnDistributorPurchase);
 
   }
 
@@ -533,16 +516,13 @@ export class ViewDistributorPurchaseComponent implements OnInit, OnDestroy {
     _distributorPurchase.sl_distributor_purchase_id = this.sl_distributor_purchase_id;
     _distributorPurchase.Tax_Type = (this.isSGSTTax) ? 'SGST' : (this.isIGSTTax ? 'IGST' : '');
 
-    if (this.data.action == 'vendorPurchaseApproval'
+    if (this.data.action == 'distributorPurchaseEdit'
     ) {
-      _distributorPurchase.data = JSON.stringify(this.data.notificationData);
-      _distributorPurchase.vendor_name = this.userSession.Name;
-      _distributorPurchase.Distributor_Name = this.userSession.Distributor_Name;
-    } else if (this.data.action == 'vendorPartialPurchaseAcceptApproval'
-    ) {
-      _distributorPurchase.data = JSON.stringify(this.data.notificationData);
-      _distributorPurchase.vendor_id = this.viewDistributorPurchaseForm.controls['vendor_id'].value;
+      _distributorPurchase.id = this.viewDistributorPurchaseForm.controls['id'].value;
+      _distributorPurchase.ss_vendor_id = this.viewDistributorPurchaseForm.controls['vendor_id'].value;
       _distributorPurchase.vendor_name = this.viewDistributorPurchaseForm.controls['vendor_name'].value;
+      _distributorPurchase.scheme_id = this.viewDistributorPurchaseForm.controls['scheme_id'].value;
+      _distributorPurchase.ss_distributor_id = this.userSession.ID;
       _distributorPurchase.Distributor_Name = this.userSession.Name;
     }
 
@@ -632,7 +612,7 @@ export class ViewDistributorPurchaseComponent implements OnInit, OnDestroy {
    *
    * @param _distributorPurchase: User
    */
-  acceptRejectPurchase(_distributorPurchase: DistributorPurchase) {
+  editDistributorPurchase(_distributorPurchase: DistributorPurchase) {
     this.loading = true;
     let httpParams = new HttpParams();
     Object.keys(_distributorPurchase).forEach(function (key) {
@@ -640,11 +620,11 @@ export class ViewDistributorPurchaseComponent implements OnInit, OnDestroy {
     });
 
     const distributorPurchaseServiceSubscription = this.distributorPurchaseService
-      .acceptRejectPurchase(httpParams)
+      .createDistributorPurchase(httpParams)
       .pipe(
         tap(response => {
           if (response.status == APP_CONSTANTS.response.SUCCESS) {
-            const message = `Purchase accepted successfully.`;
+            const message = `Purchase updated successfully.`;
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
             this.dialogRef.close('reload');
           } else if (response.status == APP_CONSTANTS.response.ERROR) {

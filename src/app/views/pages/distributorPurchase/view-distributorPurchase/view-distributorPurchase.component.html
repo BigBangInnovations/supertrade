@@ -277,11 +277,17 @@
         <button type="button" (click)="close()" mat-raised-button matTooltip="Close">
         Close
                                             </button>&nbsp;
-        <ng-container *ngIf="pageAction == 'distributorPurchaseReturn'">
-            <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!viewDistributorPurchaseForm.valid" mat-raised-button color="primary" (click)="ReuturnDistributorPurchase()" matTooltip="Return DistributorPurchase">
-                                                                                        Return
-                                                                                    </button>
-        </ng-container>
+                                            <ng-container *ngIf="pageAction == 'distributorPurchaseReturn'">
+                                                <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!viewDistributorPurchaseForm.valid" mat-raised-button color="primary" (click)="ReuturnDistributorPurchase()" matTooltip="Return Distributor Purchase">
+                                                                                                                            Return
+                                                                                                                        </button>
+                                            </ng-container>
+
+                                            <ng-container *ngIf="pageAction == 'distributorPurchaseEdit'">
+                                                <button type="submit" [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading" [disabled]="!viewDistributorPurchaseForm.valid" mat-raised-button color="primary" (click)="editPurchase()" matTooltip="Update Distributor Purchase">
+                                                                                                                            Update
+                                                                                                                        </button>
+                                            </ng-container>
 
         
     </mat-dialog-actions>

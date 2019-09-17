@@ -550,7 +550,11 @@ export class DistributorPurchaseListComponent implements OnInit, OnDestroy {
 			height: "550px"
 		});
 		dialogRef.afterClosed().subscribe(res => {
-			if (action == "distributorPurchaseReturn" && res == "reload")
+			if (
+				(
+					action == "distributorPurchaseReturn"
+				|| action == "distributorPurchaseEdit"
+				) && res == "reload")
 				this.loadDistributorPurchaseList();
 		});
 	}
