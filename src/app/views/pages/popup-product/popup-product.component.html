@@ -47,7 +47,7 @@
                         </mat-form-field>
 
                         <mat-form-field class="mat-form-field-fluid">
-                            <input maxlength="5" matInput placeholder="Quantity" value="" formControlName="productQuantityCtrl">
+                            <input maxlength="5" matInput placeholder="Quantity" value="" formControlName="productQuantityCtrl" (input)="getProductSrNo();">
                             <mat-error *ngIf="isControlHasError('productQuantityCtrl','required')">
                                 <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Quantity'} }}</strong>
                             </mat-error>
@@ -69,6 +69,42 @@
                                 <strong>{{ 'POPUPPRODUCT.VALIDATION.ONLY_INTEGER' | translate:{'name':'Product quantity'} }}</strong>
                             </mat-error>
                         </mat-form-field>
+
+                        <ng-container formArrayName="productsSerialNoCtrl">
+                                <ng-container *ngFor="let productsSerialNo of popupProductForm['controls'].productsSerialNoCtrl['controls']; let l=index">
+                                    <ng-container [formGroupName]="l">
+                                            <mat-list-item role="listitem">
+                                                    <mat-form-field class="col-lg-12" style="margin-left: -11px;">
+                                                            <input matInput formControlName="serialNumber" placeholder="Serial number {{l + 1}}">
+                                                            <mat-error *ngIf="isSrNoHasError('required')">
+                                                                    <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'products SerialNo'} }}</strong>
+                                                                </mat-error>
+                                                                
+                                                                <mat-error *ngIf="isSrNoHasError('pattern')">
+                                                                        <strong>{{ 'POPUPPRODUCT.VALIDATION.NUMBER_PATTERN' | translate:{'name':'SerialNumber'} }}</strong>
+                                                                    </mat-error>
+                                        
+                                                                    <mat-error *ngIf="isSrNoHasError('maxLength')">
+                                                                            <strong>{{ 'POPUPPRODUCT.VALIDATION.MAX_LENGTH_FIELD' | translate }} {{userData.companySettings.TotalCharsInSrNo}}</strong>
+                                                                        </mat-error>
+
+                                                                        <mat-error *ngIf="isSrNoHasError('minLength')">
+                                                                                <strong>{{ 'POPUPPRODUCT.VALIDATION.MIN_LENGTH_FIELD' | translate }} {{userData.companySettings.TotalCharsInSrNo}}</strong>
+                                                                            </mat-error>
+                                                                            <mat-error *ngIf="isSrNoHasError('minlength')">
+                                                                                    <strong>{{ 'POPUPPRODUCT.VALIDATION.MIN_LENGTH_FIELD' | translate }} {{userData.companySettings.TotalCharsInSrNo}}</strong>
+                                                                                </mat-error>
+                                        
+                                                                    <mat-error *ngIf="isSrNoHasError('maxlength')">
+                                                                        <strong>{{ 'POPUPPRODUCT.VALIDATION.MAX_LENGTH_FIELD' | translate }} {{userData.companySettings.TotalCharsInSrNo}}</strong>
+                                                                    </mat-error>
+
+                                                            </mat-form-field>
+                                                        </mat-list-item>
+                                    </ng-container>
+                                </ng-container>
+                        </ng-container>
+
                         <!-- Hidden field start -->
 
                         <input [hidden]="true" value="" formControlName="productNameCtrl">

@@ -5,7 +5,7 @@ import {
 	EventEmitter,
 	Optional
 } from "@angular/core";
-import { FormGroup, FormArray } from "@angular/forms";
+import { FormGroup, FormArray, FormBuilder, Validators } from "@angular/forms";
 import { EncrDecrServiceService } from "../../../../core/auth/_services/encr-decr-service.service";
 import { environment } from "../../../../../environments/environment";
 import { APP_CONSTANTS } from "../../../../../config/default/constants";
@@ -59,8 +59,12 @@ export class PopupAddProductComponent {
 
 	/**
 	 * @param EncrDecr: EncrDecrServiceService
+	 * @param fb: FormBuilder
 	 */
-	constructor(private EncrDecr: EncrDecrServiceService) {
+	constructor(
+		private EncrDecr: EncrDecrServiceService,
+		private fb: FormBuilder,
+		) {
 		let sessionStorage = this.EncrDecr.getLocalStorage(
 			environment.localStorageKey
 		);
@@ -154,8 +158,33 @@ export class PopupAddProductComponent {
 		return this.productForm.controls[type].value;
 	}
 
+	serialNoAddQuantityWise(quantity:number){
+		const numberPatern = "^[0-9.,]+$";
+		if(this.userData.companySettings.ProductSelectionTypeInSTrade == 1){
+		let currentProductSerialNoArray = <FormArray>this.productForm.controls['productsSerialNoCtrl'];
+		currentProductSerialNoArray.clear();
+		var i:number; 
+		for(i = quantity;i>=1;i--) {
+			currentProductSerialNoArray.push(
+				// this.fb.group({serialNumber:['', Validators.required]})
+				this.fb.group({serialNumber:['', Validators.compose([
+					Validators.required,
+					Validators.pattern(numberPatern),
+					Validators.minLength(this.userData.companySettings.TotalCharsInSrNo),
+					Validators.maxLength(this.userData.companySettings.TotalCharsInSrNo),
+				])]})
+			  )
+		 }
+		 }		 		
+	}
+
 	getProductAmount() {
 		let quantity = this.productForm.controls["productQuantityCtrl"].value;
+
+		/** 
+		 * Serial no inputbox added as per quantity
+		 */
+		this.serialNoAddQuantityWise(quantity)
 		let price = this.productForm.controls["productPriceCtrl"].value;
 		let discount = this.productForm.controls["productDiscountCtrl"].value;
 		let distributorMaxDiscount = this.productForm.controls["productDistributorMaxDiscountCtrl"].value;
@@ -261,6 +290,26 @@ export class PopupAddProductComponent {
 	 */
 	isControlHasError(controlName: string, validationType: string): boolean {
 		const control = this.productForm.controls[controlName];
+		if (!control) {
+			return false;
+		}
+		const result =
+			control.hasError(validationType) &&
+			(control.dirty || control.touched);
+		return result;
+	}
+
+	/**
+	 * Checking control validation
+	 *
+	 * @param controlName: string => Equals to formControlName
+	 * @param validationType: string => Equals to valitors name
+	 */
+	isSrNoHasError(validationType: string): boolean {
+		
+		// const control = this.popupProductForm.controls['productsSerialNoCtrl'].controls[0][controlName];
+		const control = this.productForm.controls['productsSerialNoCtrl']['controls'][0]['controls']['serialNumber']
+
 		if (!control) {
 			return false;
 		}

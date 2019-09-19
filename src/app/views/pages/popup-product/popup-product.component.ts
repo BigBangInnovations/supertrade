@@ -11,7 +11,8 @@ import {
 	FormControl,
 	FormBuilder,
 	FormGroup,
-	Validators
+	Validators,
+	FormArray
 } from "@angular/forms";
 // RxJS
 import { Observable, Subject } from "rxjs";
@@ -116,6 +117,8 @@ export class PopupProductComponent implements OnInit {
 		this.popupProductForm = this.fb.group({
 			productCategoryCtrl: ["", Validators.required],
 			productSubCategoryCtrl: ["", Validators.required],
+			// productsSerialNoCtrl: this.fb.array([], Validators.required),
+			productsSerialNoCtrl: this.fb.array([]),
 			productCtrl: ["", Validators.required],
 			productNameCtrl: [""],
 			productPriceCtrl: [""],
@@ -148,6 +151,26 @@ export class PopupProductComponent implements OnInit {
 		});
 	}
 
+	getProductSrNo(){
+		const numberPatern = "^[0-9.,]+$";
+		if(this.userData.companySettings.ProductSelectionTypeInSTrade == 1){
+			let quantity = this.popupProductForm.controls["productQuantityCtrl"].value
+			let currentProductSerialNoArray = <FormArray>this.popupProductForm.controls['productsSerialNoCtrl'];
+			currentProductSerialNoArray.clear();
+			var i:number; 
+			for(i = quantity;i>=1;i--) {
+				currentProductSerialNoArray.push(
+					// this.fb.group({serialNumber:['', Validators.required]})
+					this.fb.group({serialNumber:['', Validators.compose([
+						Validators.required,
+						Validators.pattern(numberPatern),
+						Validators.minLength(this.userData.companySettings.TotalCharsInSrNo),
+						Validators.maxLength(this.userData.companySettings.TotalCharsInSrNo),
+					])]})
+				  )
+			 }
+			}
+	}
 	/**
 	 * Form Submit
 	 */
@@ -160,6 +183,7 @@ export class PopupProductComponent implements OnInit {
 			);
 			return;
 		}
+
 		const numberPatern = "^[0-9.,]+$";
 		this.productFormArray = {
 			productCategoryCtrl: [
@@ -168,6 +192,10 @@ export class PopupProductComponent implements OnInit {
 			productSubCategoryCtrl: [
 				this.popupProductForm.controls["productSubCategoryCtrl"].value
 			],
+			// productsSerialNoCtrl: this.fb.array(this.popupProductForm.controls["productsSerialNoCtrl"].value),
+			productsSerialNoCtrl: <FormArray>this.popupProductForm.controls['productsSerialNoCtrl'],
+			// productsSerialNoCtrl: this.fb.array([]),
+
 			productCtrl: [this.popupProductForm.controls["productCtrl"].value],
 			productNameCtrl: [
 				this.popupProductForm.controls["productNameCtrl"].value
@@ -409,6 +437,26 @@ export class PopupProductComponent implements OnInit {
 	 */
 	isControlHasError(controlName: string, validationType: string): boolean {
 		const control = this.popupProductForm.controls[controlName];
+
+		if (!control) {
+			return false;
+		}
+		const result =
+			control.hasError(validationType) &&
+			(control.dirty || control.touched);
+		return result;
+	}
+
+	/**
+	 * Checking control validation
+	 *
+	 * @param controlName: string => Equals to formControlName
+	 * @param validationType: string => Equals to valitors name
+	 */
+	isSrNoHasError(validationType: string): boolean {
+		
+		// const control = this.popupProductForm.controls['productsSerialNoCtrl'].controls[0][controlName];
+		const control = this.popupProductForm.controls['productsSerialNoCtrl']['controls'][0]['controls']['serialNumber']
 
 		if (!control) {
 			return false;

@@ -138,6 +138,7 @@ pageAction != 'addSale'
                     <mat-error *ngIf="isControlHasError('productQuantityCtrl','minLength')">
                         <strong>{{ 'POPUPPRODUCT.VALIDATION.MIN_LENGTH_FIELD' | translate }} 1</strong>
                     </mat-error>
+                    
                     <mat-error *ngIf="isControlHasError('productQuantityCtrl','maxLength')">
                         <strong>{{ 'POPUPPRODUCT.VALIDATION.MAX_LENGTH_FIELD' | translate }} 5</strong>
                     </mat-error>
@@ -149,8 +150,42 @@ pageAction != 'addSale'
                     </mat-error>
                 </mat-form-field>
             </mat-list-item>
+            
+                <ng-container formArrayName="productsSerialNoCtrl">
+                        <ng-container *ngFor="let productsSerialNo of productForm['controls'].productsSerialNoCtrl['controls']; let l=index">
+                            <ng-container [formGroupName]="l">
+                                    <mat-list-item role="listitem" style=" margin-top:25px;">
+                                            <mat-form-field class="col-lg-12" style="margin-left: -11px;">
+                                                    <input matInput formControlName="serialNumber" placeholder="Serial number {{l + 1}}">
+                                                    <mat-error *ngIf="isSrNoHasError('required')">
+                                                            <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'products SerialNo'} }}</strong>
+                                                        </mat-error>
+                                                        
+                                                        <mat-error *ngIf="isSrNoHasError('pattern')">
+                                                                <strong>{{ 'POPUPPRODUCT.VALIDATION.NUMBER_PATTERN' | translate:{'name':'SerialNumber'} }}</strong>
+                                                            </mat-error>
+                                
+                                                            <mat-error *ngIf="isSrNoHasError('maxLength')">
+                                                                    <strong>{{ 'POPUPPRODUCT.VALIDATION.MAX_LENGTH_FIELD' | translate }} {{userData.companySettings.TotalCharsInSrNo}}</strong>
+                                                                </mat-error>
 
-            <mat-list-item role="listitem">
+                                                                <mat-error *ngIf="isSrNoHasError('minLength')">
+                                                                        <strong>{{ 'POPUPPRODUCT.VALIDATION.MIN_LENGTH_FIELD' | translate }} {{userData.companySettings.TotalCharsInSrNo}}</strong>
+                                                                    </mat-error>
+                                                                    <mat-error *ngIf="isSrNoHasError('minlength')">
+                                                                            <strong>{{ 'POPUPPRODUCT.VALIDATION.MIN_LENGTH_FIELD' | translate }} {{userData.companySettings.TotalCharsInSrNo}}</strong>
+                                                                        </mat-error>
+                                
+                                                            <mat-error *ngIf="isSrNoHasError('maxlength')">
+                                                                <strong>{{ 'POPUPPRODUCT.VALIDATION.MAX_LENGTH_FIELD' | translate }} {{userData.companySettings.TotalCharsInSrNo}}</strong>
+                                                            </mat-error>
+                                                    </mat-form-field>
+                                                </mat-list-item>
+                            </ng-container>
+                        </ng-container>
+                </ng-container>
+
+            <mat-list-item role="listitem" style="margin-top:25px;">
                 <span matLine>Product Amount </span>
                 <div class="kt-align-right">{{ productAmount | number:'1.2-2' }}</div>
             </mat-list-item>
