@@ -111,22 +111,20 @@ pageAction != 'addSale'
                 </mat-list-item>
             </ng-container>
             <mat-list-item role="listitem" *ngIf="
-                pageAction == 'saleReturn'
-                || pageAction == 'purchaseReturn'
-                || pageAction == 'addSale' 
+                pageAction == 'addSale' 
                 || pageAction == 'addPurchase' 
                 || pageAction == 'addDistributorSale'
-                || pageAction == 'retailerPurchaseApproval' 
                 || pageAction == 'addOrder' 
-                || pageAction == 'retailerPurchaseReturnApproval' 
-                || pageAction == 'distributorSaleReturn' 
                 || pageAction == 'distributorPurchaseOrderEdit' 
-                || pageAction == 'distributorPurchaseReturn' 
                 || pageAction == 'addDistributorPurchase' 
                 || pageAction == 'distributorPurchaseEdit' 
                 ">
                 <mat-form-field class="col-lg-12" style="margin-left: -11px;">
-                    <input maxlength="5" matInput formControlName="productQuantityCtrl" placeholder="Quantity" (input)="getProductAmount();">
+                    <input
+                    [attr.readonly]="(pageAction == 'viewSale' 
+                    || pageAction == 'viewPurchase'
+                    )"
+                    maxlength="5" matInput formControlName="productQuantityCtrl" placeholder="Quantity" (input)="getProductAmount();">
                     <mat-error *ngIf="isControlHasError('productQuantityCtrl','required')">
                         <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Quantity'} }}</strong>
                     </mat-error>
@@ -155,31 +153,63 @@ pageAction != 'addSale'
                         <ng-container *ngFor="let productsSerialNo of productForm['controls'].productsSerialNoCtrl['controls']; let l=index">
                             <ng-container [formGroupName]="l">
                                     <mat-list-item role="listitem" style=" margin-top:25px;">
-                                            <mat-form-field class="col-lg-12" style="margin-left: -11px;">
-                                                    <input matInput formControlName="serialNumber" placeholder="Serial number {{l + 1}}">
-                                                    <mat-error *ngIf="isSrNoHasError('required')">
+                                            
+                                                <!-- <ng-container *ngIf="
+                                                pageAction != 'saleReturn'
+                                                && pageAction != 'viewSale'
+                                                ; else elseProductSrNoInputbox"> -->
+                                                <mat-form-field class="col-lg-11" style="margin-left: -11px;">
+                                                    <input
+                                                     [readonly]="
+                                                     pageAction == 'viewSale'
+                                                     || pageAction == 'saleReturn'
+                                                     || pageAction == 'viewDistributorSale'
+                                                     || pageAction == 'retailerPartialSalesAcceptApproval'
+                                                     || pageAction == 'viewDistributorPurchase'
+                                                     || pageAction == 'distributorPurchaseReturn'
+                                                     "
+                                                      matInput formControlName="serialNumber" placeholder="Serial number {{l + 1}}">
+                                                      
+                                                </mat-form-field>
+                                                    <button class="col-lg-1" *ngIf="
+                                                    pageAction != 'viewDistributorPurchase'
+                                                    && pageAction != 'retailerPartialSalesAcceptApproval'
+                                                    && pageAction != 'viewSale'
+                                                    && pageAction != 'viewDistributorSale'
+                                                    "  mat-icon-button (click)="deleteProductSrNo(l)">
+                                                        <mat-icon class="mat-24 kt-font-inverse-light">delete</mat-icon>
+                                                      </button>
+                                                <!-- </ng-container> -->
+                                                <!-- <ng-template #elseProductSrNoInputbox> -->
+                                                    <!-- <mat-checkbox formControlName="serialNumber" >Serial number {{l + 1}}</mat-checkbox> -->
+                                                    <!-- <mat-checkbox formControlName="serialNumber" >{{ productForm['controls'].productsSerialNoCtrl['controls'][l]['controls']['serialNumber'].value }}</mat-checkbox> -->
+                                                    
+                                                    <!-- <mat-checkbox formControlName="serialNumber" >{{ productForm['controls'].productsSerialNoCtrl['controls'][l]['controls']['serialNumber'].value }}</mat-checkbox> -->
+                                                    <!-- <mat-checkbox formControlName="serialNumber" >Serial number {{l + 1}}</mat-checkbox> -->
+                                                <!-- </ng-template> -->
+                                                
+                                                    <mat-error *ngIf="isSrNoHasError('required',l)">
                                                             <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'products SerialNo'} }}</strong>
                                                         </mat-error>
                                                         
-                                                        <mat-error *ngIf="isSrNoHasError('pattern')">
+                                                        <mat-error *ngIf="isSrNoHasError('pattern',l)">
                                                                 <strong>{{ 'POPUPPRODUCT.VALIDATION.NUMBER_PATTERN' | translate:{'name':'SerialNumber'} }}</strong>
                                                             </mat-error>
                                 
-                                                            <mat-error *ngIf="isSrNoHasError('maxLength')">
+                                                            <mat-error *ngIf="isSrNoHasError('maxLength',l)">
                                                                     <strong>{{ 'POPUPPRODUCT.VALIDATION.MAX_LENGTH_FIELD' | translate }} {{userData.companySettings.TotalCharsInSrNo}}</strong>
                                                                 </mat-error>
 
-                                                                <mat-error *ngIf="isSrNoHasError('minLength')">
+                                                                <mat-error *ngIf="isSrNoHasError('minLength',l)">
                                                                         <strong>{{ 'POPUPPRODUCT.VALIDATION.MIN_LENGTH_FIELD' | translate }} {{userData.companySettings.TotalCharsInSrNo}}</strong>
                                                                     </mat-error>
-                                                                    <mat-error *ngIf="isSrNoHasError('minlength')">
+                                                                    <mat-error *ngIf="isSrNoHasError('minlength',l)">
                                                                             <strong>{{ 'POPUPPRODUCT.VALIDATION.MIN_LENGTH_FIELD' | translate }} {{userData.companySettings.TotalCharsInSrNo}}</strong>
                                                                         </mat-error>
                                 
-                                                            <mat-error *ngIf="isSrNoHasError('maxlength')">
+                                                            <mat-error *ngIf="isSrNoHasError('maxlength',l)">
                                                                 <strong>{{ 'POPUPPRODUCT.VALIDATION.MAX_LENGTH_FIELD' | translate }} {{userData.companySettings.TotalCharsInSrNo}}</strong>
                                                             </mat-error>
-                                                    </mat-form-field>
                                                 </mat-list-item>
                             </ng-container>
                         </ng-container>

@@ -330,6 +330,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     const numberPatern = '^[0-9.,]+$';
     products.forEach(element => {
       let quantity = element.Quantity;
+      let maxApproveQuantity = element.Quantity - element.ReturnQuantity;
       let points = element.points;
       let points_boost = element.points_boost;
 
@@ -342,6 +343,9 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
         points = element.points / quantity
         points_boost = (element.points * boost_point) / 100;
       }
+      if ( this.pageAction == "distributorSaleReturn"
+			&& this.userData.companySettings.ProductSelectionTypeInSTrade == 1 )
+				quantity = maxApproveQuantity;
 
       let res = {
         productCategoryCtrl: [''],
@@ -359,7 +363,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
           [
             Validators.required,
             Validators.min(0),
-            Validators.max(element.Quantity - element.ReturnQuantity),
+            Validators.max(maxApproveQuantity),
             Validators.pattern(numberPatern),
             Validators.maxLength(5),
             // Validators.min(1),
@@ -370,6 +374,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
         productReturnedQuantityCtrl: [element.ReturnQuantity],
         productAcceptedQuantityCtrl: [element.acceptQty],
         productDiscountCtrl: [element.Discount],
+        productDistributorMaxDiscountCtrl: [element.DistributorMaxDiscount],
         productLoyaltyPointCtrl: [(element.points) / element.Quantity],
         productBarCodeCtrl: [''],
         productProductCodeCtrl: [''],
@@ -379,6 +384,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
         VATCodeCtrl: [''],
         points: [points],
         points_boost: [points_boost],
+        productsSerialNoCtrl: this.prepareProductSrNoView(element.serial_no)
       }
 
       currentProductArray.push(
@@ -390,6 +396,38 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
     return [];
   }
 
+  prepareProductSrNoView(serialNo): FormArray {
+    // const currentProductSerialNoArray = <FormArray>this.saleForm.controls['products']['controls']['productsSerialNoCtrl'];
+    const currentProductSerialNoArray = this.distributorSaleFB.array([]);
+
+    const numberPatern = '^[0-9.,]+$';
+    serialNo.forEach(element => {
+      if(this.pageAction == 'retailerPartialSalesAcceptApproval'){
+        if(element.dist_sales_id > 0 && element.retailer_purchase_id > 0){
+          currentProductSerialNoArray.push(
+            // this.fb.group({serialNumber:['', Validators.required]})
+            this.distributorSaleFB.group({serialNumber:[element.serial_no, Validators.compose([
+              Validators.required,
+              Validators.pattern(numberPatern),
+              Validators.minLength(this.userData.companySettings.TotalCharsInSrNo),
+              Validators.maxLength(this.userData.companySettings.TotalCharsInSrNo),
+            ])]})
+            )
+        }
+      }else {
+      currentProductSerialNoArray.push(
+        // this.fb.group({serialNumber:['', Validators.required]})
+        this.distributorSaleFB.group({serialNumber:[element.serial_no, Validators.compose([
+          Validators.required,
+          Validators.pattern(numberPatern),
+          Validators.minLength(this.userData.companySettings.TotalCharsInSrNo),
+          Validators.maxLength(this.userData.companySettings.TotalCharsInSrNo),
+        ])]})
+        )
+      }
+    });
+    return currentProductSerialNoArray;
+  }
 	/**
 	 * On destroy
 	 */
@@ -610,7 +648,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
         product.clear();
         product.ProductID = data.productCtrl;//Product Original ID
         product.ProductCode = data.productProductCodeCtrl;//Product Original ID
-        product.serial_no = '';//Serial number
+        product.serial_no = JSON.stringify(this.prepareProductSerialNo(data.productsSerialNoCtrl))
         product.ProductAmount = data.productPriceCtrl * data.productQuantityCtrl;//Product Amount:: Product prive * Quantity
         product.Price = data.productPriceCtrl;//Product original price :: Return product time It's total get point in order
         product.points = data.points;//Product original point :: Return product time It's total get boost point in order
@@ -632,6 +670,17 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
       }
     });
     return _products;
+  }
+
+    /**  
+   * Serial no serialize
+   */
+  prepareProductSerialNo(controls){
+    const _serialNo = [];
+    controls.forEach(data => {  
+      _serialNo.push(data.serialNumber)
+    });
+    return _serialNo;
   }
 
   /**

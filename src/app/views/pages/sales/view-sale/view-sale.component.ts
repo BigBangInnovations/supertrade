@@ -29,6 +29,8 @@ import { Logout } from '../../../../core/auth';
 import { SubheaderService, LayoutConfigService } from '../../../../core/_base/layout';
 import { LayoutUtilsService, MessageType } from '../../../../core/_base/crud';
 import { CustomValidator } from '../../../../core/_base/layout/validators/custom-validator'
+import { EncrDecrServiceService } from '../../../../core/auth/_services/encr-decr-service.service'
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'kt-view-sale',
@@ -44,6 +46,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
   saleForm: FormGroup;
   hasFormErrors: boolean = false;
   componentRef: any;
+  userData: any;
   OptionalSetting: dynamicProductTemplateSetting;
   loading = false;
   @ViewChild('popupProductCalculation', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
@@ -73,6 +76,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
  * @param store: Store<AppState>
  * @param saleFB: FormBuilder
  * @param salesService: SalesService,
+ * @param EncrDecr: EncrDecrServiceService
  * @param subheaderService: SubheaderService
  * @param layoutUtilsService: LayoutUtilsService
  * @param cdr
@@ -87,12 +91,18 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     private resolver: ComponentFactoryResolver,
     private salesService: SalesService,
     private subheaderService: SubheaderService,
+    private EncrDecr: EncrDecrServiceService,
     private layoutUtilsService: LayoutUtilsService,
     private cdr: ChangeDetectorRef,
   ) {
     const OptionalSetting = new dynamicProductTemplateSetting();
     OptionalSetting.clear();
     OptionalSetting.displayDeleteButton = false;
+
+    if(this.data.action == 'saleReturn'){
+      OptionalSetting.displayDeleteButton = true;
+    }
+
     if (
       this.data.action == 'saleReturn'
       || this.data.action == 'PurchaseReturn'
@@ -108,6 +118,9 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
+      this.userData = JSON.parse(sessionStorage)
+
     if (this.data.saleId) {
       this.sale$ = this.store.pipe(select(selectSaleById(this.data.saleId)));
       this.sale$.subscribe(res => {
@@ -145,7 +158,18 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     const numberPatern = '^[0-9.,]+$';
     products.forEach(element => {
       let quantity = element.Quantity;
-      if (this.pageAction == 'saleReturn') quantity = 0;
+      let maxApproveQuantity = element.Quantity - element.ReturnQuantity;
+
+      if (this.pageAction == 'saleReturn'
+      && this.userData.companySettings.ProductSelectionTypeInSTrade != 1
+      ){
+        quantity = 0;
+      }
+      else if(this.pageAction == 'saleReturn'
+      && this.userData.companySettings.ProductSelectionTypeInSTrade == 1) {
+        quantity = maxApproveQuantity;
+      }
+
       let res = {
         productCategoryCtrl: [''],
         productSubCategoryCtrl: [''],
@@ -162,7 +186,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
           [
             Validators.required,
             Validators.min(0),
-            Validators.max(element.Quantity - element.ReturnQuantity),
+            Validators.max(maxApproveQuantity),
             Validators.pattern(numberPatern),
             Validators.maxLength(5),
             // Validators.min(1),
@@ -173,6 +197,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
         productReturnedQuantityCtrl: [element.ReturnQuantity],
         productAcceptedQuantityCtrl: [element.acceptQty],
         productDiscountCtrl: [element.Discount],
+			  productDistributorMaxDiscountCtrl: [element.DistributorMaxDiscount],
         productLoyaltyPointCtrl: [(element.points) / element.Quantity],
         productBarCodeCtrl: [''],
         productProductCodeCtrl: [''],
@@ -182,6 +207,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
         VATCodeCtrl: [''],
         points: [element.points],
         points_boost: [element.points_boost],
+        productsSerialNoCtrl: this.prepareProductSrNoView(element.serial_no)
       }
 
       currentProductArray.push(
@@ -191,6 +217,26 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
     });
     this.commonCalculation();
     return [];
+  }
+
+  prepareProductSrNoView(serialNo): FormArray {
+    // const currentProductSerialNoArray = <FormArray>this.saleForm.controls['products']['controls']['productsSerialNoCtrl'];
+    const currentProductSerialNoArray = this.saleFB.array([]);
+
+    const numberPatern = '^[0-9.,]+$';
+    serialNo.forEach(element => {
+      
+      currentProductSerialNoArray.push(
+        // this.fb.group({serialNumber:['', Validators.required]})
+        this.saleFB.group({serialNumber:[element.serial_no, Validators.compose([
+          Validators.required,
+          Validators.pattern(numberPatern),
+          Validators.minLength(this.userData.companySettings.TotalCharsInSrNo),
+          Validators.maxLength(this.userData.companySettings.TotalCharsInSrNo),
+        ])]})
+        )
+    });
+    return currentProductSerialNoArray;
   }
 
 	/**
@@ -284,7 +330,7 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
         product.clear();
         product.ProductID = data.productCtrl;//Product Original ID
         product.ProductCode = data.productProductCodeCtrl;//Product Original ID
-        product.serial_no = '';//Serial number
+        product.serial_no = JSON.stringify(this.prepareProductSerialNo(data.productsSerialNoCtrl))
         product.ProductAmount = data.productPriceCtrl * data.productQuantityCtrl;//Product Amount:: Product prive * Quantity
         product.Price = data.productPriceCtrl;//Product original price :: Return product time It's total get point in order
         product.points = data.points;//Product original point :: Return product time It's total get boost point in order
@@ -305,6 +351,18 @@ export class ViewSaleComponent implements OnInit, OnDestroy {
       }
     });
     return _products;
+  }
+
+  
+  /**  
+   * Serial no serialize
+   */
+  prepareProductSerialNo(controls){
+    const _serialNo = [];
+    controls.forEach(data => {  
+      _serialNo.push(data.serialNumber)
+    });
+    return _serialNo;
   }
 
 	/**

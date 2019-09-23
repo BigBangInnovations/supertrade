@@ -370,7 +370,7 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 			product.clear();
 			product.ProductID = data.productCtrl; //Product Original ID
 			product.ProductCode = data.productProductCodeCtrl; //Product Original ID
-			product.serial_no = ""; //Serial number
+			product.serial_no = JSON.stringify(this.prepareProductSerialNo(data.productsSerialNoCtrl))
 			product.ProductAmount =
 				data.productPriceCtrl * data.productQuantityCtrl; //Product Amount:: Product prive * Quantity
 			product.Price = data.productPriceCtrl; //Product original price
@@ -394,6 +394,17 @@ export class AddPurchaseComponent implements OnInit, OnDestroy {
 		return _products;
 	}
 
+	  /**  
+   * Serial no serialize
+   */
+  prepareProductSerialNo(controls){
+    const _serialNo = [];
+    controls.forEach(data => {  
+      _serialNo.push(data.serialNumber)
+    });
+    return _serialNo;
+  }
+  
 	/**
 	 * Add User
 	 *

@@ -323,7 +323,7 @@ export class AddDistributorPurchaseComponent implements OnInit, OnDestroy {
       product.clear();
       product.ProductID = data.productCtrl;//Product Original ID
       product.ProductCode = data.productProductCodeCtrl;//Product Original ID
-      product.serial_no = '';//Serial number
+      product.serial_no = JSON.stringify(this.prepareProductSerialNo(data.productsSerialNoCtrl))
       product.ProductAmount = data.productPriceCtrl * data.productQuantityCtrl;//Product Amount:: Product prive * Quantity
       product.Price = data.productPriceCtrl;//Product original price
       product.points = data.productLoyaltyPointCtrl;//Product original point
@@ -343,6 +343,16 @@ export class AddDistributorPurchaseComponent implements OnInit, OnDestroy {
       _products.push(product);
     });
     return _products;
+  }
+  	  /**  
+   * Serial no serialize
+   */
+  prepareProductSerialNo(controls){
+    const _serialNo = [];
+    controls.forEach(data => {  
+      _serialNo.push(data.serialNumber)
+    });
+    return _serialNo;
   }
 
 	/**
@@ -524,12 +534,32 @@ export class AddDistributorPurchaseComponent implements OnInit, OnDestroy {
           InclusiveExclusiveCtrl: [orderProduct.InclusiveExclusive],
           VATFromCtrl: [orderProduct.VATFrom],
           VATCodeCtrl: [''],
+          productsSerialNoCtrl: this.prepareProductSrNoView(orderProduct.Quantity),
         }
         this.createProduct(productFormArray);
       });
     })
   }
 
+  prepareProductSrNoView(quantity): FormArray {
+    // const currentProductSerialNoArray = <FormArray>this.saleForm.controls['products']['controls']['productsSerialNoCtrl'];
+    const currentProductSerialNoArray = this.distributorPurchaseFB.array([]);
+
+    const numberPatern = '^[0-9.,]+$';
+    for (let index = 0; index < quantity; index++) {
+      currentProductSerialNoArray.push(
+        // this.fb.group({serialNumber:['', Validators.required]})
+        this.distributorPurchaseFB.group({serialNumber:['', Validators.compose([
+          Validators.required,
+          Validators.pattern(numberPatern),
+          Validators.minLength(this.userData.companySettings.TotalCharsInSrNo),
+          Validators.maxLength(this.userData.companySettings.TotalCharsInSrNo),
+        ])]})
+        )
+    }
+    return currentProductSerialNoArray;
+  }
+  
   resetProductData() {
     const currentProductArray = <FormArray>this.addDistributorPurchaseForm.controls['products'];
     //Clear

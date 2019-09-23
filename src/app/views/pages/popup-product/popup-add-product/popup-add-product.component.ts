@@ -105,10 +105,16 @@ export class PopupAddProductComponent {
 			if (this.salesActiveSchemebooster != undefined)
 				this.boost_point = this.salesActiveSchemebooster.boost_point;
 		}
-
-		this.productQuantity = this.productForm.controls[
-			"productQuantityCtrl"
-		].value;
+		
+		// if (this.pageAction == "saleReturn") {
+		// 		const arrayControl = <FormArray>this.productForm.controls['productsSerialNoCtrl']
+		// 		this.productQuantity = arrayControl.length;
+		// 	} else{
+			this.productQuantity = this.productForm.controls[
+				"productQuantityCtrl"
+			].value;
+		// }
+		
 		this.productOrgPrice = this.productForm.controls[
 			"productPriceCtrl"
 		].value;
@@ -184,22 +190,36 @@ export class PopupAddProductComponent {
 		/** 
 		 * Serial no inputbox added as per quantity
 		 */
-		this.serialNoAddQuantityWise(quantity)
+		if(
+			this.pageAction != "saleReturn"
+			&& this.pageAction != "viewSale"
+			&& this.pageAction != "viewPurchase"
+			&& this.pageAction != "purchaseReturn"
+			&& this.pageAction != "viewDistributorSale"
+			&& this.pageAction != "distributorSaleReturn"
+			&& this.pageAction != "retailerPurchaseApproval"
+			&& this.pageAction != "viewDistributorPurchase"
+			&& this.pageAction != "distributorPurchaseReturn"
+			){
+				this.serialNoAddQuantityWise(quantity)
+			}
+		
 		let price = this.productForm.controls["productPriceCtrl"].value;
 		let discount = this.productForm.controls["productDiscountCtrl"].value;
 		let distributorMaxDiscount = this.productForm.controls["productDistributorMaxDiscountCtrl"].value;
 
-		if( (
-			(this.pageAction == 'addOrder' && APP_CONSTANTS.USER_ROLE.RETAILER_TYPE)
-			|| this.pageAction == 'addPurchase'
-			|| this.pageAction == 'addDistributorPurchase'
-			)
-			&& this.OptionalSetting.isPriceEditable){
-			let discount = (price*this.productOrgDiscount)/this.productOrgPrice
-			this.productForm.controls["productDiscountCtrl"].setValue(
-				discount
-			);
-		}	
+		// if( (
+		// 	(this.pageAction == 'addOrder' && APP_CONSTANTS.USER_ROLE.RETAILER_TYPE)
+		// 	|| this.pageAction == 'addPurchase'
+		// 	|| this.pageAction == 'addDistributorPurchase'
+		// 	)
+		// 	&& this.OptionalSetting.isPriceEditable){
+		// 	let discount = (price*this.productOrgDiscount)/this.productOrgPrice
+		// 	this.productForm.controls["productDiscountCtrl"].setValue(
+		// 		discount
+		// 	);
+		// }
+
 		if((
 			(this.pageAction == 'addOrder' || this.pageAction == 'addDistributorSale')
 			 && APP_CONSTANTS.USER_ROLE.DISTRIBUTOR_TYPE)){
@@ -282,6 +302,15 @@ export class PopupAddProductComponent {
 		this.quantityChange.emit();
 	}
 
+	deleteProductSrNo(index: number): void {
+		const arrayControl = <FormArray>this.productForm.controls['productsSerialNoCtrl']
+		arrayControl.removeAt(index);
+		console.log('arrayControl.length');		
+		console.log(arrayControl.length);		
+		this.productForm.controls["productQuantityCtrl"].setValue(arrayControl.length);
+		this.getProductAmount();
+	}
+
 	/**
 	 * Checking control validation
 	 *
@@ -305,10 +334,9 @@ export class PopupAddProductComponent {
 	 * @param controlName: string => Equals to formControlName
 	 * @param validationType: string => Equals to valitors name
 	 */
-	isSrNoHasError(validationType: string): boolean {
-		
+	isSrNoHasError(validationType: string, index:number = 0): boolean {
 		// const control = this.popupProductForm.controls['productsSerialNoCtrl'].controls[0][controlName];
-		const control = this.productForm.controls['productsSerialNoCtrl']['controls'][0]['controls']['serialNumber']
+		const control = this.productForm.controls['productsSerialNoCtrl']['controls'][index]['controls']['serialNumber']
 
 		if (!control) {
 			return false;

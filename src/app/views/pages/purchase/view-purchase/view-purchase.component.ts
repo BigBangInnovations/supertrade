@@ -57,6 +57,8 @@ import {
 } from "../../../../core/_base/layout";
 import { LayoutUtilsService, MessageType } from "../../../../core/_base/crud";
 import { CustomValidator } from '../../../../core/_base/layout/validators/custom-validator'
+import { EncrDecrServiceService } from '../../../../core/auth/_services/encr-decr-service.service'
+import { environment } from '../../../../../environments/environment';
 
 @Component({
 	selector: "kt-view-purchase",
@@ -71,6 +73,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 	purchaseForm: FormGroup;
 	hasFormErrors: boolean = false;
 	componentRef: any;
+	userData: any;
 	OptionalSetting: dynamicProductTemplateSetting;
 	loading = false;
 	sl_distributor_sales_id: number = 0;
@@ -102,6 +105,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 	 * @param router: Router
 	 * @param data: any
 	 * @param store: Store<AppState>
+	 * @param EncrDecr: EncrDecrServiceService
 	 * @param purchaseFB: FormBuilder,
 	 * @param subheaderService: SubheaderService
 	 * @param layoutUtilsService: LayoutUtilsService
@@ -117,6 +121,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 		private purchaseFB: FormBuilder,
 		private resolver: ComponentFactoryResolver,
 		private purchaseService: PurchaseService,
+		private EncrDecr: EncrDecrServiceService,
 		private subheaderService: SubheaderService,
 		private layoutUtilsService: LayoutUtilsService,
 		private cdr: ChangeDetectorRef
@@ -148,6 +153,9 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit() {
+		let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
+	  this.userData = JSON.parse(sessionStorage)
+	  
 		this.purchaseForm = this.purchaseFB.group({
 			invoice_id: [""],
 			scheme_id: [""],
@@ -230,21 +238,20 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 		products.forEach(element => {
 			let quantity = element.Quantity;
 
-			if (
-				this.pageAction == "purchaseReturn" ||
-				this.pageAction == "retailerPurchaseReturnApproval"
-			)
+			if ( this.pageAction == "purchaseReturn" || this.pageAction == "retailerPurchaseReturnApproval" )
 				quantity = 0;
 
-			if (
-				this.pageAction ==
-				"distributorPartialAcceptPurchaseReturnApproval"
-			)
+			if ( this.pageAction == "distributorPartialAcceptPurchaseReturnApproval" )
 				quantity = element.acceptQty;
 
 			let maxApproveQuantity = element.Quantity - element.ReturnQuantity;
+
 			if (this.pageAction == "retailerPurchaseReturnApproval")
 				maxApproveQuantity = element.Quantity;
+
+			if ( (this.pageAction == "purchaseReturn" || this.pageAction == "retailerPurchaseReturnApproval")
+			&& this.userData.companySettings.ProductSelectionTypeInSTrade == 1 )
+				quantity = maxApproveQuantity;
 
 			let res = {
 				productCategoryCtrl: [""],
@@ -274,6 +281,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 				productReturnedQuantityCtrl: [element.ReturnQuantity],
 				productAcceptedQuantityCtrl: [element.acceptQty],
 				productDiscountCtrl: [element.Discount],
+				productDistributorMaxDiscountCtrl: [element.DistributorMaxDiscount],
 				productLoyaltyPointCtrl: [element.points / element.Quantity],
 				productBarCodeCtrl: [""],
 				productProductCodeCtrl: [""],
@@ -284,7 +292,8 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 				points: [element.points],
 				points_boost: [element.points_boost],
 				return_points: [element.return_points],
-				return_points_boost: [element.return_points_boost]
+				return_points_boost: [element.return_points_boost],
+				productsSerialNoCtrl: this.prepareProductSrNoView(element.serial_no)
 			};
 
 			currentProductArray.push(this.purchaseFB.group(res));
@@ -292,6 +301,26 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 		this.commonCalculation();
 		return [];
 	}
+
+	prepareProductSrNoView(serialNo): FormArray {
+		// const currentProductSerialNoArray = <FormArray>this.saleForm.controls['products']['controls']['productsSerialNoCtrl'];
+		const currentProductSerialNoArray = this.purchaseFB.array([]);
+	
+		const numberPatern = '^[0-9.,]+$';
+		serialNo.forEach(element => {
+		  
+		  currentProductSerialNoArray.push(
+			// this.fb.group({serialNumber:['', Validators.required]})
+			this.purchaseFB.group({serialNumber:[element.serial_no, Validators.compose([
+			  Validators.required,
+			  Validators.pattern(numberPatern),
+			  Validators.minLength(this.userData.companySettings.TotalCharsInSrNo),
+			  Validators.maxLength(this.userData.companySettings.TotalCharsInSrNo),
+			])]})
+			)
+		});
+		return currentProductSerialNoArray;
+	  }
 
 	/**
 	 * On destroy
@@ -542,7 +571,7 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 				product.clear();
 				product.ProductID = data.productCtrl; //Product Original ID
 				product.ProductCode = data.productProductCodeCtrl; //Product Original ID
-				product.serial_no = ""; //Serial number
+				product.serial_no = JSON.stringify(this.prepareProductSerialNo(data.productsSerialNoCtrl))
 				product.ProductAmount =
 					data.productPriceCtrl * data.productQuantityCtrl; //Product Amount:: Product prive * Quantity
 				product.Price = data.productPriceCtrl; //Product original price :: Return product time It's total get point in order
@@ -577,6 +606,17 @@ export class ViewPurchaseComponent implements OnInit, OnDestroy {
 		});
 		return _products;
 	}
+
+	  /**  
+   * Serial no serialize
+   */
+  prepareProductSerialNo(controls){
+    const _serialNo = [];
+    controls.forEach(data => {  
+      _serialNo.push(data.serialNumber)
+    });
+    return _serialNo;
+  }
 
 	/**
 	 * returnPurchase
