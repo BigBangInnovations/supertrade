@@ -235,7 +235,8 @@ export class ViewDistributorPurchaseOrderComponent implements OnInit, OnDestroy 
 				VATPercentageCtrl: [""],
 				InclusiveExclusiveCtrl: [""],
 				VATFromCtrl: [""],
-				VATCodeCtrl: [""]
+				VATCodeCtrl: [""],
+				productsSerialNoCtrl: this.distributorPurchaseOrderFB.array([])
 			};
 
 			currentProductArray.push(this.distributorPurchaseOrderFB.group(res));

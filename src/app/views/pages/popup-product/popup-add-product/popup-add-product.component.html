@@ -111,13 +111,21 @@ pageAction != 'addSale'
                 </mat-list-item>
             </ng-container>
             <mat-list-item role="listitem" *ngIf="
-                pageAction == 'addSale' 
+                (pageAction == 'addSale' 
                 || pageAction == 'addPurchase' 
                 || pageAction == 'addDistributorSale'
                 || pageAction == 'addOrder' 
                 || pageAction == 'distributorPurchaseOrderEdit' 
                 || pageAction == 'addDistributorPurchase' 
-                || pageAction == 'distributorPurchaseEdit' 
+                || pageAction == 'distributorPurchaseEdit' ) || (
+                    userData.companySettings.ProductSelectionTypeInSTrade != 1 && (
+                        pageAction == 'saleReturn' 
+                        || pageAction == 'purchaseReturn' 
+                        || pageAction == 'distributorSaleReturn' 
+                        || pageAction == 'distributorPurchaseReturn' 
+                        || pageAction == 'retailerPurchaseApproval' 
+                    )
+                )
                 ">
                 <mat-form-field class="col-lg-12" style="margin-left: -11px;">
                     <input
