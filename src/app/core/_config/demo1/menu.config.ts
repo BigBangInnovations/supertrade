@@ -11,6 +11,13 @@ export class MenuConfig {
 					translate: 'MENU.DASHBOARD',
 				},
 				{
+					title: 'Add Opening stock',
+					root: true,
+					alignment: 'left',
+					page: '/add-opening-stock',
+					translate: 'MENU.ADD_OPENING_STOCK',
+				},
+				{
 					title: 'Sales',
 					root: true,
 					alignment: 'left',
@@ -410,6 +417,14 @@ export class MenuConfig {
 					icon: 'flaticon2-architecture-and-city',
 					page: '/dashboard',
 					translate: 'MENU.DASHBOARD',
+					bullet: 'dot',
+				},
+				{
+					title: 'Opening Stock',
+					root: true,
+					icon: 'flaticon2-add-square',
+					page: '/add-opening-stock',
+					translate: 'MENU.ADD_OPENING_STOCK',
 					bullet: 'dot',
 				},
 				{

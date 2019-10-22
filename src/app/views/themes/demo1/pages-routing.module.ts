@@ -89,6 +89,10 @@ const routes: Routes = [
 				data: { moduleName: 'distributorPurchase' },
 				loadChildren: () => import('../../../../app/views/pages/distributorPurchase/add-distributorPurchase/add-distributorPurchase.module').then(m => m.AddDistributorPurchaseModule)
 			},
+			{
+				path: 'add-opening-stock',
+				loadChildren: () => import('../../../../app/views/pages/opening-stock/opening-stock.module').then(m => m.OpeningStockModule)
+			},
 			{ path: 'error/:type', component: ErrorPageComponent },
 			{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 			{path: '**', redirectTo: 'dashboard', pathMatch: 'full'}

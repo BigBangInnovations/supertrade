@@ -82,6 +82,10 @@ import { DistributorPurchaseService } from './core/distributorPurchase'
 import { DistributorPurchaseOrderModule } from './views/pages/distributorPurchaseOrder/distributorPurchaseOrder.module'
 import { DistributorPurchaseOrderService } from './core/distributorPurchaseOrder'
 
+//opening stock
+import { OpeningStockModule } from './views/pages/opening-stock/opening-stock.module'
+import { OpeningStockService } from './core/openingStock'
+
 // CRUD
 import { HttpUtilsService, LayoutUtilsService, TypesUtilsService } from './core/_base/crud';
 // Config
@@ -197,6 +201,7 @@ export function hljsLanguages(): HighlightLanguage[] {
 		HttpUtilsService,
 		TypesUtilsService,
 		LayoutUtilsService,
+		OpeningStockService,
 	],
 	bootstrap: [AppComponent]
 })

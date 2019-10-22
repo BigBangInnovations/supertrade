@@ -6,6 +6,12 @@ export class PageConfig {
 				'desc': 'Latest updates and statistic charts'
 			},
 		},
+		'add-opening-stock': {
+			page: {
+				'title': 'Upload opening stock',
+				'desc': 'Latest updates and statistic charts'
+			},
+		},
 		sales: {
 			page: { title: 'Sales', desc: 'SuperTRADE Sales' },
 			'add-sale': {

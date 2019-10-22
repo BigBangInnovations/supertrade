@@ -29,7 +29,8 @@ export class InterceptService implements HttpInterceptor {
 		let clonedRequest = request.clone({
 			setHeaders: {
 				'Content-Type': 'application/x-www-form-urlencoded',
-				Accept: '*/*'
+				Accept: '*/*',
+				
 			},
 			url: this.fixUrl(request.url),
 		});
