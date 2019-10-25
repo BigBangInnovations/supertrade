@@ -42,6 +42,9 @@ export class PageConfig {
 				page: { 'title': 'Add Order', 'desc': 'SuperTRADE Add Order' },
 			}
 		},
+		'reports': {
+			page: { 'title': 'Reports', 'desc': 'SuperTRADE Reports' },
+		},
 		notification: {
 			page: { 'title': 'Notification', 'desc': 'SuperTRADE notification and approval' },
 		},

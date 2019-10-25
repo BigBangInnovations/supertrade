@@ -616,6 +616,14 @@ export class MenuConfig {
 					]
 				},
 				{
+					title: 'Report',
+					root: true,
+					icon: 'flaticon2-line-chart',
+					page: '/reports',
+					translate: 'MENU.REPORTS',
+					bullet: 'dot',
+				},
+				{
 					title: 'Notification & Approval',
 					root: true,
 					icon: 'flaticon-alert',

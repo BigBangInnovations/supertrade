@@ -93,6 +93,10 @@ const routes: Routes = [
 				path: 'add-opening-stock',
 				loadChildren: () => import('../../../../app/views/pages/opening-stock/opening-stock.module').then(m => m.OpeningStockModule)
 			},
+			{
+				path: 'reports',
+				loadChildren: () => import('../../../../app/views/pages/reports/reports.module').then(m => m.ReportsModule)
+			},
 			{ path: 'error/:type', component: ErrorPageComponent },
 			{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 			{path: '**', redirectTo: 'dashboard', pathMatch: 'full'}

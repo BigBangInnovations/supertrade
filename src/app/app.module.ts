@@ -86,6 +86,10 @@ import { DistributorPurchaseOrderService } from './core/distributorPurchaseOrder
 import { OpeningStockModule } from './views/pages/opening-stock/opening-stock.module'
 import { OpeningStockService } from './core/openingStock'
 
+//reports
+import { ReportsModule } from './views/pages/reports/reports.module'
+import { ReportsService } from './core/reports'
+
 // CRUD
 import { HttpUtilsService, LayoutUtilsService, TypesUtilsService } from './core/_base/crud';
 // Config
@@ -202,6 +206,7 @@ export function hljsLanguages(): HighlightLanguage[] {
 		TypesUtilsService,
 		LayoutUtilsService,
 		OpeningStockService,
+		ReportsService,
 	],
 	bootstrap: [AppComponent]
 })
