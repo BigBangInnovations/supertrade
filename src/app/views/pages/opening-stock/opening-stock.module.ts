@@ -38,7 +38,7 @@ import {
 	MatTooltipModule
  } from '@angular/material';
 
- import { MatFileUploadModule } from 'angular-material-fileupload'
+//  import { MatFileUploadModule } from 'angular-material-fileupload'
 
  import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -90,7 +90,7 @@ const routes: Routes = [
 		MatDialogModule,
 		FormsModule,
     ReactiveFormsModule,
-    MatFileUploadModule
+    // MatFileUploadModule
 	],
 	exports:[
 		OpeningStockComponent,

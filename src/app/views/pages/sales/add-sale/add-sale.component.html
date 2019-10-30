@@ -59,7 +59,7 @@
                             </mat-error>
 
                             <mat-error *ngIf="isControlHasError('mobile_no','pattern')">
-                                <strong>{{ 'POPUPPRODUCT.VALIDATION.NUMBER_PATTERN' | translate }}</strong>
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.NUMBER_PATTERN' | translate:{'name':'Customer name'} }}</strong>
                             </mat-error>
 
                             <mat-error *ngIf="isControlHasError('name','maxLength')">
@@ -75,11 +75,11 @@
                         <mat-form-field class="mat-form-field-fluid">
                             <input matInput placeholder="Enter mobile number" formControlName="mobile_no" maxlength="15" />
                             <mat-error *ngIf="isControlHasError('mobile_no','required')">
-                                <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Customer number'} }}</strong>
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.REQUIRED' | translate:{'name':'Mobile number'} }}</strong>
                             </mat-error>
 
                             <mat-error *ngIf="isControlHasError('mobile_no','pattern')">
-                                <strong>{{ 'POPUPPRODUCT.VALIDATION.NUMBER_PATTERN' | translate }}</strong>
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.NUMBER_PATTERN' | translate:{'name':'Mobile number'} }}</strong>
                             </mat-error>
 
                             <mat-error *ngIf="isControlHasError('mobile_no','maxLength')">
@@ -109,7 +109,7 @@
                             </mat-error>
                             
                             <mat-error *ngIf="isControlHasError('landline_no','pattern')">
-                                <strong>{{ 'POPUPPRODUCT.VALIDATION.NUMBER_PATTERN' | translate }}</strong>
+                                <strong>{{ 'POPUPPRODUCT.VALIDATION.NUMBER_PATTERN' | translate:{'name':'Landline number'} }}</strong>
                             </mat-error>
 
                             <mat-error *ngIf="isControlHasError('landline_no','maxlength')">
