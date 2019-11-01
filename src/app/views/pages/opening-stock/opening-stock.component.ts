@@ -56,6 +56,7 @@ export class OpeningStockComponent implements OnInit {
   ngOnInit() {
     let sessionStorage = this.EncrDecr.getLocalStorage(environment.localStorageKey);
     this.userData = JSON.parse(sessionStorage)
+    console.log(this.userData.companySettings.FreezeOpeningStockSTrade);
     this.createForm();
   }
 
@@ -229,4 +230,7 @@ isControlHasError(controlName: string, validationType: string): boolean {
         
   }
 
+  downloadOsFormat(){
+    saveAs(environment.apiEndpoint+"assets/excel_format/opening stock suprtrade.xlsx", "OpeningStockFormat.xlsx");
+  }
 }

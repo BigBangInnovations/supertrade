@@ -1,14 +1,15 @@
 <kt-portlet>
         <kt-portlet-header [class]="'kt-portlet__head--lg'" >
-                <!-- <ng-container ktPortletTitle>
-                    <h3 class="kt-portlet__head-title">
-                        <span>Upload opening stock</span>
-                    </h3>
-                </ng-container> -->
+                <ng-container ktPortletTitle>
+                    <button (click)="downloadOsFormat()" 
+                    mat-raised-button matTooltip="Download Excel Format" color="primary" type="button">
+                        <span>Download Excel Format</span>
+                    </button>
+                </ng-container>
         
                 <ng-container ktPortletTools>
                     <button (click)="freezeStock()" 
-                    [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading"
+                    [ngClass]="{'kt-spinner kt-spinner--right kt-spinner--md kt-spinner--light': loading}" [disabled]="loading || userData.companySettings.FreezeOpeningStockSTrade"
                     mat-raised-button matTooltip="Freeze Opening Stock" color="warn" type="button">
                         <span>Freeze Opening Stock</span>
                     </button>
