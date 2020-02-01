@@ -739,7 +739,8 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
       .pipe(
         tap(response => {
           if (response.status == APP_CONSTANTS.response.SUCCESS) {
-            const message = `Purchase accepted successfully.`;
+            // const message = `Purchase accepted successfully.`;
+            const message = `Approval done successfully.`;
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
             this.dialogRef.close('reload');
           } else if (response.status == APP_CONSTANTS.response.ERROR) {
@@ -779,7 +780,7 @@ export class ViewDistributorSaleComponent implements OnInit, OnDestroy {
       .pipe(
         tap(response => {
           if (response.status == APP_CONSTANTS.response.SUCCESS) {
-            const message = `Accepted successfully.`;
+            const message = `Approval done successfully.`;
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
             this.dialogRef.close('reload');
           } else if (response.status == APP_CONSTANTS.response.ERROR) {

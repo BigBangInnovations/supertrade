@@ -372,7 +372,7 @@ export class AddDistributorPurchaseComponent implements OnInit, OnDestroy {
       .pipe(
         tap(response => {
           if (response.status == APP_CONSTANTS.response.SUCCESS) {
-            const message = `Distributor Sale has been successfully added.`;
+            const message = `Distributor Purchase has been successfully added.`;
             this.layoutUtilsService.showActionNotification(message, MessageType.Create, 5000, false, false);
             this.router.navigateByUrl('distributor-purchase'); // distributorPurchase listing page
           } else if (response.status == APP_CONSTANTS.response.ERROR) {
